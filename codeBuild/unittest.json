@@ -40,7 +40,7 @@
                 "Artifacts": {
                     "Type": "CODEPIPELINE",
                     "Name": {
-                        "Fn:Sub": "${BuildName}-artifact"
+                        "Fn::Sub": "${BuildName}-artifact"
                     },
                     "Packaging": "NONE",
                     "EncryptionDisabled": false
