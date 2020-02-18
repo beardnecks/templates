@@ -1,0 +1,247 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "ArtifactStoreName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 bucket that stores pipeline artifacts."
+        },
+        "PipelineName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Name of the CodePipeline"
+        },
+        "SourceBucket": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 bucket source for the pipeline"
+        },
+        "SourceBucketObjectKey": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Zip file containing source code inside Source Code Bucket"
+        },
+        "OutputBucketName":{
+            "Type": "String",
+            "Default": "Pipeline-output-bucket",
+            "Description": "Bucket containing the output artifact from the pipeline"
+        },
+        "UnitTestName":{
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of unit test"
+        },
+        "VerifyTestName":{
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of verify test"
+        },
+        "PackagingName":{
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of packaging"
+        }
+    },
+    "Resources": {
+        "ArtifacStoreBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {
+                    "Fn::Sub": "${PipelineName}-${ArtifactStoreName}"
+                },
+                "Tags": []
+            }
+        },
+        "ServiceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/service-role/",
+                "RoleName": {
+                    "Fn::Sub": "AWSCodePipelineServiceRole-eu-west-1-${PipelineName}"
+                },
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "codepipeline.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+                ],
+                "MaxSessionDuration": 3600,
+                "Description": "Service Role for CodePipeline"
+            }
+        },
+        "pipeline": {
+            "Type": "AWS::CodePipeline::Pipeline",
+            "Properties": {
+                "Name": {
+                    "Ref": "PipelineName"
+                },
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "ServiceRole",
+                        "Arn"
+                    ]
+                },
+                "ArtifactStore": {
+                    "Type": "S3",
+                    "Location": {
+                        "Fn::Sub": "${PipelineName}-${ArtifactStoreName}"
+                    }
+                },
+                "Stages": [
+                    {
+                        "Name": "Source",
+                        "Actions": [
+                            {
+                                "Name": "Source",
+                                "ActionTypeId": {
+                                    "Category": "Source",
+                                    "Owner": "AWS",
+                                    "Provider": "S3",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "PollForSourceChanges": "false",
+                                    "S3Bucket": {
+                                        "Ref": "SourceBucket"
+                                    },
+                                    "S3ObjectKey": {
+                                        "Ref": "SourceBucketObjectKey"
+                                    }
+                                },
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "InputArtifacts": [],
+                                "Region": "eu-west-1",
+                                "Namespace": "SourceVariables"
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "Testing",
+                        "Actions": [
+                            {
+                                "Name": "Unittest",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "UnitTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
+                                "Name": "Suricata-verify",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "VerifyTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "packaging",
+                        "Actions": [
+                            {
+                                "Name": "packaging-rpm",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "PackagingName"
+                                    }
+                                },
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "BuildArtifact"
+                                    }
+                                ],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1",
+                                "Namespace": "BuildVariables"
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "Deploy",
+                        "Actions": [
+                            {
+                                "Name": "deploy-s3",
+                                "ActionTypeId": {
+                                    "Category": "Deploy",
+                                    "Owner": "AWS",
+                                    "Provider": "S3",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "BucketName": {
+                                        "Ref": "OutputBucketName"
+                                    },
+                                    "Extract": "true"
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "BuildArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
