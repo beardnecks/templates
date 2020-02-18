@@ -16,30 +16,13 @@
             "Description": "Docker container to run the build",
             "Type": "String",
             "Default": ""
+        },
+        "IAMRole": {
+            "Description": "Iam role arn passed from master template",
+            "Type": "String"
         }
     },
     "Resources": {
-        "iamRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "codebuild.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "Path": "/",
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
-                ]
-            }
-        },
         "Verify": {
             "Description": "CodeBuild project",
             "Type": "AWS::CodeBuild::Project",
@@ -75,10 +58,7 @@
                     "ImagePullCredentialsType": "SERVICE_ROLE"
                 },
                 "ServiceRole": {
-                    "Fn::GetAtt": [
-                        "iamRole",
-                        "Arn"
-                    ]
+                    "Ref": "IAMRole"
                 },
                 "TimeoutInMinutes": 60,
                 "QueuedTimeoutInMinutes": 480,
