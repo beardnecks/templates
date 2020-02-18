@@ -39,7 +39,9 @@
                 "SecondarySourceVersions": [],
                 "Artifacts": {
                     "Type": "CODEPIPELINE",
-                    "Name": "p-neckbeards-unittest-00",
+                    "Name": {
+                        "Fn:Sub": "${BuildName}-artifact"
+                    },
                     "Packaging": "NONE",
                     "EncryptionDisabled": false
                 },

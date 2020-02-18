@@ -40,7 +40,9 @@
                 "SecondarySourceVersions": [],
                 "Artifacts": {
                     "Type": "CODEPIPELINE",
-                    "Name": "p-neckbeards-suricata_verify",
+                    "Name": {
+                        "Fn::Sub": "${BuildName}-artifact"
+                    },
                     "Packaging": "NONE",
                     "EncryptionDisabled": false
                 },
