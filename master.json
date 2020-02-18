@@ -41,6 +41,19 @@
                         "PackagingBuildSpecFileName",
                         "PackagingTemplateURL"
                     ]
+                },
+                {
+                    "Label": {
+                        "default": "CodePipeline settings"
+                    },
+                    "Parameters": [
+                        "ArtifactStoreName",
+                        "PipelineName",
+                        "SourceBucket",
+                        "SourceBucketObjectKey",
+                        "OutputBucketName",
+                        "PipelineTemplateURL"
+                    ]
                 }
             ],
             "ParamketerLabels": {
@@ -73,6 +86,24 @@
                 },
                 "PackagingTemplateURL": {
                     "default": "S3 URL of packaging template"
+                },
+                "ArtifactStoreName": {
+                    "default": "S3 bucket that stores pipeline artifacts."
+                },
+                "PipelineName": {
+                    "default": "Name of the CodePipeline"
+                },
+                "SourceBucket": {
+                    "default": "S3 bucket source for the pipeline"
+                },
+                "SourceBucketObjectKey": {
+                    "default": "Zip file containing source code inside Source Code Bucket"
+                },
+                "OutputBucketName": {
+                    "default": "Bucket containing the output artifact from the pipeline"
+                },
+                "PipelineTemplateURL": {
+                    "default": "S3 URL for the pipeline template"
                 }
             }
         }
@@ -127,6 +158,36 @@
             "Description": "S3 URL for packaging build template",
             "Type": "String",
             "Default": ""
+        },
+        "ArtifactStoreName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 bucket that stores pipeline artifacts."
+        },
+        "PipelineName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Name of the CodePipeline"
+        },
+        "SourceBucket": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 bucket source for the pipeline"
+        },
+        "SourceBucketObjectKey": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Zip file containing source code inside Source Code Bucket"
+        },
+        "OutputBucketName": {
+            "Type": "String",
+            "Default": "Pipeline-output-bucket",
+            "Description": "Bucket containing the output artifact from the pipeline"
+        },
+        "PipelineTemplateURL": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 URL for the pipeline template"
         }
     },
     "Resources": {
@@ -147,7 +208,11 @@
                 },
                 "Path": "/",
                 "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
+                    "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
                 ]
             }
         },
@@ -224,6 +289,40 @@
                 "TemplateURL": {
                     "Ref": "PackagingTemplateURL"
                 }
+            }
+        },
+        "pipeline": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "ArtifactStoreName": {
+                        "Ref": "ArtifactStoreName"
+                    },
+                    "PipelineName": {
+                        "Ref": "PipelineName"
+                    },
+                    "SourceBucket": {
+                        "Ref": "SourceBucket"
+                    },
+                    "SourceBucketObjectKey": {
+                        "Ref": "SourceBucketObjectKey"
+                    },
+                    "OutputBucketName": {
+                        "Ref": "OutputBucketName"
+                    },
+                    "UnitTestName": {
+                        "Ref": "UnitTestName"
+                    },
+                    "VerifyTestName": {
+                        "Ref": "VerifyTestName"
+                    },
+                    "PackagingName": {
+                        "Ref": "PackagingBuildName"
+                    }
+                },
+                "TemplateURL": 
+                { "Ref": "PipelineTemplateURL" }
+                
             }
         }
     }
