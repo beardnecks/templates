@@ -1,6 +1,82 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Creates nested stacks containing CodeBuild templates",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "General Settings"
+                    },
+                    "Parameters": [
+                        "BuildImage"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Unit Test settings"
+                    },
+                    "Parameters": [
+                        "UnitTestName",
+                        "UnitTestBuildSpecFileName",
+                        "UnitTestTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Verify Test settings"
+                    },
+                    "Parameters": [
+                        "VerifyTestName",
+                        "VerifyBuildSpecFileName",
+                        "VerifyTestTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Packaging Test settings"
+                    },
+                    "Parameters": [
+                        "PackagingBuildName",
+                        "PackagingBuildSpecFileName",
+                        "PackagingTemplateURL"
+                    ]
+                }
+            ],
+            "ParamketerLabels": {
+                "UnitTestName": {
+                    "default": "Project name of unittest"
+                },
+                "VerifyTestName": {
+                    "default": "Project name of verify tests"
+                },
+                "PackagingBuildName": {
+                    "default": "Project name of packaging stage"
+                },
+                "UnitTestBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the unit test"
+                },
+                "VerifyBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the verify tests"
+                },
+                "PackagingBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the packaging stage"
+                },
+                "BuildImage": {
+                    "default": "ECR address of docker image used for building"
+                },
+                "UnitTestTemplateURL": {
+                    "default": "S3 URL of unit test template"
+                },
+                "VerifyTestTemplateURL": {
+                    "default": "S3 URL of verify test template"
+                },
+                "PackagingTemplateURL": {
+                    "default": "S3 URL of packaging template"
+                }
+            }
+        }
+    },
     "Parameters": {
         "UnitTestName": {
             "Description": "Name of the unittest build project",
@@ -54,6 +130,27 @@
         }
     },
     "Resources": {
+        "CodeBuildIamRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "codebuild.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+                ]
+            }
+        },
         "UnitTest": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
@@ -66,6 +163,12 @@
                     },
                     "BuildSpecFileName": {
                         "Ref": "UnitTestBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
                     }
                 },
                 "TemplateURL": {
@@ -85,6 +188,12 @@
                     },
                     "BuildSpecFileName": {
                         "Ref": "VerifyBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
                     }
                 },
                 "TemplateURL": {
@@ -104,6 +213,12 @@
                     },
                     "BuildSpecFileName": {
                         "Ref": "PackagingBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
                     }
                 },
                 "TemplateURL": {
