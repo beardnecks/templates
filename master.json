@@ -56,7 +56,7 @@
                     ]
                 }
             ],
-            "ParamketerLabels": {
+            "ParameterLabels": {
                 "UnitTestName": {
                     "default": "Project name of unittest"
                 },
