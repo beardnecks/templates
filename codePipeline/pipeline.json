@@ -21,22 +21,22 @@
             "Default": "",
             "Description": "Zip file containing source code inside Source Code Bucket"
         },
-        "OutputBucketName":{
+        "OutputBucketName": {
             "Type": "String",
             "Default": "Pipeline-output-bucket",
             "Description": "Bucket containing the output artifact from the pipeline"
         },
-        "UnitTestName":{
+        "UnitTestName": {
             "Type": "String",
             "Default": "",
             "Description": "Project name of unit test"
         },
-        "VerifyTestName":{
+        "VerifyTestName": {
             "Type": "String",
             "Default": "",
             "Description": "Project name of verify test"
         },
-        "PackagingName":{
+        "PackagingName": {
             "Type": "String",
             "Default": "",
             "Description": "Project name of packaging"
@@ -78,6 +78,125 @@
                 ],
                 "MaxSessionDuration": 3600,
                 "Description": "Service Role for CodePipeline"
+            }
+        },
+        "AmazonCloudWatchEventRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "events.amazonaws.com"
+                                ]
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "cwe-pipeline-execution",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "codepipeline:StartPipelineExecution",
+                                    "Resource": {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "arn:aws:codepipeline:",
+                                                {
+                                                    "Ref": "AWS::Region"
+                                                },
+                                                ":",
+                                                {
+                                                    "Ref": "AWS::AccountId"
+                                                },
+                                                ":",
+                                                {
+                                                    "Ref": "pipeline"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "eventRule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "--",
+                "EventPattern": {
+                    "source": [
+                        "aws.s3"
+                    ],
+                    "detail-type": [
+                        "AWS API Call via CloudTrail"
+                    ],
+                    "detail": {
+                        "eventSource": [
+                            "s3.amazonaws.com"
+                        ],
+                        "eventName": [
+                            "PutObject",
+                            "CompleteMultipartUpload",
+                            "CopyObject"
+                        ],
+                        "requestParameters": {
+                            "bucketName": [
+                                {
+                                    "Ref": "SourceBucket"
+                                }
+                            ],
+                            "key": [
+                                {
+                                    "Ref": "SourceBucketObjectKey"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "arn:aws:codepipeline:",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                        "Ref": "AWS::AccountId"
+                                    },
+                                    ":",
+                                    {
+                                        "Ref": "pipeline"
+                                    }
+                                ]
+                            ]
+                        },
+                        "Id": "t-pipeline-target",
+                        "RoleArn": {
+                            "Fn::GetAtt": [
+                                "AmazonCloudWatchEventRole",
+                                "Arn"
+                            ]
+                        }
+                    }
+                ]
             }
         },
         "pipeline": {
