@@ -52,6 +52,15 @@
                 "Tags": []
             }
         },
+        "OutputBucket":{
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {
+                    "Ref": "OutputBucketName"
+                },
+                "Tags": []
+            }
+        },
         "ServiceRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
