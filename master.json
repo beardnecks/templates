@@ -44,6 +44,16 @@
                 },
                 {
                     "Label": {
+                        "default": "Docker Build and Deploy settings"
+                    },
+                    "Parameters": [
+                        "DockerName",
+                        "DockerBuildSpecFileName",
+                        "DockerTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
                         "default": "CodePipeline settings"
                     },
                     "Parameters": [
@@ -66,6 +76,9 @@
                 "PackagingBuildName": {
                     "default": "Project name of packaging stage"
                 },
+                "DockerName": {
+                    "default": "Project name of Docker stage"
+                },
                 "UnitTestBuildSpecFileName": {
                     "default": "File path of the buildspec file of the unit test"
                 },
@@ -74,6 +87,9 @@
                 },
                 "PackagingBuildSpecFileName": {
                     "default": "File path of the buildspec file of the packaging stage"
+                },
+                "DockerBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the Docker stage"
                 },
                 "BuildImage": {
                     "default": "ECR address of docker image used for building"
@@ -86,6 +102,9 @@
                 },
                 "PackagingTemplateURL": {
                     "default": "S3 URL of packaging template"
+                },
+                "DockerTemplateURL": {
+                    "default": "S3 URL of Docker template"
                 },
                 "ArtifactStoreName": {
                     "default": "S3 bucket that stores pipeline artifacts."
@@ -124,6 +143,11 @@
             "Type": "String",
             "Default": "packaging"
         },
+        "DockerName": {
+            "Description": "Name of the docker build project",
+            "Type": "String",
+            "Default": "packaging"
+        },
         "UnitTestBuildSpecFileName": {
             "Description": "Filename of the buildspec.yaml",
             "Type": "String",
@@ -135,6 +159,11 @@
             "Default": ""
         },
         "PackagingBuildSpecFileName": {
+            "Description": "Filename of the buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "DockerBuildSpecFileName": {
             "Description": "Filename of the buildspec.yaml",
             "Type": "String",
             "Default": ""
@@ -156,6 +185,11 @@
         },
         "PackagingTemplateURL": {
             "Description": "S3 URL for packaging build template",
+            "Type": "String",
+            "Default": ""
+        },
+        "DockerTemplateURL": {
+            "Description": "S3 URL for docker build template",
             "Type": "String",
             "Default": ""
         },
@@ -291,6 +325,28 @@
                 }
             }
         },
+        "Docker": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Ref": "DockerName"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "DockerBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "DockerTemplateURL"
+                }
+            }
+        },
         "pipeline": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
@@ -318,6 +374,9 @@
                     },
                     "PackagingName": {
                         "Ref": "PackagingBuildName"
+                    },
+                    "DockerName": {
+                        "Ref": "DockerName"
                     }
                 },
                 "TemplateURL": {
