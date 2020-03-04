@@ -1,0 +1,74 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Builds and deploys the docker image",
+    "Parameters": {
+        "BuildName": {
+            "Description": "Name of the build project",
+            "Type": "String",
+            "Default": "packaging"
+        },
+        "BuildSpecFileName": {
+            "Description": "Filename of the buildspec.yaml",
+            "Type": "String",
+            "Default": "buildspec-packaging-centos8.yml"
+        },
+        "IAMRole": {
+            "Description": "Iam role arn passed from master template",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "DockerPackaging": {
+            "Description": "CodeBuild project",
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+                "Name": {
+                    "Ref": "BuildName"
+                },
+                "Source": {
+                    "Type": "CODEPIPELINE",
+                    "BuildSpec": {
+                        "Ref": "BuildSpecFileName"
+                    },
+                    "InsecureSsl": false
+                },
+                "SecondarySourceVersions": [],
+                "Artifacts": {
+                    "Type": "CODEPIPELINE",
+                    "Name": {
+                        "Fn::Sub": "${BuildName}-artifact"
+                    },
+                    "Packaging": "NONE",
+                    "EncryptionDisabled": false
+                },
+                "Cache": {
+                    "Type": "NO_CACHE"
+                },
+                "Environment": {
+                    "Type": "LINUX_CONTAINER",
+                    "Image": "aws/codebuild/standard:3.0",
+                    "ComputeType": "BUILD_GENERAL1_MEDIUM",
+                    "EnvironmentVariables": [],
+                    "PrivilegedMode": true,
+                    "ImagePullCredentialsType": "CODEBUILD"
+                },
+                "ServiceRole": {
+                    "Ref": "IAMRole"
+                },
+                "TimeoutInMinutes": 60,
+                "QueuedTimeoutInMinutes": 480,
+                "Tags": [],
+                "BadgeEnabled": false,
+                "LogsConfig": {
+                    "CloudWatchLogs": {
+                        "Status": "ENABLED"
+                    },
+                    "S3Logs": {
+                        "Status": "DISABLED",
+                        "EncryptionDisabled": false
+                    }
+                }
+            }
+        }
+    }
+}
