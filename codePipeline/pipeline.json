@@ -40,6 +40,11 @@
             "Type": "String",
             "Default": "",
             "Description": "Project name of packaging"
+        },
+        "DockerName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of docker"
         }
     },
     "Resources": {
@@ -52,7 +57,7 @@
                 "Tags": []
             }
         },
-        "OutputBucket":{
+        "OutputBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
                 "BucketName": {
@@ -337,6 +342,32 @@
                                 ],
                                 "Region": "eu-west-1",
                                 "Namespace": "BuildVariables"
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "docker-packaging",
+                        "Actions": [
+                            {
+                                "Name": "docker-build-deploy",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "DockerName"
+                                    }
+                                },
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
                             }
                         ]
                     },
