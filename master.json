@@ -320,9 +320,9 @@
                         "Ref": "PackagingBuildName"
                     }
                 },
-                "TemplateURL": 
-                { "Ref": "PipelineTemplateURL" }
-                
+                "TemplateURL": {
+                    "Ref": "PipelineTemplateURL"
+                }
             }
         }
     }
