@@ -1,0 +1,255 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Creates nested stacks containing CodeBuild templates",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "General Settings"
+                    },
+                    "Parameters": [
+                        "BuildImage"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Unit Test settings"
+                    },
+                    "Parameters": [
+                        "UnitTestName",
+                        "UnitTestBuildSpecFileName",
+                        "UnitTestTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Verify Test settings"
+                    },
+                    "Parameters": [
+                        "VerifyTestName",
+                        "VerifyBuildSpecFileName",
+                        "VerifyTestTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "CodePipeline settings"
+                    },
+                    "Parameters": [
+                        "ArtifactStoreName",
+                        "PipelineName",
+                        "SourceBucket",
+                        "SourceBucketObjectKey",
+                        "PipelineTemplateURL"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "UnitTestName": {
+                    "default": "Project name of unittest"
+                },
+                "VerifyTestName": {
+                    "default": "Project name of verify tests"
+                },
+                "UnitTestBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the unit test"
+                },
+                "VerifyBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the verify tests"
+                },
+                "BuildImage": {
+                    "default": "ECR address of docker image used for building"
+                },
+                "UnitTestTemplateURL": {
+                    "default": "S3 URL of unit test template"
+                },
+                "VerifyTestTemplateURL": {
+                    "default": "S3 URL of verify test template"
+                },
+                "ArtifactStoreName": {
+                    "default": "S3 bucket that stores pipeline artifacts."
+                },
+                "PipelineName": {
+                    "default": "Name of the CodePipeline"
+                },
+                "SourceBucket": {
+                    "default": "S3 bucket source for the pipeline"
+                },
+                "SourceBucketObjectKey": {
+                    "default": "Zip file containing source code inside Source Code Bucket"
+                },
+                "PipelineTemplateURL": {
+                    "default": "S3 URL for the pipeline template"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "UnitTestName": {
+            "Description": "Name of the unittest build project",
+            "Type": "String",
+            "Default": "unittest"
+        },
+        "VerifyTestName": {
+            "Description": "Name of the verify test build project",
+            "Type": "String",
+            "Default": "verify"
+        },
+        "UnitTestBuildSpecFileName": {
+            "Description": "Filename of the buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "VerifyBuildSpecFileName": {
+            "Description": "Filename of the buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "BuildImage": {
+            "Description": "Docker container to run the build",
+            "Type": "String",
+            "Default": ""
+        },
+        "UnitTestTemplateURL": {
+            "Description": "S3 URL for unit test template",
+            "Type": "String",
+            "Default": ""
+        },
+        "VerifyTestTemplateURL": {
+            "Description": "S3 URL for verify test template",
+            "Type": "String",
+            "Default": ""
+        },
+        "ArtifactStoreName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 bucket that stores pipeline artifacts."
+        },
+        "PipelineName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Name of the CodePipeline"
+        },
+        "SourceBucket": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 bucket source for the pipeline"
+        },
+        "SourceBucketObjectKey": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Zip file containing source code inside Source Code Bucket"
+        },
+        "PipelineTemplateURL": {
+            "Type": "String",
+            "Default": "",
+            "Description": "S3 URL for the pipeline template"
+        }
+    },
+    "Resources": {
+        "CodeBuildIamRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "codebuild.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
+                    "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+                ]
+            }
+        },
+        "UnitTest": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Ref": "UnitTestName"
+                    },
+                    "BuildImage": {
+                        "Ref": "BuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "UnitTestBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "UnitTestTemplateURL"
+                }
+            }
+        },
+        "Verify": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Ref": "VerifyTestName"
+                    },
+                    "BuildImage": {
+                        "Ref": "BuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "VerifyBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "VerifyTestTemplateURL"
+                }
+            }
+        },
+        "pipeline": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "ArtifactStoreName": {
+                        "Ref": "ArtifactStoreName"
+                    },
+                    "PipelineName": {
+                        "Ref": "PipelineName"
+                    },
+                    "SourceBucket": {
+                        "Ref": "SourceBucket"
+                    },
+                    "SourceBucketObjectKey": {
+                        "Ref": "SourceBucketObjectKey"
+                    },
+                    "UnitTestName": {
+                        "Ref": "UnitTestName"
+                    },
+                    "VerifyTestName": {
+                        "Ref": "VerifyTestName"
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "PipelineTemplateURL"
+                }
+            }
+        }
+    }
+}
