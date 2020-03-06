@@ -17,7 +17,6 @@
                         "default": "Unit Test settings"
                     },
                     "Parameters": [
-                        "UnitTestName",
                         "UnitTestBuildSpecFileName",
                         "UnitTestTemplateURL"
                     ]
@@ -27,9 +26,37 @@
                         "default": "Verify Test settings"
                     },
                     "Parameters": [
-                        "VerifyTestName",
                         "VerifyBuildSpecFileName",
                         "VerifyTestTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Coccinelle Test settings"
+                    },
+                    "Parameters": [
+                        "CoccinelleBuildSpecFileName",
+                        "CoccinelleTestTemplateURL",
+                        "CoccinelleBuildImage"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Rust Test settings"
+                    },
+                    "Parameters": [
+                        "RustBuildSpecFileName",
+                        "RustTemplateURL",
+                        "RustBuildImage"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Clang Test settings"
+                    },
+                    "Parameters": [
+                        "ClangBuildSpecFileName",
+                        "ClangTemplateURL"
                     ]
                 },
                 {
@@ -46,26 +73,44 @@
                 }
             ],
             "ParameterLabels": {
-                "UnitTestName": {
-                    "default": "Project name of unittest"
-                },
-                "VerifyTestName": {
-                    "default": "Project name of verify tests"
-                },
                 "UnitTestBuildSpecFileName": {
                     "default": "File path of the buildspec file of the unit test"
                 },
                 "VerifyBuildSpecFileName": {
                     "default": "File path of the buildspec file of the verify tests"
                 },
+                "CoccinelleBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the coccinelle tests"
+                },
+                "ClangBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the coccinelle tests"
+                },
+                "RustBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the coccinelle tests"
+                },
                 "BuildImage": {
                     "default": "ECR address of docker image used for building"
+                },
+                "CoccinelleBuildImage": {
+                    "default": "ECR address of docker image used for Coccinelle"
+                },
+                "RustBuildImage": {
+                    "default": "ECR address of docker image used for Rust"
                 },
                 "UnitTestTemplateURL": {
                     "default": "S3 URL of unit test template"
                 },
                 "VerifyTestTemplateURL": {
                     "default": "S3 URL of verify test template"
+                },
+                "CoccinelleTemplateURL": {
+                    "default": "S3 URL of coccinelle test template"
+                },
+                "ClangTemplateURL": {
+                    "default": "S3 URL of Clang test template"
+                },
+                "RustTemplateURL": {
+                    "default": "S3 URL of rust test template"
                 },
                 "ArtifactStoreName": {
                     "default": "S3 bucket that stores pipeline artifacts."
@@ -86,16 +131,6 @@
         }
     },
     "Parameters": {
-        "UnitTestName": {
-            "Description": "Name of the unittest build project",
-            "Type": "String",
-            "Default": "unittest"
-        },
-        "VerifyTestName": {
-            "Description": "Name of the verify test build project",
-            "Type": "String",
-            "Default": "verify"
-        },
         "UnitTestBuildSpecFileName": {
             "Description": "Filename of the buildspec.yaml",
             "Type": "String",
@@ -106,8 +141,33 @@
             "Type": "String",
             "Default": ""
         },
+        "CoccinelleBuildSpecFileName": {
+            "Description": "Name of the Coccinelle buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "ClangBuildSpecFileName": {
+            "Description": "name of the Clang buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "RustBuildSpecFileName": {
+            "Description": "name of the rust buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
         "BuildImage": {
             "Description": "Docker container to run the build",
+            "Type": "String",
+            "Default": ""
+        },
+        "CoccinelleBuildImage": {
+            "Description": "Docker container to run the coccinelle build",
+            "Type": "String",
+            "Default": ""
+        },
+        "RustBuildImage": {
+            "Description": "Docker container to run the rust build",
             "Type": "String",
             "Default": ""
         },
@@ -118,6 +178,21 @@
         },
         "VerifyTestTemplateURL": {
             "Description": "S3 URL for verify test template",
+            "Type": "String",
+            "Default": ""
+        },
+        "CoccinelleTemplateURL": {
+            "Description": "S3 URL for coccinelle test template",
+            "Type": "String",
+            "Default": ""
+        },
+        "ClangTemplateURL": {
+            "Description": "S3 URL for clang test template",
+            "Type": "String",
+            "Default": ""
+        },
+        "RustTemplateURL": {
+            "Description": "S3 URL for rust test template",
             "Type": "String",
             "Default": ""
         },
@@ -178,7 +253,7 @@
             "Properties": {
                 "Parameters": {
                     "BuildName": {
-                        "Ref": "UnitTestName"
+                        "Fn::Sub": "${PipelineName}-UnitTest"
                     },
                     "BuildImage": {
                         "Ref": "BuildImage"
@@ -203,7 +278,15 @@
             "Properties": {
                 "Parameters": {
                     "BuildName": {
-                        "Ref": "VerifyTestName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-VerifyTest"
+                            ]
+                        ]
                     },
                     "BuildImage": {
                         "Ref": "BuildImage"
@@ -220,6 +303,105 @@
                 },
                 "TemplateURL": {
                     "Ref": "VerifyTestTemplateURL"
+                }
+            }
+        },
+        "Coccinelle": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-CoccinelleTest"
+                            ]
+                        ]
+                    },
+                    "BuildImage": {
+                        "Ref": "CoccinelleBuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "CoccinelleBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "CoccinelleTemplateURL"
+                }
+            }
+        },
+        "Clang": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-ClangTest"
+                            ]
+                        ]
+                    },
+                    "BuildImage": {
+                        "Ref": "BuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "ClangBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "ClangTemplateURL"
+                }
+            }
+        },
+        "Rust": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-RustTest"
+                            ]
+                        ]
+                    },
+                    "BuildImage": {
+                        "Ref": "RustBuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "RustBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "RustTemplateURL"
                 }
             }
         },
@@ -240,10 +422,59 @@
                         "Ref": "SourceBucketObjectKey"
                     },
                     "UnitTestName": {
-                        "Ref": "UnitTestName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-UnitTest"
+                            ]
+                        ]
                     },
                     "VerifyTestName": {
-                        "Ref": "VerifyTestName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-VerifyTest"
+                            ]
+                        ]
+                    },
+                    "CoccinelleTestName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-CoccinelleTest"
+                            ]
+                        ]
+                    },
+                   "RustTestName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-RustTest"
+                            ]
+                        ]
+                    },
+                    "ClangTestName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-ClangTest"
+                            ]
+                        ]
                     }
                 },
                 "TemplateURL": {
