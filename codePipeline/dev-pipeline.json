@@ -30,6 +30,21 @@
             "Type": "String",
             "Default": "",
             "Description": "Project name of verify test"
+        },
+        "CoccinelleTestName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of Coccinelle"
+        },
+        "ClangTestName": {
+            "Type": "String",
+            "Default": "ClangTestName",
+            "Description": "Project name of Clang test"
+        },
+        "RustTestName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of Rust test"
         }
     },
     "Resources": {
@@ -255,6 +270,72 @@
                                 "Configuration": {
                                     "ProjectName": {
                                         "Ref": "UnitTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
+                                "Name": "RustTest",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "RustTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
+                                "Name": "Coccinelle",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "CoccinelleTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
+                                "Name": "ClangTest",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "ClangTestName"
                                     }
                                 },
                                 "OutputArtifacts": [],
