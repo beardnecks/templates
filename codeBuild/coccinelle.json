@@ -1,0 +1,80 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Coccinelle testing",
+    "Parameters": {
+        "BuildName": {
+            "Description": "Name of the build project",
+            "Type": "String",
+            "Default": "Coccinelle"
+        },
+        "BuildSpecFileName": {
+            "Description": "Filename of the buildspec.yaml",
+            "Type": "String",
+            "Default": "qa/buildspec/coccinelle.yml"
+        },
+        "BuildImage": {
+            "Description": "Docker container to run the build",
+            "Type": "String",
+            "Default": ""
+        },
+        "IAMRole": {
+            "Description": "Iam role arn passed from master template",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "Unittest": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+                "Name": {
+                    "Ref": "BuildName"
+                },
+                "Source": {
+                    "Type": "CODEPIPELINE",
+                    "BuildSpec": {
+                        "Ref": "BuildSpecFileName"
+                    },
+                    "InsecureSsl": false
+                },
+                "SecondarySourceVersions": [],
+                "Artifacts": {
+                    "Type": "CODEPIPELINE",
+                    "Name": {
+                        "Fn::Sub": "${BuildName}-artifact"
+                    },
+                    "Packaging": "NONE",
+                    "EncryptionDisabled": false
+                },
+                "Cache": {
+                    "Type": "NO_CACHE"
+                },
+                "Environment": {
+                    "Type": "LINUX_CONTAINER",
+                    "Image": {
+                        "Ref": "BuildImage"
+                    },
+                    "ComputeType": "BUILD_GENERAL1_MEDIUM",
+                    "EnvironmentVariables": [],
+                    "PrivilegedMode": false,
+                    "ImagePullCredentialsType": "SERVICE_ROLE"
+                },
+                "ServiceRole": {
+                    "Ref": "IAMRole"
+                },
+                "TimeoutInMinutes": 60,
+                "QueuedTimeoutInMinutes": 480,
+                "Tags": [],
+                "BadgeEnabled": false,
+                "LogsConfig": {
+                    "CloudWatchLogs": {
+                        "Status": "ENABLED"
+                    },
+                    "S3Logs": {
+                        "Status": "DISABLED",
+                        "EncryptionDisabled": false
+                    }
+                }
+            }
+        }
+    }
+}
