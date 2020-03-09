@@ -53,7 +53,7 @@
                     "Image": {
                         "Ref": "BuildImage"
                     },
-                    "ComputeType": "BUILD_GENERAL1_MEDIUM",
+                    "ComputeType": "BUILD_GENERAL1_LARGE",
                     "EnvironmentVariables": [],
                     "PrivilegedMode": false,
                     "ImagePullCredentialsType": "SERVICE_ROLE"
