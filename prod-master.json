@@ -46,8 +46,7 @@
                     },
                     "Parameters": [
                         "RustBuildSpecFileName",
-                        "RustTemplateURL",
-                        "RustBuildImage"
+                        "RustTemplateURL"
                     ]
                 },
                 {
@@ -130,9 +129,6 @@
                 },
                 "CoccinelleBuildImage": {
                     "default": "ECR address of docker image used for Coccinelle"
-                },
-                "RustBuildImage": {
-                    "default": "ECR address of docker image used for Rust"
                 },
                 "UnitTestTemplateURL": {
                     "default": "S3 URL of unit test template"
@@ -227,11 +223,6 @@
         },
         "CoccinelleBuildImage": {
             "Description": "Docker container to run the coccinelle build",
-            "Type": "String",
-            "Default": ""
-        },
-        "RustBuildImage": {
-            "Description": "Docker container to run the rust build",
             "Type": "String",
             "Default": ""
         },
@@ -480,7 +471,7 @@
                         ]
                     },
                     "BuildImage": {
-                        "Ref": "RustBuildImage"
+                        "Ref": "BuildImage"
                     },
                     "BuildSpecFileName": {
                         "Ref": "RustBuildSpecFileName"
