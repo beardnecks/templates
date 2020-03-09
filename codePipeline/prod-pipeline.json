@@ -36,12 +36,32 @@
             "Default": "",
             "Description": "Project name of verify test"
         },
+        "CoccinelleTestName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of Coccinelle"
+        },
+        "ClangTestName": {
+            "Type": "String",
+            "Default": "ClangTestName",
+            "Description": "Project name of Clang test"
+        },
+        "RustTestName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of Rust test"
+        },
         "PackagingName": {
             "Type": "String",
             "Default": "",
             "Description": "Project name of packaging"
         },
-        "DockerName": {
+        "DockerBuildName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of docker"
+        },
+        "DockerDeployName": {
             "Type": "String",
             "Default": "",
             "Description": "Project name of docker"
@@ -290,6 +310,72 @@
                                 "Region": "eu-west-1"
                             },
                             {
+                                "Name": "RustTest",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "RustTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
+                                "Name": "Coccinelle",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "CoccinelleTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
+                                "Name": "ClangTest",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "ClangTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
                                 "Name": "Suricata-verify",
                                 "ActionTypeId": {
                                     "Category": "Build",
@@ -314,7 +400,7 @@
                         ]
                     },
                     {
-                        "Name": "packaging",
+                        "Name": "Build",
                         "Actions": [
                             {
                                 "Name": "packaging-rpm",
@@ -332,7 +418,7 @@
                                 },
                                 "OutputArtifacts": [
                                     {
-                                        "Name": "BuildArtifact"
+                                        "Name": "RPMBuildArtifact"
                                     }
                                 ],
                                 "InputArtifacts": [
@@ -342,14 +428,9 @@
                                 ],
                                 "Region": "eu-west-1",
                                 "Namespace": "BuildVariables"
-                            }
-                        ]
-                    },
-                    {
-                        "Name": "docker-packaging",
-                        "Actions": [
+                            },
                             {
-                                "Name": "docker-build-deploy",
+                                "Name": "docker-build",
                                 "ActionTypeId": {
                                     "Category": "Build",
                                     "Owner": "AWS",
@@ -359,9 +440,14 @@
                                 "RunOrder": 1,
                                 "Configuration": {
                                     "ProjectName": {
-                                        "Ref": "DockerName"
+                                        "Ref": "DockerBuildName"
                                     }
                                 },
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "DockerBuildArtifact"
+                                    }
+                                ],
                                 "InputArtifacts": [
                                     {
                                         "Name": "SourceArtifact"
@@ -392,7 +478,32 @@
                                 "OutputArtifacts": [],
                                 "InputArtifacts": [
                                     {
-                                        "Name": "BuildArtifact"
+                                        "Name": "RPMBuildArtifact"
+                                    }
+                                ],
+                                "Region": "eu-west-1"
+                            },
+                            {
+                                "Name": "docker-deploy",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "DockerDeployName"
+                                    },
+                                    "PrimarySource": "SourceArtifact"
+                                },
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    },
+                                    {
+                                        "Name": "DockerBuildArtifact"
                                     }
                                 ],
                                 "Region": "eu-west-1"

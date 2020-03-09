@@ -253,7 +253,15 @@
             "Properties": {
                 "Parameters": {
                     "BuildName": {
-                        "Fn::Sub": "${PipelineName}-UnitTest"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-UnitTest"
+                            ]
+                        ]
                     },
                     "BuildImage": {
                         "Ref": "BuildImage"
