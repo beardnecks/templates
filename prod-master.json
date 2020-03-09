@@ -17,7 +17,6 @@
                         "default": "Unit Test settings"
                     },
                     "Parameters": [
-                        "UnitTestName",
                         "UnitTestBuildSpecFileName",
                         "UnitTestTemplateURL"
                     ]
@@ -27,9 +26,36 @@
                         "default": "Verify Test settings"
                     },
                     "Parameters": [
-                        "VerifyTestName",
                         "VerifyBuildSpecFileName",
                         "VerifyTestTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Coccinelle Test settings"
+                    },
+                    "Parameters": [
+                        "CoccinelleBuildSpecFileName",
+                        "CoccinelleTestTemplateURL",
+                        "CoccinelleBuildImage"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Rust Test settings"
+                    },
+                    "Parameters": [
+                        "RustBuildSpecFileName",
+                        "RustTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Clang Test settings"
+                    },
+                    "Parameters": [
+                        "ClangBuildSpecFileName",
+                        "ClangTemplateURL"
                     ]
                 },
                 {
@@ -37,19 +63,26 @@
                         "default": "Packaging Test settings"
                     },
                     "Parameters": [
-                        "PackagingBuildName",
                         "PackagingBuildSpecFileName",
                         "PackagingTemplateURL"
                     ]
                 },
                 {
                     "Label": {
-                        "default": "Docker Build and Deploy settings"
+                        "default": "Docker Build settings"
                     },
                     "Parameters": [
-                        "DockerName",
-                        "DockerBuildSpecFileName",
-                        "DockerTemplateURL"
+                        "DockerBuildBuildSpecFileName",
+                        "DockerBuildTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Docker deploy settings"
+                    },
+                    "Parameters": [
+                        "DockerDeployBuildSpecFileName",
+                        "DockerDeployTemplateURL"
                     ]
                 },
                 {
@@ -67,32 +100,35 @@
                 }
             ],
             "ParameterLabels": {
-                "UnitTestName": {
-                    "default": "Project name of unittest"
-                },
-                "VerifyTestName": {
-                    "default": "Project name of verify tests"
-                },
-                "PackagingBuildName": {
-                    "default": "Project name of packaging stage"
-                },
-                "DockerName": {
-                    "default": "Project name of Docker stage"
-                },
                 "UnitTestBuildSpecFileName": {
                     "default": "File path of the buildspec file of the unit test"
                 },
                 "VerifyBuildSpecFileName": {
                     "default": "File path of the buildspec file of the verify tests"
                 },
+                "CoccinelleBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the coccinelle tests"
+                },
+                "ClangBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the coccinelle tests"
+                },
+                "RustBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the coccinelle tests"
+                },
                 "PackagingBuildSpecFileName": {
                     "default": "File path of the buildspec file of the packaging stage"
                 },
-                "DockerBuildSpecFileName": {
+                "DockerBuildBuildSpecFileName": {
+                    "default": "File path of the buildspec file of the Docker stage"
+                },
+                "DockerDeployBuildSpecFileName": {
                     "default": "File path of the buildspec file of the Docker stage"
                 },
                 "BuildImage": {
                     "default": "ECR address of docker image used for building"
+                },
+                "CoccinelleBuildImage": {
+                    "default": "ECR address of docker image used for Coccinelle"
                 },
                 "UnitTestTemplateURL": {
                     "default": "S3 URL of unit test template"
@@ -100,10 +136,22 @@
                 "VerifyTestTemplateURL": {
                     "default": "S3 URL of verify test template"
                 },
+                "CoccinelleTemplateURL": {
+                    "default": "S3 URL of coccinelle test template"
+                },
+                "ClangTemplateURL": {
+                    "default": "S3 URL of Clang test template"
+                },
+                "RustTemplateURL": {
+                    "default": "S3 URL of rust test template"
+                },
                 "PackagingTemplateURL": {
                     "default": "S3 URL of packaging template"
                 },
-                "DockerTemplateURL": {
+                "DockerBuildTemplateURL": {
+                    "default": "S3 URL of Docker template"
+                },
+                "DockerDeployTemplateURL": {
                     "default": "S3 URL of Docker template"
                 },
                 "ArtifactStoreName": {
@@ -128,26 +176,6 @@
         }
     },
     "Parameters": {
-        "UnitTestName": {
-            "Description": "Name of the unittest build project",
-            "Type": "String",
-            "Default": "unittest"
-        },
-        "VerifyTestName": {
-            "Description": "Name of the verify test build project",
-            "Type": "String",
-            "Default": "verify"
-        },
-        "PackagingBuildName": {
-            "Description": "Name of the unittest build project",
-            "Type": "String",
-            "Default": "packaging"
-        },
-        "DockerName": {
-            "Description": "Name of the docker build project",
-            "Type": "String",
-            "Default": "packaging"
-        },
         "UnitTestBuildSpecFileName": {
             "Description": "Filename of the buildspec.yaml",
             "Type": "String",
@@ -158,18 +186,43 @@
             "Type": "String",
             "Default": ""
         },
+        "CoccinelleBuildSpecFileName": {
+            "Description": "Name of the Coccinelle buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "ClangBuildSpecFileName": {
+            "Description": "name of the Clang buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "RustBuildSpecFileName": {
+            "Description": "name of the rust buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
         "PackagingBuildSpecFileName": {
             "Description": "Filename of the buildspec.yaml",
             "Type": "String",
             "Default": ""
         },
-        "DockerBuildSpecFileName": {
+        "DockerBuildBuildSpecFileName": {
+            "Description": "Filename of the buildspec.yaml",
+            "Type": "String",
+            "Default": ""
+        },
+        "DockerDeployBuildSpecFileName": {
             "Description": "Filename of the buildspec.yaml",
             "Type": "String",
             "Default": ""
         },
         "BuildImage": {
             "Description": "Docker container to run the build",
+            "Type": "String",
+            "Default": ""
+        },
+        "CoccinelleBuildImage": {
+            "Description": "Docker container to run the coccinelle build",
             "Type": "String",
             "Default": ""
         },
@@ -183,12 +236,32 @@
             "Type": "String",
             "Default": ""
         },
+        "CoccinelleTemplateURL": {
+            "Description": "S3 URL for coccinelle test template",
+            "Type": "String",
+            "Default": ""
+        },
+        "ClangTemplateURL": {
+            "Description": "S3 URL for clang test template",
+            "Type": "String",
+            "Default": ""
+        },
+        "RustTemplateURL": {
+            "Description": "S3 URL for rust test template",
+            "Type": "String",
+            "Default": ""
+        },
         "PackagingTemplateURL": {
             "Description": "S3 URL for packaging build template",
             "Type": "String",
             "Default": ""
         },
-        "DockerTemplateURL": {
+        "DockerBuildTemplateURL": {
+            "Description": "S3 URL for docker build template",
+            "Type": "String",
+            "Default": ""
+        },
+        "DockerDeployTemplateURL": {
             "Description": "S3 URL for docker build template",
             "Type": "String",
             "Default": ""
@@ -255,7 +328,15 @@
             "Properties": {
                 "Parameters": {
                     "BuildName": {
-                        "Ref": "UnitTestName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-UnitTest"
+                            ]
+                        ]
                     },
                     "BuildImage": {
                         "Ref": "BuildImage"
@@ -280,7 +361,15 @@
             "Properties": {
                 "Parameters": {
                     "BuildName": {
-                        "Ref": "VerifyTestName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-VerifyTest"
+                            ]
+                        ]
                     },
                     "BuildImage": {
                         "Ref": "BuildImage"
@@ -300,12 +389,119 @@
                 }
             }
         },
+        "Coccinelle": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-CoccinelleTest"
+                            ]
+                        ]
+                    },
+                    "BuildImage": {
+                        "Ref": "CoccinelleBuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "CoccinelleBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "CoccinelleTemplateURL"
+                }
+            }
+        },
+        "Clang": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-ClangTest"
+                            ]
+                        ]
+                    },
+                    "BuildImage": {
+                        "Ref": "BuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "ClangBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "ClangTemplateURL"
+                }
+            }
+        },
+        "Rust": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-RustTest"
+                            ]
+                        ]
+                    },
+                    "BuildImage": {
+                        "Ref": "BuildImage"
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "RustBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "RustTemplateURL"
+                }
+            }
+        },
         "Packaging": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
                 "Parameters": {
                     "BuildName": {
-                        "Ref": "PackagingBuildName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-Packaging"
+                            ]
+                        ]
                     },
                     "BuildImage": {
                         "Ref": "BuildImage"
@@ -325,15 +521,23 @@
                 }
             }
         },
-        "Docker": {
+        "DockerBuild": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
                 "Parameters": {
                     "BuildName": {
-                        "Ref": "DockerName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-DockerBuild"
+                            ]
+                        ]
                     },
                     "BuildSpecFileName": {
-                        "Ref": "DockerBuildSpecFileName"
+                        "Ref": "DockerBuildBuildSpecFileName"
                     },
                     "IAMRole": {
                         "Fn::GetAtt": [
@@ -343,13 +547,46 @@
                     }
                 },
                 "TemplateURL": {
-                    "Ref": "DockerTemplateURL"
+                    "Ref": "DockerBuildTemplateURL"
+                }
+            }
+        },
+        "DockerDeploy": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "BuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-DockerDeploy"
+                            ]
+                        ]
+                    },
+                    "BuildSpecFileName": {
+                        "Ref": "DockerDeployBuildSpecFileName"
+                    },
+                    "IAMRole": {
+                        "Fn::GetAtt": [
+                            "CodeBuildIamRole",
+                            "Arn"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Ref": "DockerDeployTemplateURL"
                 }
             }
         },
         "pipeline": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
+                "TemplateURL": {
+                    "Ref": "PipelineTemplateURL"
+                },
                 "Parameters": {
                     "ArtifactStoreName": {
                         "Ref": "ArtifactStoreName"
@@ -367,20 +604,93 @@
                         "Ref": "OutputBucketName"
                     },
                     "UnitTestName": {
-                        "Ref": "UnitTestName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-UnitTest"
+                            ]
+                        ]
                     },
                     "VerifyTestName": {
-                        "Ref": "VerifyTestName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-VerifyTest"
+                            ]
+                        ]
+                    },
+                    "CoccinelleTestName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-CoccinelleTest"
+                            ]
+                        ]
+                    },
+                    "RustTestName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-RustTest"
+                            ]
+                        ]
+                    },
+                    "ClangTestName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-ClangTest"
+                            ]
+                        ]
                     },
                     "PackagingName": {
-                        "Ref": "PackagingBuildName"
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-Packaging"
+                            ]
+                        ]
                     },
-                    "DockerName": {
-                        "Ref": "DockerName"
+                    "DockerBuildName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-DockerBuild"
+                            ]
+                        ]
+                    },
+                    "DockerDeployName": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                {
+                                    "Ref": "PipelineName"
+                                },
+                                "-DockerDeploy"
+                            ]
+                        ]
                     }
-                },
-                "TemplateURL": {
-                    "Ref": "PipelineTemplateURL"
                 }
             }
         }

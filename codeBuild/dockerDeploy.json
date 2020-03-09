@@ -18,7 +18,7 @@
         }
     },
     "Resources": {
-        "DockerPackaging": {
+        "DockerDeploy": {
             "Description": "CodeBuild project",
             "Type": "AWS::CodeBuild::Project",
             "Properties": {
@@ -47,7 +47,7 @@
                 "Environment": {
                     "Type": "LINUX_CONTAINER",
                     "Image": "aws/codebuild/standard:3.0",
-                    "ComputeType": "BUILD_GENERAL1_MEDIUM",
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
                     "EnvironmentVariables": [],
                     "PrivilegedMode": true,
                     "ImagePullCredentialsType": "CODEBUILD"
