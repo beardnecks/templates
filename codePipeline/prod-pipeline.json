@@ -233,6 +233,118 @@
                 ]
             }
         },
+        "AWSCloudTrailBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {
+                    "Fn::Sub": "${PipelineName}-InitCloudTrail"
+                }
+            },
+            "DeletionPolicy": "Retain"
+        },
+        "AWSCloudTrailBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket": {
+                    "Ref": "AWSCloudTrailBucket"
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "AWSCloudTrailAclCheck",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "cloudtrail.amazonaws.com"
+                                ]
+                            },
+                            "Action": "s3:GetBucketAcl",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "AWSCloudTrailBucket",
+                                    "Arn"
+                                ]
+                            }
+                        },
+                        {
+                            "Sid": "AWSCloudTrailWrite",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "cloudtrail.amazonaws.com"
+                                ]
+                            },
+                            "Action": "s3:PutObject",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        {
+                                            "Fn::GetAtt": [
+                                                "AWSCloudTrailBucket",
+                                                "Arn"
+                                            ]
+                                        },
+                                        "/AWSLogs/",
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        "/*"
+                                    ]
+                                ]
+                            },
+                            "Condition": {
+                                "StringEquals": {
+                                    "s3:x-amz-acl": "bucket-owner-full-control"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "AwsCloudTrail": {
+            "DependsOn": [
+                "AWSCloudTrailBucketPolicy"
+            ],
+            "Type": "AWS::CloudTrail::Trail",
+            "Properties": {
+                "S3BucketName": {
+                    "Ref": "AWSCloudTrailBucket"
+                },
+                "EventSelectors": [
+                    {
+                        "DataResources": [
+                            {
+                                "Type": "AWS::S3::Object",
+                                "Values": [
+                                    {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "arn:aws:s3:::",
+                                                {
+                                                    "Ref": "SourceBucket"
+                                                },
+                                                "/",
+                                                {
+                                                    "Ref": "SourceBucketObjectKey"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "ReadWriteType": "WriteOnly"
+                    }
+                ],
+                "IncludeGlobalServiceEvents": true,
+                "IsLogging": true,
+                "IsMultiRegionTrail": true
+            }
+        },
         "pipeline": {
             "Type": "AWS::CodePipeline::Pipeline",
             "Properties": {
