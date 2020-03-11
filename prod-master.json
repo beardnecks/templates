@@ -9,7 +9,10 @@
                         "default": "General Settings"
                     },
                     "Parameters": [
-                        "BuildImage"
+                        "BuildImage",
+                        "token",
+                        "stackBucket",
+                        "NotificationTemplateURL"
                     ]
                 },
                 {
@@ -100,6 +103,12 @@
                 }
             ],
             "ParameterLabels": {
+                "token": {
+                    "default": "(optional, will not create if not assigned)Github token for notification system"
+                },
+                "stackBucket": {
+                    "default": "(optional) init bucket containing lambda function for notification system"
+                },
                 "UnitTestBuildSpecFileName": {
                     "default": "File path of the buildspec file of the unit test"
                 },
@@ -154,6 +163,9 @@
                 "DockerDeployTemplateURL": {
                     "default": "S3 URL of Docker template"
                 },
+                "NotificationTemplateURL": {
+                    "default": "S3 URL of notification system template"
+                },
                 "ArtifactStoreName": {
                     "default": "S3 bucket that stores pipeline artifacts."
                 },
@@ -176,6 +188,16 @@
         }
     },
     "Parameters": {
+        "token": {
+            "Description": "(optional, will not create if not assigned)Github Token",
+            "Type": "String",
+            "Default": ""
+        },
+        "stackBucket": {
+            "Description": "(optional) init bucket containing lambda function for notification system",
+            "Type": "String",
+            "Default": ""
+        },
         "UnitTestBuildSpecFileName": {
             "Description": "Filename of the buildspec.yaml",
             "Type": "String",
@@ -266,6 +288,11 @@
             "Type": "String",
             "Default": ""
         },
+        "NotificationTemplateURL": {
+            "Description": "S3 URL for notification system template",
+            "Type": "String",
+            "Default": ""
+        },
         "ArtifactStoreName": {
             "Type": "String",
             "Default": "",
@@ -297,6 +324,44 @@
             "Description": "S3 URL for the pipeline template"
         }
     },
+    "Conditions": {
+        "HasToken": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "",
+                        {
+                            "Ref": "token"
+                        }
+                    ]
+                }
+            ]
+        },
+        "HasNotificationURL": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "",
+                        {
+                            "Ref": "NotificationTemplateURL"
+                        }
+                    ]
+                }
+            ]
+        },
+        "HasStackBucket": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "",
+                        {
+                            "Ref": "stackBucket"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
     "Resources": {
         "CodeBuildIamRole": {
             "Type": "AWS::IAM::Role",
@@ -321,6 +386,47 @@
                     "arn:aws:iam::aws:policy/CloudWatchFullAccess",
                     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
                 ]
+            }
+        },
+        "NotificationSystem": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "HasToken",
+            "Properties": {
+                "Parameters": {
+                    "token": {
+                        "Fn::If": [
+                            "HasToken",
+                            {
+                                "Ref": "token"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    },
+                    "stackBucket": {
+                        "Fn::If": [
+                            "HasStackBucket",
+                            {
+                                "Ref": "stackBucket"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Fn::If": [
+                        "HasNotificationURL",
+                        {
+                            "Ref": "NotificationTemplateURL"
+                        },
+                        {
+                            "Ref": "AWS::NoValue"
+                        }
+                    ]
+                }
             }
         },
         "UnitTest": {
