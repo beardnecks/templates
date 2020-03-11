@@ -9,10 +9,7 @@
                         "default": "General Settings"
                     },
                     "Parameters": [
-                        "BuildImage",
-                        "token",
-                        "stackBucket",
-                        "NotificationTemplateURL"
+                        "BuildImage"
                     ]
                 },
                 {
@@ -99,6 +96,16 @@
                         "SourceBucketObjectKey",
                         "OutputBucketName",
                         "PipelineTemplateURL"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "(Optional) Notification system settings"
+                    },
+                    "Parameters": [
+                        "token",
+                        "stackBucket",
+                        "NotificationTemplateURL"
                     ]
                 }
             ],
