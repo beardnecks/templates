@@ -36,7 +36,7 @@
                     },
                     "Parameters": [
                         "CoccinelleBuildSpecFileName",
-                        "CoccinelleTestTemplateURL",
+                        "CoccinelleTemplateURL",
                         "CoccinelleBuildImage"
                     ]
                 },
