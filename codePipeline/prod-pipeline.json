@@ -235,11 +235,6 @@
         },
         "AWSCloudTrailBucket": {
             "Type": "AWS::S3::Bucket",
-            "Properties": {
-                "BucketName": {
-                    "Fn::Sub": "${PipelineName}-cloudtrail-log"
-                }
-            },
             "DeletionPolicy": "Retain"
         },
         "AWSCloudTrailBucketPolicy": {
