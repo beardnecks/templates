@@ -362,7 +362,9 @@
                                     }
                                 ],
                                 "InputArtifacts": [],
-                                "Region": "eu-west-1",
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                },
                                 "Namespace": "SourceVariables"
                             }
                         ]
@@ -390,7 +392,9 @@
                                         "Name": "SourceArtifact"
                                     }
                                 ],
-                                "Region": "eu-west-1"
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
                             },
                             {
                                 "Name": "RustTest",
@@ -412,7 +416,9 @@
                                         "Name": "SourceArtifact"
                                     }
                                 ],
-                                "Region": "eu-west-1"
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
                             },
                             {
                                 "Name": "Coccinelle",
@@ -434,7 +440,9 @@
                                         "Name": "SourceArtifact"
                                     }
                                 ],
-                                "Region": "eu-west-1"
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
                             },
                             {
                                 "Name": "ClangTest",
@@ -456,7 +464,9 @@
                                         "Name": "SourceArtifact"
                                     }
                                 ],
-                                "Region": "eu-west-1"
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
                             },
                             {
                                 "Name": "Suricata-verify",
@@ -478,7 +488,9 @@
                                         "Name": "SourceArtifact"
                                     }
                                 ],
-                                "Region": "eu-west-1"
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
                             }
                         ]
                     }
