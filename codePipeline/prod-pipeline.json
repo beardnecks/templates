@@ -75,7 +75,7 @@
                     "Fn::Sub": "${PipelineName}-${ArtifactStoreName}"
                 },
                 "Tags": []
-            }
+            } 
         },
         "OutputBucket": {
             "Type": "AWS::S3::Bucket",
@@ -237,7 +237,7 @@
             "Type": "AWS::S3::Bucket",
             "Properties": {
                 "BucketName": {
-                    "Fn::Sub": "${PipelineName}-InitCloudTrail"
+                    "Fn::Sub": "${PipelineName}-cloudtrail-log"
                 }
             },
             "DeletionPolicy": "Retain"

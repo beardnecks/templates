@@ -208,7 +208,7 @@
             "Type": "AWS::S3::Bucket",
             "Properties": {
                 "BucketName": {
-                    "Fn::Sub": "${PipelineName}-InitCloudTrail"
+                    "Fn::Sub": "${PipelineName}-cloudtrail-log"
                 }
             },
             "DeletionPolicy": "Retain"
