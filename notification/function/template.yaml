@@ -3,11 +3,6 @@
   "Transform": "AWS::Serverless-2016-10-31",
   "Description": "Creates notification lambda function",
   "Parameters": {
-    "stackBucket": {
-      "Description": "Name of the build project",
-      "Type": "String",
-      "Default": "t-martin-stackinit-s"
-    },
     "token": {
       "Description": "Github Token",
       "Type": "String",
