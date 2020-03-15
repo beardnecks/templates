@@ -61,6 +61,7 @@
         "notificationFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
+                "FunctionName": "t-testing-notification",
                 "Handler": "lambda_function.lambda_handler",
                 "MemorySize": "128",
                 "Role": {

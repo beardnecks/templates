@@ -246,6 +246,16 @@
             "Type": "String",
             "Default": "",
             "Description": "S3 URL for the pipeline template"
+        },
+        "snsTopicName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Name of sns topic"
+        },
+        "snsDisplayName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Display Name of sns topic"
         }
     },
     "Conditions": {
@@ -520,6 +530,7 @@
         },
         "pipeline": {
             "Type": "AWS::CloudFormation::Stack",
+            "DependsOn": "NotificationSystem",
             "Properties": {
                 "Parameters": {
                     "ArtifactStoreName": {
@@ -588,7 +599,9 @@
                                 "-ClangTest"
                             ]
                         ]
-                    }
+                    },
+                    "snsTopicName": { "Ref": "snsTopicName" },
+                    "snsDisplayName": { "Ref": "snsDisplayName" }
                 },
                 "TemplateURL": {
                     "Ref": "PipelineTemplateURL"
