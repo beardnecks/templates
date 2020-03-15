@@ -3,6 +3,7 @@ import os
 
 import boto3
 import requests
+from github import Github
 
 # need to get sha of PR commit
 # need to get user that owns repo
@@ -10,17 +11,21 @@ import requests
 
 
 def lambda_handler(event, context):
+    print(event)
     token = os.environ["TOKEN"]
     # test values
     # sha = os.environ['SHA']
     user = "beardnecks"
     repo = "suricata"
-    pullrequests = requests.get(
+
+    g = Github(token)
+
+    pull_requests = requests.get(
         "https://api.github.com/repos/" + user + "/" + repo + "/pulls",
         headers={"Authorization": "token " + token},
     )
-    if len(pullrequests.json()) > 0:
-        sha = pullrequests.json()[0]["head"]["sha"]
+    if len(pull_requests.json()) > 0:
+        sha = pull_requests.json()[0]["head"]["sha"]
     else:
         # Only looks at push to master bran
         pushes_to_master = requests.get(
