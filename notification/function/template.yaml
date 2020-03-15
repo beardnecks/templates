@@ -1,0 +1,86 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "Creates notification lambda function",
+  "Parameters": {
+    "stackBucket": {
+      "Description": "Name of the build project",
+      "Type": "String",
+      "Default": "t-martin-stackinit-s"
+    },
+    "token": {
+      "Description": "Github Token",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Resources": {
+    "NotificationRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+          }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+        {
+          "PolicyName": "NotificationLambda",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetObject"
+              ],
+              "Resource": "arn:aws:s3:::*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "*"
+            }
+            ]
+          }
+        }
+        ]
+      }
+    },
+    "notificationFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "lambda_function.lambda_handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "NotificationRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7",
+        "Timeout": 300,
+        "Environment": {
+          "Variables": {
+            "TOKEN": {
+              "Ref": "token"
+            }
+          }
+        },
+        "CodeUri": "."
+      }
+    }
+  }
+}
