@@ -143,11 +143,6 @@
     }
   },
   "Parameters": {
-    "token": {
-      "Description": "(optional, will not create if not assigned)Github Token",
-      "Type": "String",
-      "Default": ""
-    },
     "UnitTestBuildSpecFileName": {
       "Description": "Filename of the buildspec.yaml",
       "Type": "String",
@@ -210,6 +205,11 @@
     },
     "NotificationTemplateURL": {
       "Description": "S3 URL for notification system template",
+      "Type": "String",
+      "Default": ""
+    },
+    "token": {
+      "Description": "(optional, will not create if not assigned)Github Token",
       "Type": "String",
       "Default": ""
     },
@@ -299,36 +299,6 @@
           "arn:aws:iam::aws:policy/CloudWatchFullAccess",
           "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
         ]
-      }
-    },
-    "NotificationSystem": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Condition": "HasToken",
-      "Properties": {
-        "Parameters": {
-          "token": {
-            "Fn::If": [
-              "HasToken",
-              {
-                "Ref": "token"
-              },
-              {
-                "Ref": "AWS::NoValue"
-              }
-            ]
-          }
-        },
-        "TemplateURL": {
-          "Fn::If": [
-            "HasNotificationURL",
-            {
-              "Ref": "NotificationTemplateURL"
-            },
-            {
-              "Ref": "AWS::NoValue"
-            }
-          ]
-        }
       }
     },
     "UnitTest": {
@@ -496,9 +466,44 @@
         }
       }
     },
+    "NotificationSystem": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Condition": "HasToken",
+      "Properties": {
+        "Parameters": {
+          "token": {
+            "Fn::If": [
+              "HasToken",
+              {
+                "Ref": "token"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          },
+          "SourceBucket": {
+            "Ref": "SourceBucket"
+          },
+          "SourceBucketObjectKey": {
+            "Ref": "SourceBucketObjectKey"
+          }
+        },
+        "TemplateURL": {
+          "Fn::If": [
+            "HasNotificationURL",
+            {
+              "Ref": "NotificationTemplateURL"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      }
+    },
     "pipeline": {
       "Type": "AWS::CloudFormation::Stack",
-      "DependsOn": "NotificationSystem",
       "Properties": {
         "Parameters": {
           "ArtifactStoreName": {
@@ -573,6 +578,12 @@
           },
           "snsDisplayName": {
             "Ref": "snsDisplayName"
+          },
+          "notificationFunctionArn": {
+            "Fn::GetAtt": [
+              "NotificationSystem",
+              "Outputs.notificationFunctionArn"
+            ]
           }
         },
         "TemplateURL": {

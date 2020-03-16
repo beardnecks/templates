@@ -55,6 +55,21 @@
       "Type": "String",
       "Default": "",
       "Description": "Display Name of sns topic"
+    },
+    "NotificationTemplateURL": {
+      "Description": "S3 URL for notification system template",
+      "Type": "String",
+      "Default": ""
+    },
+    "token": {
+      "Description": "(optional, will not create if not assigned)Github Token",
+      "Type": "String",
+      "Default": ""
+    },
+    "notificationFunctionArn": {
+      "Description": "ARN of notification function",
+      "Type": "String",
+      "Default": ""
     }
   },
   "Resources": {
@@ -85,7 +100,9 @@
                 {
                   "Effect": "Allow",
                   "Action": "sns:Publish",
-                  "Resource": "arn:aws:sns:eu-west-1:389941814333:t-martin-notifyCP"
+                  "Resource": {
+                    "Ref": "snsTopic"
+                  }
                 }
               ]
             }
@@ -103,38 +120,12 @@
           ],
           "detail-type": [
             "CodePipeline Pipeline Execution State Change"
-          ],
-          "detail": {
-            "state": [
-              "CANCELED",
-              "RESUMED",
-              "FAILED",
-              "STARTED",
-              "SUCCEEDED",
-              "SUPERSEDED"
-            ]
-          }
+          ]
         },
         "Targets": [
           {
             "Arn": {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:aws:sns:",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId"
-                  },
-                  ":",
-                  {
-                    "Ref": "snsTopicName"
-                  }
-                ]
-              ]
+              "Ref": "snsTopic"
             },
             "Id": "t-topic-target"
           }
@@ -153,15 +144,54 @@
         "DisplayName": {
           "Ref": "snsDisplayName"
         },
-        "Subscription": [
-          {
-            "Endpoint": "arn:aws:lambda:eu-west-1:389941814333:function:t-testing-notification",
-            "Protocol": "Lambda"
-          }
-        ],
         "TopicName": {
           "Ref": "snsTopicName"
         }
+      }
+    },
+    "snsTopicPolicy": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "Topics": [
+          {
+            "Ref": "snsTopic"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Action": [
+              "SNS:GetTopicAttributes",
+              "SNS:SetTopicAttributes",
+              "SNS:AddPermission",
+              "SNS:RemovePermission",
+              "SNS:DeleteTopic",
+              "SNS:Subscribe",
+              "SNS:ListSubscriptionsByTopic",
+              "SNS:Publish",
+              "SNS:Receive"
+            ],
+            "Resource": {
+              "Ref": "snsTopic"
+            },
+            "Principal": {
+              "Service": "events.amazonaws.com"
+            }
+          }
+        }
+      }
+    },
+    "snsTopicSubscription": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "TopicArn": {
+          "Ref": "snsTopic"
+        },
+        "Endpoint": {
+          "Ref": "notificationFunctionArn"
+        },
+        "Protocol": "lambda"
       }
     },
     "LambdaInvokePermission": {
@@ -172,7 +202,9 @@
         "SourceArn": {
           "Ref": "snsTopic"
         },
-        "FunctionName": "arn:aws:lambda:eu-west-1:389941814333:function:t-testing-notification"
+        "FunctionName": {
+          "Ref": "notificationFunctionArn"
+        }
       }
     },
     "ArtifacStoreBucket": {

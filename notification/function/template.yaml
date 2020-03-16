@@ -7,6 +7,16 @@
       "Description": "Github Token",
       "Type": "String",
       "Default": ""
+    },
+    "SourceBucket": {
+      "Description": "Output Bucket where source and event is stored",
+      "Type": "String",
+      "Default": ""
+    },
+    "SourceBucketObjectKey": {
+      "Description": "Location of file to download",
+      "Type": "String",
+      "Default": ""
     }
   },
   "Resources": {
@@ -71,11 +81,25 @@
           "Variables": {
             "TOKEN": {
               "Ref": "token"
+            },
+            "SOURCE_BUCKET": {
+              "Ref": "SourceBucket"
+            },
+            "SOURCE_BUCKET_OBJECT_KEY": {
+              "Ref": "SourceBucketObjectKey"
             }
           }
         },
         "CodeUri": "."
       }
     }
+  },
+  "Outputs": {
+    "notificationFunctionArn": {
+      "Value": {
+        "Fn::GetAtt": ["notificationFunction","Arn"]
+      }
+    }
   }
+
 }
