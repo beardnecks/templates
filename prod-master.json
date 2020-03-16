@@ -382,21 +382,26 @@
                                 "Service": "codebuild.amazonaws.com"
                             },
                             "Action": "sts:AssumeRole" 
-                        },
-                        {
-                            "Effect": "Allow",
-                            "Action": "*",
-                            "Resource": "*"
                         }
                     ]
                 },
                 "Path": "/",
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
-                    "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
-                    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
-                    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-                ]
+                "CodebuildIamPolicy":{
+                    "Version": "2020-03-16",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:*",
+                                "ecr:*",
+                                "coudwatch:*",
+                                "codepipeline:*",
+                                "codebuild:*"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
             }
         },
         "NotificationSystem": {
