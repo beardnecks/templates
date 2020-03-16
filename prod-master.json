@@ -394,14 +394,14 @@
                     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
                 ],
                 "CodebuildIamPolicy":{
-                    "Version": "2020-03-16",
+                    "Version": "2012-10-17",
                     "Statement": [
                         {
                             "Effect": "Allow",
                             "Action": [
                                 "s3:*",
                                 "ecr:*",
-                                "coudwatch:*",
+                                "cloudwatch:*",
                                 "codepipeline:*",
                                 "codebuild:*"
                             ],
