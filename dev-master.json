@@ -1,567 +1,584 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Creates nested stacks containing CodeBuild templates",
-    "Metadata": {
-        "AWS::CloudFormation::Interface": {
-            "ParameterGroups": [
-                {
-                    "Label": {
-                        "default": "General Settings"
-                    },
-                    "Parameters": [
-                        "BuildImage"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "Unit Test settings"
-                    },
-                    "Parameters": [
-                        "UnitTestBuildSpecFileName",
-                        "UnitTestTemplateURL"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "Verify Test settings"
-                    },
-                    "Parameters": [
-                        "VerifyBuildSpecFileName",
-                        "VerifyTestTemplateURL"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "Coccinelle Test settings"
-                    },
-                    "Parameters": [
-                        "CoccinelleBuildSpecFileName",
-                        "CoccinelleTemplateURL",
-                        "CoccinelleBuildImage"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "Rust Test settings"
-                    },
-                    "Parameters": [
-                        "RustBuildSpecFileName",
-                        "RustTemplateURL",
-                        "BuildImage"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "Clang Test settings"
-                    },
-                    "Parameters": [
-                        "ClangBuildSpecFileName",
-                        "ClangTemplateURL"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "CodePipeline settings"
-                    },
-                    "Parameters": [
-                        "ArtifactStoreName",
-                        "PipelineName",
-                        "SourceBucket",
-                        "SourceBucketObjectKey",
-                        "PipelineTemplateURL"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "(Optional) Notification system settings"
-                    },
-                    "Parameters": [
-                        "token",
-                        "NotificationTemplateURL"
-                    ]
-                }
-            ],
-            "ParameterLabels": {
-                "token": {
-                    "default": "(optional, will not create if not assigned)Github token for notification system"
-                },
-                "UnitTestBuildSpecFileName": {
-                    "default": "File path of the buildspec file of the unit test"
-                },
-                "VerifyBuildSpecFileName": {
-                    "default": "File path of the buildspec file of the verify tests"
-                },
-                "CoccinelleBuildSpecFileName": {
-                    "default": "File path of the buildspec file of the coccinelle tests"
-                },
-                "ClangBuildSpecFileName": {
-                    "default": "File path of the buildspec file of the coccinelle tests"
-                },
-                "RustBuildSpecFileName": {
-                    "default": "File path of the buildspec file of the coccinelle tests"
-                },
-                "BuildImage": {
-                    "default": "ECR address of docker image used for building"
-                },
-                "CoccinelleBuildImage": {
-                    "default": "ECR address of docker image used for Coccinelle"
-                },
-                "UnitTestTemplateURL": {
-                    "default": "S3 URL of unit test template"
-                },
-                "VerifyTestTemplateURL": {
-                    "default": "S3 URL of verify test template"
-                },
-                "CoccinelleTemplateURL": {
-                    "default": "S3 URL of coccinelle test template"
-                },
-                "ClangTemplateURL": {
-                    "default": "S3 URL of Clang test template"
-                },
-                "RustTemplateURL": {
-                    "default": "S3 URL of rust test template"
-                },
-                "NotificationTemplateURL": {
-                    "default": "S3 URL of notification system template"
-                },
-                "ArtifactStoreName": {
-                    "default": "S3 bucket that stores pipeline artifacts."
-                },
-                "PipelineName": {
-                    "default": "Name of the CodePipeline"
-                },
-                "SourceBucket": {
-                    "default": "S3 bucket source for the pipeline"
-                },
-                "SourceBucketObjectKey": {
-                    "default": "Zip file containing source code inside Source Code Bucket"
-                },
-                "PipelineTemplateURL": {
-                    "default": "S3 URL for the pipeline template"
-                }
-            }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Creates nested stacks containing CodeBuild templates",
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "General Settings"
+          },
+          "Parameters": [
+            "BuildImage"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Unit Test settings"
+          },
+          "Parameters": [
+            "UnitTestBuildSpecFileName",
+            "UnitTestTemplateURL"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Verify Test settings"
+          },
+          "Parameters": [
+            "VerifyBuildSpecFileName",
+            "VerifyTestTemplateURL"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Coccinelle Test settings"
+          },
+          "Parameters": [
+            "CoccinelleBuildSpecFileName",
+            "CoccinelleTemplateURL",
+            "CoccinelleBuildImage"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Rust Test settings"
+          },
+          "Parameters": [
+            "RustBuildSpecFileName",
+            "RustTemplateURL",
+            "BuildImage"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Clang Test settings"
+          },
+          "Parameters": [
+            "ClangBuildSpecFileName",
+            "ClangTemplateURL"
+          ]
+        },
+        {
+          "Label": {
+            "default": "CodePipeline settings"
+          },
+          "Parameters": [
+            "ArtifactStoreName",
+            "PipelineName",
+            "SourceBucket",
+            "SourceBucketObjectKey",
+            "PipelineTemplateURL"
+          ]
+        },
+        {
+          "Label": {
+            "default": "(Optional) Notification system settings"
+          },
+          "Parameters": [
+            "token",
+            "NotificationTemplateURL"
+          ]
         }
-    },
-    "Parameters": {
+      ],
+      "ParameterLabels": {
         "token": {
-            "Description": "(optional, will not create if not assigned)Github Token",
-            "Type": "String",
-            "Default": ""
+          "default": "(optional, will not create if not assigned)Github token for notification system"
         },
         "UnitTestBuildSpecFileName": {
-            "Description": "Filename of the buildspec.yaml",
-            "Type": "String",
-            "Default": ""
+          "default": "File path of the buildspec file of the unit test"
         },
         "VerifyBuildSpecFileName": {
-            "Description": "Filename of the buildspec.yaml",
-            "Type": "String",
-            "Default": ""
+          "default": "File path of the buildspec file of the verify tests"
         },
         "CoccinelleBuildSpecFileName": {
-            "Description": "Name of the Coccinelle buildspec.yaml",
-            "Type": "String",
-            "Default": ""
+          "default": "File path of the buildspec file of the coccinelle tests"
         },
         "ClangBuildSpecFileName": {
-            "Description": "name of the Clang buildspec.yaml",
-            "Type": "String",
-            "Default": ""
+          "default": "File path of the buildspec file of the coccinelle tests"
         },
         "RustBuildSpecFileName": {
-            "Description": "name of the rust buildspec.yaml",
-            "Type": "String",
-            "Default": ""
+          "default": "File path of the buildspec file of the coccinelle tests"
         },
         "BuildImage": {
-            "Description": "Docker container to run the build",
-            "Type": "String",
-            "Default": ""
+          "default": "ECR address of docker image used for building"
         },
         "CoccinelleBuildImage": {
-            "Description": "Docker container to run the coccinelle build",
-            "Type": "String",
-            "Default": ""
+          "default": "ECR address of docker image used for Coccinelle"
         },
         "UnitTestTemplateURL": {
-            "Description": "S3 URL for unit test template",
-            "Type": "String",
-            "Default": ""
+          "default": "S3 URL of unit test template"
         },
         "VerifyTestTemplateURL": {
-            "Description": "S3 URL for verify test template",
-            "Type": "String",
-            "Default": ""
+          "default": "S3 URL of verify test template"
         },
         "CoccinelleTemplateURL": {
-            "Description": "S3 URL for coccinelle test template",
-            "Type": "String",
-            "Default": ""
+          "default": "S3 URL of coccinelle test template"
         },
         "ClangTemplateURL": {
-            "Description": "S3 URL for clang test template",
-            "Type": "String",
-            "Default": ""
+          "default": "S3 URL of Clang test template"
         },
         "RustTemplateURL": {
-            "Description": "S3 URL for rust test template",
-            "Type": "String",
-            "Default": ""
+          "default": "S3 URL of rust test template"
         },
         "NotificationTemplateURL": {
-            "Description": "S3 URL for notification system template",
-            "Type": "String",
-            "Default": ""
+          "default": "S3 URL of notification system template"
         },
         "ArtifactStoreName": {
-            "Type": "String",
-            "Default": "",
-            "Description": "S3 bucket that stores pipeline artifacts."
+          "default": "S3 bucket that stores pipeline artifacts."
         },
         "PipelineName": {
-            "Type": "String",
-            "Default": "",
-            "Description": "Name of the CodePipeline"
+          "default": "Name of the CodePipeline"
         },
         "SourceBucket": {
-            "Type": "String",
-            "Default": "",
-            "Description": "S3 bucket source for the pipeline"
+          "default": "S3 bucket source for the pipeline"
         },
         "SourceBucketObjectKey": {
-            "Type": "String",
-            "Default": "",
-            "Description": "Zip file containing source code inside Source Code Bucket"
+          "default": "Zip file containing source code inside Source Code Bucket"
         },
         "PipelineTemplateURL": {
-            "Type": "String",
-            "Default": "",
-            "Description": "S3 URL for the pipeline template"
+          "default": "S3 URL for the pipeline template"
         }
-    },
-    "Conditions": {
-        "HasToken": {
-            "Fn::Not": [
-                {
-                    "Fn::Equals": [
-                        "",
-                        {
-                            "Ref": "token"
-                        }
-                    ]
-                }
-            ]
-        },
-        "HasNotificationURL": {
-            "Fn::Not": [
-                {
-                    "Fn::Equals": [
-                        "",
-                        {
-                            "Ref": "NotificationTemplateURL"
-                        }
-                    ]
-                }
-            ]
-        }
-    },
-    "Resources": {
-        "CodeBuildIamRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "codebuild.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "Path": "/",
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
-                    "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
-                    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-                    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
-                    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-                ]
-            }
-        },
-        "NotificationSystem": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Condition": "HasToken",
-            "Properties": {
-                "Parameters": {
-                    "token": {
-                        "Fn::If": [
-                            "HasToken",
-                            {
-                                "Ref": "token"
-                            },
-                            {
-                                "Ref": "AWS::NoValue"
-                            }
-                        ]
-                    }
-                },
-                "TemplateURL": {
-                    "Fn::If": [
-                        "HasNotificationURL",
-                        {
-                            "Ref": "NotificationTemplateURL"
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                }
-            }
-        },
-        "UnitTest": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "Parameters": {
-                    "BuildName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-UnitTest"
-                            ]
-                        ]
-                    },
-                    "BuildImage": {
-                        "Ref": "BuildImage"
-                    },
-                    "BuildSpecFileName": {
-                        "Ref": "UnitTestBuildSpecFileName"
-                    },
-                    "IAMRole": {
-                        "Fn::GetAtt": [
-                            "CodeBuildIamRole",
-                            "Arn"
-                        ]
-                    }
-                },
-                "TemplateURL": {
-                    "Ref": "UnitTestTemplateURL"
-                }
-            }
-        },
-        "Verify": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "Parameters": {
-                    "BuildName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-VerifyTest"
-                            ]
-                        ]
-                    },
-                    "BuildImage": {
-                        "Ref": "BuildImage"
-                    },
-                    "BuildSpecFileName": {
-                        "Ref": "VerifyBuildSpecFileName"
-                    },
-                    "IAMRole": {
-                        "Fn::GetAtt": [
-                            "CodeBuildIamRole",
-                            "Arn"
-                        ]
-                    }
-                },
-                "TemplateURL": {
-                    "Ref": "VerifyTestTemplateURL"
-                }
-            }
-        },
-        "Coccinelle": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "Parameters": {
-                    "BuildName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-CoccinelleTest"
-                            ]
-                        ]
-                    },
-                    "BuildImage": {
-                        "Ref": "CoccinelleBuildImage"
-                    },
-                    "BuildSpecFileName": {
-                        "Ref": "CoccinelleBuildSpecFileName"
-                    },
-                    "IAMRole": {
-                        "Fn::GetAtt": [
-                            "CodeBuildIamRole",
-                            "Arn"
-                        ]
-                    }
-                },
-                "TemplateURL": {
-                    "Ref": "CoccinelleTemplateURL"
-                }
-            }
-        },
-        "Clang": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "Parameters": {
-                    "BuildName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-ClangTest"
-                            ]
-                        ]
-                    },
-                    "BuildImage": {
-                        "Ref": "BuildImage"
-                    },
-                    "BuildSpecFileName": {
-                        "Ref": "ClangBuildSpecFileName"
-                    },
-                    "IAMRole": {
-                        "Fn::GetAtt": [
-                            "CodeBuildIamRole",
-                            "Arn"
-                        ]
-                    }
-                },
-                "TemplateURL": {
-                    "Ref": "ClangTemplateURL"
-                }
-            }
-        },
-        "Rust": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "Parameters": {
-                    "BuildName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-RustTest"
-                            ]
-                        ]
-                    },
-                    "BuildImage": {
-                        "Ref": "BuildImage"
-                    },
-                    "BuildSpecFileName": {
-                        "Ref": "RustBuildSpecFileName"
-                    },
-                    "IAMRole": {
-                        "Fn::GetAtt": [
-                            "CodeBuildIamRole",
-                            "Arn"
-                        ]
-                    }
-                },
-                "TemplateURL": {
-                    "Ref": "RustTemplateURL"
-                }
-            }
-        },
-        "pipeline": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "Parameters": {
-                    "ArtifactStoreName": {
-                        "Ref": "ArtifactStoreName"
-                    },
-                    "PipelineName": {
-                        "Ref": "PipelineName"
-                    },
-                    "SourceBucket": {
-                        "Ref": "SourceBucket"
-                    },
-                    "SourceBucketObjectKey": {
-                        "Ref": "SourceBucketObjectKey"
-                    },
-                    "UnitTestName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-UnitTest"
-                            ]
-                        ]
-                    },
-                    "VerifyTestName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-VerifyTest"
-                            ]
-                        ]
-                    },
-                    "CoccinelleTestName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-CoccinelleTest"
-                            ]
-                        ]
-                    },
-                    "RustTestName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-RustTest"
-                            ]
-                        ]
-                    },
-                    "ClangTestName": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                {
-                                    "Ref": "PipelineName"
-                                },
-                                "-ClangTest"
-                            ]
-                        ]
-                    }
-                },
-                "TemplateURL": {
-                    "Ref": "PipelineTemplateURL"
-                }
-            }
-        }
+      }
     }
+  },
+  "Parameters": {
+    "token": {
+      "Description": "(optional, will not create if not assigned)Github Token",
+      "Type": "String",
+      "Default": ""
+    },
+    "UnitTestBuildSpecFileName": {
+      "Description": "Filename of the buildspec.yaml",
+      "Type": "String",
+      "Default": ""
+    },
+    "VerifyBuildSpecFileName": {
+      "Description": "Filename of the buildspec.yaml",
+      "Type": "String",
+      "Default": ""
+    },
+    "CoccinelleBuildSpecFileName": {
+      "Description": "Name of the Coccinelle buildspec.yaml",
+      "Type": "String",
+      "Default": ""
+    },
+    "ClangBuildSpecFileName": {
+      "Description": "name of the Clang buildspec.yaml",
+      "Type": "String",
+      "Default": ""
+    },
+    "RustBuildSpecFileName": {
+      "Description": "name of the rust buildspec.yaml",
+      "Type": "String",
+      "Default": ""
+    },
+    "BuildImage": {
+      "Description": "Docker container to run the build",
+      "Type": "String",
+      "Default": ""
+    },
+    "CoccinelleBuildImage": {
+      "Description": "Docker container to run the coccinelle build",
+      "Type": "String",
+      "Default": ""
+    },
+    "UnitTestTemplateURL": {
+      "Description": "S3 URL for unit test template",
+      "Type": "String",
+      "Default": ""
+    },
+    "VerifyTestTemplateURL": {
+      "Description": "S3 URL for verify test template",
+      "Type": "String",
+      "Default": ""
+    },
+    "CoccinelleTemplateURL": {
+      "Description": "S3 URL for coccinelle test template",
+      "Type": "String",
+      "Default": ""
+    },
+    "ClangTemplateURL": {
+      "Description": "S3 URL for clang test template",
+      "Type": "String",
+      "Default": ""
+    },
+    "RustTemplateURL": {
+      "Description": "S3 URL for rust test template",
+      "Type": "String",
+      "Default": ""
+    },
+    "NotificationTemplateURL": {
+      "Description": "S3 URL for notification system template",
+      "Type": "String",
+      "Default": ""
+    },
+    "ArtifactStoreName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "S3 bucket that stores pipeline artifacts."
+    },
+    "PipelineName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Name of the CodePipeline"
+    },
+    "SourceBucket": {
+      "Type": "String",
+      "Default": "",
+      "Description": "S3 bucket source for the pipeline"
+    },
+    "SourceBucketObjectKey": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Zip file containing source code inside Source Code Bucket"
+    },
+    "PipelineTemplateURL": {
+      "Type": "String",
+      "Default": "",
+      "Description": "S3 URL for the pipeline template"
+    },
+    "snsTopicName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Name of sns topic"
+    },
+    "snsDisplayName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Display Name of sns topic"
+    }
+  },
+  "Conditions": {
+    "HasToken": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            {
+              "Ref": "token"
+            }
+          ]
+        }
+      ]
+    },
+    "HasNotificationURL": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            {
+              "Ref": "NotificationTemplateURL"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "CodeBuildIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
+          "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
+          "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          "arn:aws:iam::aws:policy/CloudWatchFullAccess",
+          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+        ]
+      }
+    },
+    "NotificationSystem": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Condition": "HasToken",
+      "Properties": {
+        "Parameters": {
+          "token": {
+            "Fn::If": [
+              "HasToken",
+              {
+                "Ref": "token"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Fn::If": [
+            "HasNotificationURL",
+            {
+              "Ref": "NotificationTemplateURL"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      }
+    },
+    "UnitTest": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-UnitTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "UnitTestBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "UnitTestTemplateURL"
+        }
+      }
+    },
+    "Verify": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-VerifyTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "VerifyBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "VerifyTestTemplateURL"
+        }
+      }
+    },
+    "Coccinelle": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-CoccinelleTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "CoccinelleBuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "CoccinelleBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "CoccinelleTemplateURL"
+        }
+      }
+    },
+    "Clang": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-ClangTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "ClangBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "ClangTemplateURL"
+        }
+      }
+    },
+    "Rust": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-RustTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "RustBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "RustTemplateURL"
+        }
+      }
+    },
+    "pipeline": {
+      "Type": "AWS::CloudFormation::Stack",
+      "DependsOn": "NotificationSystem",
+      "Properties": {
+        "Parameters": {
+          "ArtifactStoreName": {
+            "Ref": "ArtifactStoreName"
+          },
+          "PipelineName": {
+            "Ref": "PipelineName"
+          },
+          "SourceBucket": {
+            "Ref": "SourceBucket"
+          },
+          "SourceBucketObjectKey": {
+            "Ref": "SourceBucketObjectKey"
+          },
+          "UnitTestName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-UnitTest"
+              ]
+            ]
+          },
+          "VerifyTestName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-VerifyTest"
+              ]
+            ]
+          },
+          "CoccinelleTestName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-CoccinelleTest"
+              ]
+            ]
+          },
+          "RustTestName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-RustTest"
+              ]
+            ]
+          },
+          "ClangTestName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-ClangTest"
+              ]
+            ]
+          },
+          "snsTopicName": {
+            "Ref": "snsTopicName"
+          },
+          "snsDisplayName": {
+            "Ref": "snsDisplayName"
+          }
+        },
+        "TemplateURL": {
+          "Ref": "PipelineTemplateURL"
+        }
+      }
+    }
+  }
 }
