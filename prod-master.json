@@ -368,7 +368,7 @@
                     "ecr:*",
                     "cloudtrail:LookupEvents"
                   ],
-                  "Resource": "arn:aws:ecr:eu-west-1:38994181433:repository/build/suricata-devops"
+                  "Resource": "*"
                 }
               ]
             }
