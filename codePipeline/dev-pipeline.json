@@ -616,7 +616,7 @@
               {
                 "Name": "Unittest",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -640,7 +640,7 @@
               {
                 "Name": "RustTest",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -664,7 +664,7 @@
               {
                 "Name": "Coccinelle",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -688,7 +688,7 @@
               {
                 "Name": "ClangTest",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -712,7 +712,7 @@
               {
                 "Name": "Suricata-verify",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
