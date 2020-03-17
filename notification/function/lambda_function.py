@@ -6,11 +6,6 @@ from zipfile import ZipFile
 
 import requests
 from boto3 import client
-from github import Github
-
-# need to get sha of PR commit
-# need to get user that owns repo
-# need to get repo name
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -181,8 +176,6 @@ def pipeline_change(state: PipelineStates, request: dict, push: bool):
         commit_id,
     )
 
-    print("test")
-
 
 def stage_change(state: StageStates, request: dict, stage: str, push: bool):
     if push:
@@ -199,8 +192,6 @@ def stage_change(state: StageStates, request: dict, stage: str, push: bool):
         "http://localhost",
         commit_id,
     )
-
-    print("test")
 
 
 def action_change(
@@ -220,8 +211,6 @@ def action_change(
         "http://localhost",
         commit_id,
     )
-
-    print("test")
 
 
 def lambda_handler(event, context):
