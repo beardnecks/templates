@@ -368,7 +368,7 @@
                     "ecr:*",
                     "cloudtrail:LookupEvents"
                   ],
-                  "Resource": "*"
+                  "Resource": "arn:aws:ecr:eu-west-1:389941814333:repository/*"
                 }
               ]
             }
