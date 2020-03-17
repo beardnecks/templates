@@ -128,7 +128,10 @@
               {
                 "Ref": "PipelineName"
               }
-            ]
+            ],
+            "type": {
+              "category": ["Deploy", "Build", "Test"]
+            }
           }
         },
         "Targets": [
