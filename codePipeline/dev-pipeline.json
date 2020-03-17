@@ -122,8 +122,14 @@
             "CodePipeline Pipeline Execution State Change",
             "CodePipeline Stage Execution State Change",
             "CodePipeline Action Execution State Change"
-
-          ]
+          ],
+          "detail": {
+            "pipeline": [
+              {
+                "Ref": "PipelineName"
+              }
+            ]
+          }
         },
         "Targets": [
           {
