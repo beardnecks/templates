@@ -348,7 +348,7 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "s3:*"
+                    "s3:GetObject"
                   ],
                   "Resource": {
                     "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
