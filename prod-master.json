@@ -364,6 +364,9 @@
               "Statement": [
                 {
                   "Effect": "Allow",
+                  "Principal": {
+                    "Service": "codebuild.amazonaws.com"
+                  },
                   "Action": [
                     "ecr:*",
                     "cloudtrail:LookupEvents"
