@@ -108,7 +108,8 @@
                 "ManagedPolicyArns": [
                     "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
                     "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+                    "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
+                    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
                 ],
                 "MaxSessionDuration": 3600,
                 "Description": "Service Role for CodePipeline"
