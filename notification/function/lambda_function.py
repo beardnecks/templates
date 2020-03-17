@@ -24,7 +24,8 @@ PIPELINE_CHANGE = "CodePipeline Pipeline Execution State Change"
 STAGE_CHANGE = "CodePipeline Stage Execution State Change"
 ACTION_CHANGE = "CodePipeline Action Execution State Change"
 
-STARTED = "STARTED"
+PIPELINE_CONTEXT = "neckbeards-ci"
+
 
 user = "beardnecks"
 repo = "suricata"
@@ -52,6 +53,7 @@ class PipelineStates(Enum):
     # While this pipeline execution was waiting for the next stage to be completed,
     # a newer pipeline execution advanced and continued through the pipeline instead.
     SUPERSEDED = "SUPERSEDED"
+    STOPPED = "STOPPED"
 
     def get_description_from_pipeline_state(self, pipeline_state):
         switcher = {
@@ -61,6 +63,7 @@ class PipelineStates(Enum):
             PipelineStates.CANCELED: "The pipeline was canceled",
             PipelineStates.FAILED: "The pipeline failed",
             PipelineStates.SUCCEEDED: "The pipeline succeeded!",
+            PipelineStates.STOPPED: "The pipeline was stopped!",
         }
         return switcher[pipeline_state]
 
@@ -72,6 +75,7 @@ class PipelineStates(Enum):
             PipelineStates.CANCELED: GithubStatus.FAILURE,
             PipelineStates.FAILED: GithubStatus.FAILURE,
             PipelineStates.SUCCEEDED: GithubStatus.SUCCESS,
+            PipelineStates.STOPPED: GithubStatus.ERROR,
         }
         return switcher[pipeline_state]
 
@@ -87,14 +91,16 @@ class StageStates(Enum):
     FAILED = "FAILED"
     # The stage was canceled because the pipeline structure was updated.
     CANCELED = "CANCELED"
+    STOPPED = "STOPPED"
 
     def get_description_from_stage_state(self, stage_state):
         switcher = {
-            StageStates.STARTED: "The pipeline has started!",
-            StageStates.RESUMED: "The pipeline has resumed",
-            StageStates.CANCELED: "The pipeline was canceled",
-            StageStates.FAILED: "The pipeline failed",
-            StageStates.SUCCEEDED: "The pipeline succeeded!",
+            StageStates.STARTED: "The stage has started!",
+            StageStates.RESUMED: "The stage has resumed",
+            StageStates.CANCELED: "The stage was canceled",
+            StageStates.FAILED: "The stage failed",
+            StageStates.SUCCEEDED: "The stage succeeded!",
+            StageStates.STOPPED: "The stage was stopped!",
         }
         return switcher[stage_state]
 
@@ -105,6 +111,7 @@ class StageStates(Enum):
             StageStates.CANCELED: GithubStatus.FAILURE,
             StageStates.FAILED: GithubStatus.FAILURE,
             StageStates.SUCCEEDED: GithubStatus.SUCCESS,
+            StageStates.STOPPED: GithubStatus.ERROR,
         }
         return switcher[stage_state]
 
@@ -119,9 +126,27 @@ class ActionStates(Enum):
     FAILED = "FAILED"
     # The action was canceled because the pipeline structure was updated.
     CANCELED = "CANCELED"
+    STOPPED = "STOPPED"
 
+    def get_description_from_action_state(self, action_state):
+        switcher = {
+            ActionStates.STARTED: "The action has started!",
+            ActionStates.CANCELED: "The action was canceled",
+            ActionStates.FAILED: "The action failed",
+            ActionStates.SUCCEEDED: "The action succeeded!",
+            ActionStates.STOPPED: "The action was stopped!",
+        }
+        return switcher[action_state]
 
-PIPELINE_CONTEXT = "neckbeards-ci"
+    def get_github_status_from_action_state(self, action_state):
+        switcher = {
+            ActionStates.STARTED: GithubStatus.PENDING,
+            ActionStates.CANCELED: GithubStatus.FAILURE,
+            ActionStates.FAILED: GithubStatus.FAILURE,
+            ActionStates.SUCCEEDED: GithubStatus.SUCCESS,
+            ActionStates.STOPPED: GithubStatus.ERROR,
+        }
+        return switcher[action_state]
 
 
 def update_pipeline_status(
@@ -136,7 +161,7 @@ def update_pipeline_status(
         json={
             "state": pipeline_state.get_github_status_from_pipeline_state(
                 pipeline_state
-            ),
+            ).value,
             "context": context,
             "description": pipeline_state.get_description_from_pipeline_state(
                 pipeline_state
@@ -159,7 +184,7 @@ def update_stage_status(
     r = requests.post(
         "https://api.github.com/repos/" + user + "/" + repo + "/statuses/" + commit_id,
         json={
-            "state": stage_state.get_github_status_from_stage_state(stage_state),
+            "state": stage_state.get_github_status_from_stage_state(stage_state).value,
             "context": context,
             "description": stage_state.get_description_from_stage_state(stage_state),
             "target_url": target_url,
@@ -170,7 +195,30 @@ def update_stage_status(
     return r
 
 
-def pipeline_change(state: str, request: dict, push: bool):
+def update_action_status(
+    action_state: ActionStates,
+    context: str,
+    description: str,
+    target_url: str,
+    commit_id: str,
+):
+    r = requests.post(
+        "https://api.github.com/repos/" + user + "/" + repo + "/statuses/" + commit_id,
+        json={
+            "state": action_state.get_github_status_from_action_state(
+                action_state
+            ).value,
+            "context": context,
+            "description": action_state.get_description_from_action_state(action_state),
+            "target_url": target_url,
+        },
+        headers={"Authorization": "token " + token},
+    )
+    logger.info("Request response for commit id %s: %s" % (commit_id, r.status_code))
+    return r
+
+
+def pipeline_change(state: PipelineStates, request: dict, push: bool):
     if push:
         commit_id = request["body-json"]["head_commit"]["id"]
     else:
@@ -178,20 +226,18 @@ def pipeline_change(state: str, request: dict, push: bool):
 
     logger.info("Commit id is: %s" % commit_id)
 
-    for pstate in PipelineStates:
-        if state == pstate:
-            update_pipeline_status(
-                pstate,
-                PIPELINE_CONTEXT,
-                "The pipeline is %s" % pstate,
-                "http://localhost",
-                commit_id,
-            )
+    update_pipeline_status(
+        state,
+        PIPELINE_CONTEXT,
+        "The pipeline is %s" % state,
+        "http://localhost",
+        commit_id,
+    )
 
     print("test")
 
 
-def stage_change(state: str, request: dict, stage: str, push: bool):
+def stage_change(state: StageStates, request: dict, stage: str, push: bool):
     if push:
         commit_id = request["body-json"]["head_commit"]["id"]
     else:
@@ -199,15 +245,34 @@ def stage_change(state: str, request: dict, stage: str, push: bool):
 
     logger.info("Commit id is: %s" % commit_id)
 
-    for sstate in StageStates:
-        if state == sstate:
-            update_stage_status(
-                sstate,
-                PIPELINE_CONTEXT + "/",
-                "The stage is %s" % sstate,
-                "http://localhost",
-                commit_id,
-            )
+    update_stage_status(
+        state,
+        PIPELINE_CONTEXT + "/" + stage,
+        "The stage is %s" % stage,
+        "http://localhost",
+        commit_id,
+    )
+
+    print("test")
+
+
+def action_change(
+    state: ActionStates, request: dict, stage: str, action: str, push: bool
+):
+    if push:
+        commit_id = request["body-json"]["head_commit"]["id"]
+    else:
+        commit_id = request["body-json"]["pull_request"]["head"]["sha"]
+
+    logger.info("Commit id is: %s" % commit_id)
+
+    update_action_status(
+        state,
+        PIPELINE_CONTEXT + "/" + stage + "/" + action,
+        "The stage is %s" % stage,
+        "http://localhost",
+        commit_id,
+    )
 
     print("test")
 
@@ -241,17 +306,29 @@ def lambda_handler(event, context):
     message = json.loads(event["Records"][0]["Sns"]["Message"])
     logger.info(message["detail-type"] + "  -:-  " + PIPELINE_CHANGE)
     if message["detail-type"] == PIPELINE_CHANGE:
-        logger.info(message["detail"]["state"] + "  -:-  " + STARTED)
+        logger.info(message["detail"]["state"])
         for pstate in PipelineStates:
-            if message["detail"]["state"] == pstate:
+            logger.info(pstate)
+            logger.info(type(pstate))
+            if message["detail"]["state"] == pstate.value:
                 logger.info("Pipeline change func")
                 pipeline_change(pstate, request, push)
     elif message["detail-type"] == STAGE_CHANGE:
-        logger.info(message["detail"]["state"] + "  -:-  " + STARTED)
-        for pstate in PipelineStates:
-            if message["detail"]["state"] == pstate:
+        logger.info(message["detail"]["state"])
+        for sstate in StageStates:
+            logger.info(sstate)
+            logger.info(type(sstate))
+            if message["detail"]["state"] == sstate.value:
                 logger.info("Stage change func")
-                stage_change(pstate, request, message["detail"]["stage"], push)
+                stage_change(sstate, request, message["detail"]["stage"], push)
+    elif message["detail-type"] == ACTION_CHANGE:
+        logger.info(message["detail"]["state"])
+        for astate in ActionStates:
+            logger.info(astate)
+            logger.info(type(astate))
+            if message["detail"]["state"] == astate.value:
+                logger.info("Stage change func")
+                action_change(astate, request, message["detail"]["stage"], message["detail"]["action"], push)
 
     # # event['records'][0]['Sns']['Message'] content looks like json, but it is a string
     # # Convert string to json
