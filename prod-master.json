@@ -1,10 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-<<<<<<< HEAD
-  "Description": "Creates nested stacks containing CodeBuild templates",
-=======
   "Description": "Creates CodePipeline, CodeBuild projects and notification system in nested stacks",
->>>>>>> a8ce3ae9755f2ea9f20e39b2bb132e14849cd7a8
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -40,11 +36,7 @@
           },
           "Parameters": [
             "CoccinelleBuildSpecFileName",
-<<<<<<< HEAD
-            "CoccinelleTestTemplateURL",
-=======
             "CoccinelleTemplateURL",
->>>>>>> a8ce3ae9755f2ea9f20e39b2bb132e14849cd7a8
             "CoccinelleBuildImage"
           ]
         },
@@ -1038,7 +1030,6 @@
             ]
           },
           "VerifyTestName": {
->>>>>>> a8ce3ae9755f2ea9f20e39b2bb132e14849cd7a8
             "Fn::Join": [
               "",
               [
