@@ -127,6 +127,9 @@
               {
                 "Ref": "PipelineName"
               }
+            ],
+            "stage": [
+              "Testing"
             ]
           }
         },
@@ -165,7 +168,10 @@
             ],
             "type": {
               "category": ["Deploy", "Build", "Test"]
-            }
+            },
+            "stage": [
+              "Testing"
+            ]
           }
         },
         "Targets": [
