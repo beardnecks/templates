@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Creates nested stacks containing CodeBuild templates",
+  "Description": "Creates CodePipeline, CodeBuild projects and notification system in nested stacks",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
