@@ -1,6 +1,10 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+<<<<<<< HEAD
   "Description": "Creates nested stacks containing CodeBuild templates",
+=======
+  "Description": "Creates CodePipeline, CodeBuild projects and notification system in nested stacks",
+>>>>>>> a8ce3ae9755f2ea9f20e39b2bb132e14849cd7a8
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -36,7 +40,11 @@
           },
           "Parameters": [
             "CoccinelleBuildSpecFileName",
+<<<<<<< HEAD
             "CoccinelleTestTemplateURL",
+=======
+            "CoccinelleTemplateURL",
+>>>>>>> a8ce3ae9755f2ea9f20e39b2bb132e14849cd7a8
             "CoccinelleBuildImage"
           ]
         },
@@ -329,44 +337,6 @@
       "Type": "String",
       "Default": "",
       "Description": "S3 URL for the pipeline template"
-    }
-  },
-  "Conditions": {
-    "HasToken": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            "",
-            {
-              "Ref": "token"
-            }
-          ]
-        }
-      ]
-    },
-    "HasNotificationURL": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            "",
-            {
-              "Ref": "NotificationTemplateURL"
-            }
-          ]
-        }
-      ]
-    },
-    "HasStackBucket": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            "",
-            {
-              "Ref": "stackBucket"
-            }
-          ]
-        }
-      ]
     }
   },
   "Resources": {
@@ -762,42 +732,17 @@
     },
     "NotificationSystem": {
       "Type": "AWS::CloudFormation::Stack",
-      "Condition": "HasToken",
       "Properties": {
         "Parameters": {
           "token": {
-            "Fn::If": [
-              "HasToken",
-              {
-                "Ref": "token"
-              },
-              {
-                "Ref": "AWS::NoValue"
-              }
-            ]
+            "Ref": "token"
           },
           "stackBucket": {
-            "Fn::If": [
-              "HasStackBucket",
-              {
-                "Ref": "stackBucket"
-              },
-              {
-                "Ref": "AWS::NoValue"
-              }
-            ]
+            "Ref": "stackBucket"
           }
         },
         "TemplateURL": {
-          "Fn::If": [
-            "HasNotificationURL",
-            {
-              "Ref": "NotificationTemplateURL"
-            },
-            {
-              "Ref": "AWS::NoValue"
-            }
-          ]
+          "Ref": "NotificationTemplateURL"
         }
       }
     },
@@ -806,6 +751,294 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-UnitTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "UnitTestBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "UnitTestTemplateURL"
+        }
+      }
+    },
+    "Verify": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-VerifyTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "VerifyBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "VerifyTestTemplateURL"
+        }
+      }
+    },
+    "Coccinelle": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-CoccinelleTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "CoccinelleBuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "CoccinelleBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "CoccinelleTemplateURL"
+        }
+      }
+    },
+    "Clang": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-ClangTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "ClangBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "ClangTemplateURL"
+        }
+      }
+    },
+    "Rust": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-RustTest"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "RustBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "RustTemplateURL"
+        }
+      }
+    },
+    "Packaging": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-Packaging"
+              ]
+            ]
+          },
+          "BuildImage": {
+            "Ref": "BuildImage"
+          },
+          "BuildSpecFileName": {
+            "Ref": "PackagingBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "PackagingTemplateURL"
+        }
+      }
+    },
+    "DockerBuild": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-DockerBuild"
+              ]
+            ]
+          },
+          "BuildSpecFileName": {
+            "Ref": "DockerBuildBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "DockerBuildTemplateURL"
+        }
+      }
+    },
+    "DockerDeploy": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "BuildName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-DockerDeploy"
+              ]
+            ]
+          },
+          "BuildSpecFileName": {
+            "Ref": "DockerDeployBuildSpecFileName"
+          },
+          "IAMRole": {
+            "Fn::GetAtt": [
+              "CodeBuildIamRole",
+              "Arn"
+            ]
+          }
+        },
+        "TemplateURL": {
+          "Ref": "DockerDeployTemplateURL"
+        }
+      }
+    },
+    "pipeline": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Ref": "PipelineTemplateURL"
+        },
+        "Parameters": {
+          "ArtifactStoreName": {
+            "Ref": "ArtifactStoreName"
+          },
+          "PipelineName": {
+            "Ref": "PipelineName"
+          },
+          "SourceBucket": {
+            "Ref": "SourceBucket"
+          },
+          "SourceBucketObjectKey": {
+            "Ref": "SourceBucketObjectKey"
+          },
+          "OutputBucketName": {
+            "Ref": "OutputBucketName"
+          },
+          "UnitTestName": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "PipelineName"
+                },
+                "-UnitTest"
+              ]
+            ]
+          },
+          "VerifyTestName": {
+>>>>>>> a8ce3ae9755f2ea9f20e39b2bb132e14849cd7a8
             "Fn::Join": [
               "",
               [
