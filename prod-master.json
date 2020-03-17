@@ -364,9 +364,6 @@
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Principal": {
-                    "Service": "codebuild.amazonaws.com"
-                  },
                   "Action": [
                     "ecr:*",
                     "cloudtrail:LookupEvents"
@@ -383,7 +380,7 @@
                         {
                           "Ref": "AWS::AccountId"
                         },
-                        ":repository/build/suricata-devops"
+                        ":repository/build/*"
                       ]
                     ]
                   }
