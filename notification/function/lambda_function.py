@@ -225,11 +225,11 @@ def lambda_handler(event, context):
 
     source_bucket = os.environ["SOURCE_BUCKET"]
     source_bucket_object_key = os.environ["SOURCE_BUCKET_OBJECT_KEY"]
-    print(source_bucket)
-    print(source_bucket_object_key)
     s3 = client("s3")
 
-    logger.info("Downloading source from s3")
+    logger.info(
+        "Downloading source from s3://%s/%s" % (source_bucket, source_bucket_object_key)
+    )
     s3.download_file(source_bucket, source_bucket_object_key, "/tmp/code.zip")
     logger.info("Unzipping...")
     code_zip = ZipFile("/tmp/code.zip", "r")
@@ -240,7 +240,10 @@ def lambda_handler(event, context):
     content = f.readline()
     request = json.loads(content)
 
-    pr = False
+    if "GitHub" not in event["params"]["header"]["User-Agent"]:
+        logger.error("Unknown git host %s" % event["params"]["header"]["User-Agent"])
+        raise Exception("Unknown git host %s" % event["params"]["header"]["User-Agent"])
+
     push = True
     if request["params"]["header"]["X-GitHub-Event"] == "pull_request":
         pr = True
