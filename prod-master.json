@@ -363,6 +363,10 @@
               "Version": "2012-10-17",
               "Statement": [
                 {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "AWS": "arn:aws:iam::389941814333:user/*"
+                  },
                   "Action": [
                     "ecr:*",
                     "cloudtrail:LookupEvents"
@@ -382,8 +386,7 @@
                         ":repository/build/suricata-devops"
                       ]
                     ]
-                  },
-                  "Effect": "Allow"
+                  }
                 }
               ]
             }
