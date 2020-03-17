@@ -254,29 +254,29 @@ def lambda_handler(event, context):
     logger.info(message["detail-type"] + "  -:-  " + PIPELINE_CHANGE)
     if message["detail-type"] == PIPELINE_CHANGE:
         logger.info(message["detail"]["state"])
-        for pstate in PipelineStates:
-            logger.info(pstate)
-            logger.info(type(pstate))
-            if message["detail"]["state"] == pstate.value:
+        for pipeline_state in PipelineStates:
+            logger.info(pipeline_state)
+            logger.info(type(pipeline_state))
+            if message["detail"]["state"] == pipeline_state.value:
                 logger.info("Pipeline change func")
-                pipeline_change(pstate, request, push)
+                pipeline_change(pipeline_state, request, push)
     elif message["detail-type"] == STAGE_CHANGE:
         logger.info(message["detail"]["state"])
-        for sstate in StageStates:
-            logger.info(sstate)
-            logger.info(type(sstate))
-            if message["detail"]["state"] == sstate.value:
+        for stage_state in StageStates:
+            logger.info(stage_state)
+            logger.info(type(stage_state))
+            if message["detail"]["state"] == stage_state.value:
                 logger.info("Stage change func")
-                stage_change(sstate, request, message["detail"]["stage"], push)
+                stage_change(stage_state, request, message["detail"]["stage"], push)
     elif message["detail-type"] == ACTION_CHANGE:
         logger.info(message["detail"]["state"])
-        for astate in ActionStates:
-            logger.info(astate)
-            logger.info(type(astate))
-            if message["detail"]["state"] == astate.value:
+        for action_state in ActionStates:
+            logger.info(action_state)
+            logger.info(type(action_state))
+            if message["detail"]["state"] == action_state.value:
                 logger.info("Stage change func")
                 action_change(
-                    astate,
+                    action_state,
                     request,
                     message["detail"]["stage"],
                     message["detail"]["action"],
