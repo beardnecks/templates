@@ -487,6 +487,9 @@
           },
           "SourceBucketObjectKey": {
             "Ref": "SourceBucketObjectKey"
+          },
+          "PipelineName": {
+            "Ref": "PipelineName"
           }
         },
         "TemplateURL": {
