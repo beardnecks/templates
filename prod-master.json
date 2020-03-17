@@ -368,7 +368,22 @@
                     "ecr:*",
                     "cloudtrail:LookupEvents"
                   ],
-                  "Resource": "*"
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:ecr:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":build/suricata-devops"
+                      ]
+                    ]
+                  }
                 }
               ]
             }
