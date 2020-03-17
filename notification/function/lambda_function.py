@@ -131,7 +131,6 @@ class ActionStates(Enum):
             ActionStates.SUCCEEDED: "The action succeeded!",
             ActionStates.STOPPED: "The action was stopped!",
             ActionStates.ABANDONED: "The action was abandoned!",
-
         }
         return switcher[action_state]
 
@@ -143,7 +142,6 @@ class ActionStates(Enum):
             ActionStates.SUCCEEDED: GithubStatus.SUCCESS,
             ActionStates.STOPPED: GithubStatus.ERROR,
             ActionStates.ABANDONED: GithubStatus.ERROR,
-
         }
         return switcher[action_state]
 
@@ -220,6 +218,11 @@ def action_change(
 
 def lambda_handler(event, context):
     print(event)
+    message = json.loads(event["Records"][0]["Sns"]["Message"])
+    if message["detail"]["stage"] == "Source":
+        logger.info("Stage is Source, skipping!")
+        return
+
     source_bucket = os.environ["SOURCE_BUCKET"]
     source_bucket_object_key = os.environ["SOURCE_BUCKET_OBJECT_KEY"]
     print(source_bucket)
@@ -244,7 +247,6 @@ def lambda_handler(event, context):
     elif request["params"]["header"]["X-GitHub-Event"] == "push":
         push = True
 
-    message = json.loads(event["Records"][0]["Sns"]["Message"])
     logger.info(message["detail-type"] + "  -:-  " + PIPELINE_CHANGE)
     if message["detail-type"] == PIPELINE_CHANGE:
         logger.info(message["detail"]["state"])
@@ -254,6 +256,8 @@ def lambda_handler(event, context):
             if message["detail"]["state"] == pipeline_state.value:
                 logger.info("Pipeline change func")
                 pipeline_change(pipeline_state, request, push)
+
+                return
     elif message["detail-type"] == STAGE_CHANGE:
         logger.info(message["detail"]["state"])
         for stage_state in StageStates:
@@ -262,6 +266,8 @@ def lambda_handler(event, context):
             if message["detail"]["state"] == stage_state.value:
                 logger.info("Stage change func")
                 stage_change(stage_state, request, message["detail"]["stage"], push)
+
+                return
     elif message["detail-type"] == ACTION_CHANGE:
         logger.info(message["detail"]["state"])
         for action_state in ActionStates:
@@ -277,4 +283,6 @@ def lambda_handler(event, context):
                     push,
                 )
 
-    return "Function finished :)"
+                return
+
+    logger.error("Detail Type did not match pipeline, stage or action change!")
