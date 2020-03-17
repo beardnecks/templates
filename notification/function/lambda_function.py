@@ -121,6 +121,7 @@ class ActionStates(Enum):
     # The action was canceled because the pipeline structure was updated.
     CANCELED = "CANCELED"
     STOPPED = "STOPPED"
+    ABANDONED = "ABANDONED"
 
     def get_description_from_action_state(self, action_state):
         switcher = {
@@ -129,6 +130,8 @@ class ActionStates(Enum):
             ActionStates.FAILED: "The action failed",
             ActionStates.SUCCEEDED: "The action succeeded!",
             ActionStates.STOPPED: "The action was stopped!",
+            ActionStates.ABANDONED: "The action was abandoned!",
+
         }
         return switcher[action_state]
 
@@ -139,6 +142,8 @@ class ActionStates(Enum):
             ActionStates.FAILED: GithubStatus.FAILURE,
             ActionStates.SUCCEEDED: GithubStatus.SUCCESS,
             ActionStates.STOPPED: GithubStatus.ERROR,
+            ActionStates.ABANDONED: GithubStatus.ERROR,
+
         }
         return switcher[action_state]
 
