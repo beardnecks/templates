@@ -240,14 +240,12 @@ def lambda_handler(event, context):
     content = f.readline()
     request = json.loads(content)
 
-    if "GitHub" not in event["params"]["header"]["User-Agent"]:
-        logger.error("Unknown git host %s" % event["params"]["header"]["User-Agent"])
-        raise Exception("Unknown git host %s" % event["params"]["header"]["User-Agent"])
+    if "GitHub" not in request["params"]["header"]["User-Agent"]:
+        logger.error("Unknown git host %s" % request["params"]["header"]["User-Agent"])
+        raise Exception("Unknown git host %s" % request["params"]["header"]["User-Agent"])
 
-    push = True
-    if request["params"]["header"]["X-GitHub-Event"] == "pull_request":
-        pr = True
-    elif request["params"]["header"]["X-GitHub-Event"] == "push":
+    push = False
+    if request["params"]["header"]["X-GitHub-Event"] == "push":
         push = True
 
     logger.info(message["detail-type"] + "  -:-  " + PIPELINE_CHANGE)
