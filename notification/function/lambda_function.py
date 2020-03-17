@@ -216,22 +216,51 @@ def action_change(
     )
 
 
+def update_all_stages_actions(pipeline_name: str, request: dict, push: bool):
+    logger.info("Updating all stages/actions")
+    codepipeline = client("codepipeline")
+
+    pipeline = codepipeline.get_pipeline(name=pipeline_name)
+
+    for stage in pipeline["pipeline"]["stages"]:
+        if stage["name"] == "Source":
+            logger.info("Skipping source stage")
+            continue
+        logger.info("Updating stage %s" % stage["name"])
+        stage_change(StageStates.STARTED, request, stage["name"], push)
+        for action in stage["actions"]:
+            logger.info("Updating action %s" % action["name"])
+            action_change(
+                ActionStates.STARTED, request, stage["name"], action["name"], push
+            )
+
+
 def lambda_handler(event, context):
     print(event)
     message = json.loads(event["Records"][0]["Sns"]["Message"])
-    if message["detail"]["stage"] == "Source":
-        logger.info("Stage is Source, skipping!")
-        return
 
     source_bucket = os.environ["SOURCE_BUCKET"]
     source_bucket_object_key = os.environ["SOURCE_BUCKET_OBJECT_KEY"]
     s3 = client("s3")
-
-    logger.info(
-        "Downloading source from s3://%s/%s" % (source_bucket, source_bucket_object_key)
+    codepipeline = client("codepipeline")
+    pipeline_execution = codepipeline.get_pipeline_execution(
+        pipelineName=message["detail"]["pipeline"],
+        pipelineExecutionId=message["detail"]["execution-id"],
     )
-    s3.download_file(source_bucket, source_bucket_object_key, "/tmp/code.zip")
-    logger.info("Unzipping...")
+    s3_version_id = pipeline_execution["pipelineExecution"]["artifactRevisions"][0][
+        "revisionId"
+    ]
+    logger.info(
+        "Downloading source from s3://%s/%s with VersionId %s"
+        % (source_bucket, source_bucket_object_key, s3_version_id)
+    )
+    s3.download_file(
+        source_bucket,
+        source_bucket_object_key,
+        "/tmp/code.zip",
+        ExtraArgs={"VersionId": s3_version_id},
+    )
+    logger.info("Unzipping top /tmp/code...")
     code_zip = ZipFile("/tmp/code.zip", "r")
     ZipFile.extractall(code_zip, "/tmp/code")
 
@@ -242,7 +271,9 @@ def lambda_handler(event, context):
 
     if "GitHub" not in request["params"]["header"]["User-Agent"]:
         logger.error("Unknown git host %s" % request["params"]["header"]["User-Agent"])
-        raise Exception("Unknown git host %s" % request["params"]["header"]["User-Agent"])
+        raise Exception(
+            "Unknown git host %s" % request["params"]["header"]["User-Agent"]
+        )
 
     push = False
     if request["params"]["header"]["X-GitHub-Event"] == "push":
@@ -251,9 +282,11 @@ def lambda_handler(event, context):
     logger.info(message["detail-type"] + "  -:-  " + PIPELINE_CHANGE)
     if message["detail-type"] == PIPELINE_CHANGE:
         logger.info(message["detail"]["state"])
+        if message["detail"]["state"] == PipelineStates.STARTED.value:
+            update_all_stages_actions(message["detail"]["pipeline"], request, push)
+
         for pipeline_state in PipelineStates:
             logger.info(pipeline_state)
-            logger.info(type(pipeline_state))
             if message["detail"]["state"] == pipeline_state.value:
                 logger.info("Pipeline change func")
                 pipeline_change(pipeline_state, request, push)
@@ -263,7 +296,6 @@ def lambda_handler(event, context):
         logger.info(message["detail"]["state"])
         for stage_state in StageStates:
             logger.info(stage_state)
-            logger.info(type(stage_state))
             if message["detail"]["state"] == stage_state.value:
                 logger.info("Stage change func")
                 stage_change(stage_state, request, message["detail"]["stage"], push)
@@ -273,7 +305,6 @@ def lambda_handler(event, context):
         logger.info(message["detail"]["state"])
         for action_state in ActionStates:
             logger.info(action_state)
-            logger.info(type(action_state))
             if message["detail"]["state"] == action_state.value:
                 logger.info("Stage change func")
                 action_change(
