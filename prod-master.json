@@ -104,7 +104,6 @@
           },
           "Parameters": [
             "token",
-            "stackBucket",
             "NotificationTemplateURL"
           ]
         }
@@ -112,9 +111,6 @@
       "ParameterLabels": {
         "token": {
           "default": "(optional, will not create if not assigned)Github token for notification system"
-        },
-        "stackBucket": {
-          "default": "(optional) init bucket containing lambda function for notification system"
         },
         "UnitTestBuildSpecFileName": {
           "default": "File path of the buildspec file of the unit test"
@@ -197,11 +193,6 @@
   "Parameters": {
     "token": {
       "Description": "(optional, will not create if not assigned)Github Token",
-      "Type": "String",
-      "Default": ""
-    },
-    "stackBucket": {
-      "Description": "(optional) init bucket containing lambda function for notification system",
       "Type": "String",
       "Default": ""
     },
@@ -728,9 +719,6 @@
         "Parameters": {
           "token": {
             "Ref": "token"
-          },
-          "stackBucket": {
-            "Ref": "stackBucket"
           }
         },
         "TemplateURL": {
