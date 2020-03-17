@@ -1,6 +1,6 @@
 #!/bin/bash
 PREFIX="t-joachim/"
-STACKNAME="d-joachim-pipeline"
+STACKNAME="p-joachim-pipeline"
 sam build --use-container -t notification/function/template.yaml
 sam package -t .aws-sam/build/notificationFunction/template.yaml --s3-bucket t-neckbeards-stackinit-s --use-json --output-template-file notification/function.json --s3-prefix ${PREFIX: : -1}
 aws s3 cp prod-master.json s3://t-neckbeards-stackinit-s/${PREFIX}
@@ -8,7 +8,7 @@ aws s3 cp dev-master.json s3://t-neckbeards-stackinit-s/${PREFIX}
 aws s3 cp notification/function.json s3://t-neckbeards-stackinit-s/${PREFIX}notification/
 aws s3 cp --recursive codeBuild s3://t-neckbeards-stackinit-s/${PREFIX}codeBuild/
 aws s3 cp --recursive codePipeline s3://t-neckbeards-stackinit-s/${PREFIX}codePipeline/
-aws cloudformation create-stack --stack-name ${STACKNAME} --template-body file://dev-master.json \
+aws cloudformation create-stack --stack-name ${STACKNAME} --template-body file://prod-master.json \
   --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --parameters \
   ParameterKey=UnitTestBuildSpecFileName,ParameterValue="qa/buildspec/unittest.yml" \
   ParameterKey=VerifyBuildSpecFileName,ParameterValue="qa/buildspec/suricata-verify.yml" \
