@@ -380,7 +380,7 @@
                         {
                           "Ref": "AWS::AccountId"
                         },
-                        ":build/suricata-devops"
+                        ":repository/build/suricata-devops"
                       ]
                     ]
                   }
