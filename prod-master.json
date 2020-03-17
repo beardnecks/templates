@@ -346,6 +346,22 @@
               "Version": "2012-10-17",
               "Statement": [
                 {
+                  "PolicyName": "ecr",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "ecr:*",
+                          "cloudtrail:LookupEvents"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                },
+                {
                   "Action": [
                     "autoscaling:Describe*",
                     "cloudwatch:*",
@@ -375,26 +391,6 @@
       }
     },
     "PackagingIamRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "codebuild.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            }
-          ]
-        },
-        "Path": "/",
-        "Policies": [
-        ]
-      }
-    },
-    "PipelineIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
