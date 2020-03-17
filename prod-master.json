@@ -365,7 +365,6 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "ecr:GetAuthorizationToken",
                     "ecr:*",
                     "cloudtrail:LookupEvents"
                   ],
@@ -381,7 +380,7 @@
                         {
                           "Ref": "AWS::AccountId"
                         },
-                        ":repository/build/suricata-devops"
+                        ":repository/*"
                       ]
                     ]
                   }
