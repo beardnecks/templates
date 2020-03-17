@@ -77,7 +77,6 @@
           },
           "Parameters": [
             "token",
-            "stackBucket",
             "NotificationTemplateURL"
           ]
         }
@@ -85,9 +84,6 @@
       "ParameterLabels": {
         "token": {
           "default": "(optional, will not create if not assigned)Github token for notification system"
-        },
-        "stackBucket": {
-          "default": "(optional) init bucket containing lambda function for notification system"
         },
         "UnitTestBuildSpecFileName": {
           "default": "File path of the buildspec file of the unit test"
@@ -147,16 +143,6 @@
     }
   },
   "Parameters": {
-    "token": {
-      "Description": "(optional, will not create if not assigned)Github Token",
-      "Type": "String",
-      "Default": ""
-    },
-    "stackBucket": {
-      "Description": "(optional) init bucket containing lambda function for notification system",
-      "Type": "String",
-      "Default": ""
-    },
     "UnitTestBuildSpecFileName": {
       "Description": "Filename of the buildspec.yaml",
       "Type": "String",
@@ -222,6 +208,11 @@
       "Type": "String",
       "Default": ""
     },
+    "token": {
+      "Description": "(optional, will not create if not assigned)Github Token",
+      "Type": "String",
+      "Default": ""
+    },
     "ArtifactStoreName": {
       "Type": "String",
       "Default": "",
@@ -246,6 +237,42 @@
       "Type": "String",
       "Default": "",
       "Description": "S3 URL for the pipeline template"
+    },
+    "snsTopicName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Name of sns topic"
+    },
+    "snsDisplayName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Display Name of sns topic"
+    }
+  },
+  "Conditions": {
+    "HasToken": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            {
+              "Ref": "token"
+            }
+          ]
+        }
+      ]
+    },
+    "HasNotificationURL": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            {
+              "Ref": "NotificationTemplateURL"
+            }
+          ]
+        }
+      ]
     }
   },
   "Resources": {
@@ -272,22 +299,6 @@
           "arn:aws:iam::aws:policy/CloudWatchFullAccess",
           "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
         ]
-      }
-    },
-    "NotificationSystem": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "Parameters": {
-          "token": {
-            "Ref": "token"
-          },
-          "stackBucket": {
-            "Ref": "stackBucket"
-          }
-        },
-        "TemplateURL": {
-          "Ref": "NotificationTemplateURL"
-        }
       }
     },
     "UnitTest": {
@@ -455,6 +466,42 @@
         }
       }
     },
+    "NotificationSystem": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Condition": "HasToken",
+      "Properties": {
+        "Parameters": {
+          "token": {
+            "Fn::If": [
+              "HasToken",
+              {
+                "Ref": "token"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          },
+          "SourceBucket": {
+            "Ref": "SourceBucket"
+          },
+          "SourceBucketObjectKey": {
+            "Ref": "SourceBucketObjectKey"
+          }
+        },
+        "TemplateURL": {
+          "Fn::If": [
+            "HasNotificationURL",
+            {
+              "Ref": "NotificationTemplateURL"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      }
+    },
     "pipeline": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -524,6 +571,18 @@
                 },
                 "-ClangTest"
               ]
+            ]
+          },
+          "snsTopicName": {
+            "Ref": "snsTopicName"
+          },
+          "snsDisplayName": {
+            "Ref": "snsDisplayName"
+          },
+          "notificationFunctionArn": {
+            "Fn::GetAtt": [
+              "NotificationSystem",
+              "Outputs.notificationFunctionArn"
             ]
           }
         },
