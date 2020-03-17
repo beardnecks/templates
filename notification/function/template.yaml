@@ -17,7 +17,12 @@
       "Description": "Location of file to download",
       "Type": "String",
       "Default": ""
-    }
+    },
+    "PipelineName": {
+      "Description": "Name of the attached pipeline",
+      "Type": "String",
+      "Default": ""
+    },
   },
   "Resources": {
     "NotificationRole": {
@@ -45,7 +50,8 @@
             {
               "Effect": "Allow",
               "Action": [
-                "s3:GetObject"
+                "s3:GetObject",
+                "s3:GetObjectVersion"
               ],
               "Resource": "arn:aws:s3:::*"
             },
@@ -57,6 +63,16 @@
                 "logs:PutLogEvents"
               ],
               "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codepipeline:GetPipeline",
+                "codepipeline:GetPipelineExecution"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
+              }
             }
             ]
           }
