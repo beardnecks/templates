@@ -26,7 +26,6 @@ ACTION_CHANGE = "CodePipeline Action Execution State Change"
 
 PIPELINE_CONTEXT = "neckbeards-ci"
 
-
 user = "beardnecks"
 repo = "suricata"
 token = os.environ["TOKEN"]
@@ -149,67 +148,15 @@ class ActionStates(Enum):
         return switcher[action_state]
 
 
-def update_pipeline_status(
-    pipeline_state: PipelineStates,
-    context: str,
-    description: str,
-    target_url: str,
-    commit_id: str,
+def update_github_status(
+    state: str, context: str, description: str, target_url: str, commit_id: str,
 ):
     r = requests.post(
         "https://api.github.com/repos/" + user + "/" + repo + "/statuses/" + commit_id,
         json={
-            "state": pipeline_state.get_github_status_from_pipeline_state(
-                pipeline_state
-            ).value,
+            "state": state,
             "context": context,
-            "description": pipeline_state.get_description_from_pipeline_state(
-                pipeline_state
-            ),
-            "target_url": target_url,
-        },
-        headers={"Authorization": "token " + token},
-    )
-    logger.info("Request response for commit id %s: %s" % (commit_id, r.status_code))
-    return r
-
-
-def update_stage_status(
-    stage_state: StageStates,
-    context: str,
-    description: str,
-    target_url: str,
-    commit_id: str,
-):
-    r = requests.post(
-        "https://api.github.com/repos/" + user + "/" + repo + "/statuses/" + commit_id,
-        json={
-            "state": stage_state.get_github_status_from_stage_state(stage_state).value,
-            "context": context,
-            "description": stage_state.get_description_from_stage_state(stage_state),
-            "target_url": target_url,
-        },
-        headers={"Authorization": "token " + token},
-    )
-    logger.info("Request response for commit id %s: %s" % (commit_id, r.status_code))
-    return r
-
-
-def update_action_status(
-    action_state: ActionStates,
-    context: str,
-    description: str,
-    target_url: str,
-    commit_id: str,
-):
-    r = requests.post(
-        "https://api.github.com/repos/" + user + "/" + repo + "/statuses/" + commit_id,
-        json={
-            "state": action_state.get_github_status_from_action_state(
-                action_state
-            ).value,
-            "context": context,
-            "description": action_state.get_description_from_action_state(action_state),
+            "description": description,
             "target_url": target_url,
         },
         headers={"Authorization": "token " + token},
@@ -226,10 +173,10 @@ def pipeline_change(state: PipelineStates, request: dict, push: bool):
 
     logger.info("Commit id is: %s" % commit_id)
 
-    update_pipeline_status(
-        state,
+    update_github_status(
+        state.get_github_status_from_pipeline_state(state).value,
         PIPELINE_CONTEXT,
-        "The pipeline is %s" % state,
+        state.get_description_from_pipeline_state(state),
         "http://localhost",
         commit_id,
     )
@@ -245,10 +192,10 @@ def stage_change(state: StageStates, request: dict, stage: str, push: bool):
 
     logger.info("Commit id is: %s" % commit_id)
 
-    update_stage_status(
-        state,
+    update_github_status(
+        state.get_github_status_from_stage_state(state).value,
         PIPELINE_CONTEXT + "/" + stage,
-        "The stage is %s" % stage,
+        state.get_description_from_stage_state(state),
         "http://localhost",
         commit_id,
     )
@@ -266,10 +213,10 @@ def action_change(
 
     logger.info("Commit id is: %s" % commit_id)
 
-    update_action_status(
-        state,
+    update_github_status(
+        state.get_github_status_from_action_state(state).value,
         PIPELINE_CONTEXT + "/" + stage + "/" + action,
-        "The stage is %s" % stage,
+        state.get_description_from_action_state(state),
         "http://localhost",
         commit_id,
     )
@@ -328,7 +275,13 @@ def lambda_handler(event, context):
             logger.info(type(astate))
             if message["detail"]["state"] == astate.value:
                 logger.info("Stage change func")
-                action_change(astate, request, message["detail"]["stage"], message["detail"]["action"], push)
+                action_change(
+                    astate,
+                    request,
+                    message["detail"]["stage"],
+                    message["detail"]["action"],
+                    push,
+                )
 
     # # event['records'][0]['Sns']['Message'] content looks like json, but it is a string
     # # Convert string to json
