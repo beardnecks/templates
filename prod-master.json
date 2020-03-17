@@ -323,7 +323,7 @@
     }
   },
   "Resources": {
-    "placeholder0": {
+    "TestingIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -343,7 +343,7 @@
         ]
       }
     },
-    "placeholder1": {
+    "PackagingIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -363,7 +363,47 @@
         ]
       }
     },
-    "placeholder2": {
+    "PipelineIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+        ]
+      }
+    },
+    "DockerBuildIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+        ]
+      }
+    },
+    "DockerDeployIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -749,7 +789,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           }
@@ -782,7 +822,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           }
@@ -815,7 +855,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           }
@@ -848,7 +888,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           }
@@ -881,7 +921,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           }
@@ -914,7 +954,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "PackagingIamRole",
               "Arn"
             ]
           }
@@ -944,7 +984,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "DockerBuildIamRole",
               "Arn"
             ]
           }
@@ -974,7 +1014,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "DockerDeployIamRole",
               "Arn"
             ]
           }
