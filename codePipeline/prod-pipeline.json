@@ -173,6 +173,13 @@
                 {
                   "Action": [
                     "codepipeline:*",
+                    "cloudformation:DescribeStacks",
+                    "cloudformation:ListChangeSets",
+                    "cloudtrail:CreateTrail",
+                    "cloudtrail:DescribeTrails",
+                    "cloudtrail:GetEventSelectors",
+                    "cloudtrail:PutEventSelectors",
+                    "cloudtrail:StartLogging",
                     "codebuild:BatchGetProjects",
                     "codebuild:CreateProject",
                     "codebuild:ListCuratedEnvironmentImages",
