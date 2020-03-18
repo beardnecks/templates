@@ -628,6 +628,11 @@
                     "ecr:GetAuthorizationToken",
                     "ecr:GetDownloadUrlForLayer",
                     "ecr:BatchGetImage",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:PutImage",
+                    "ecr:InitiateLayerUpload",
+                    "ecr:UploadLayerPart",
+                    "ecr:CompleteLayerUpload",
                     "cloudtrail:LookupEvents"
                   ],
                   "Resource": "*"
