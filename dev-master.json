@@ -74,15 +74,23 @@
         },
         {
           "Label": {
-            "default": "(Optional) Notification system settings"
+            "default": "Notification system settings"
           },
           "Parameters": [
             "token",
-            "NotificationTemplateURL"
+            "NotificationTemplateURL",
+            "snsDisplayName",
+            "snsTopicName"
           ]
         }
       ],
       "ParameterLabels": {
+        "snsTopicName": {
+          "default": "Name of SNS topic"
+        },
+        "snsDisplayName": {
+          "default": "Display name of SNS Topic"
+        },
         "token": {
           "default": "gitub token or bitbucket user:password for REST API calls"
         },
@@ -218,7 +226,7 @@
       "Default": ""
     },
     "token": {
-      "Description": "(optional, will not create if not assigned)Github Token",
+      "Description": "Github Token",
       "Type": "String",
       "NoEcho": true,
       "Default": ""
@@ -257,32 +265,6 @@
       "Type": "String",
       "Default": "",
       "Description": "Display Name of sns topic"
-    }
-  },
-  "Conditions": {
-    "HasToken": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            "",
-            {
-              "Ref": "token"
-            }
-          ]
-        }
-      ]
-    },
-    "HasNotificationURL": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            "",
-            {
-              "Ref": "NotificationTemplateURL"
-            }
-          ]
-        }
-      ]
     }
   },
   "Resources": {
@@ -521,15 +503,7 @@
           }
         },
         "TemplateURL": {
-          "Fn::If": [
-            "HasNotificationURL",
-            {
               "Ref": "NotificationTemplateURL"
-            },
-            {
-              "Ref": "AWS::NoValue"
-            }
-          ]
         }
       }
     },
