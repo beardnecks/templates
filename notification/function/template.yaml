@@ -17,6 +17,15 @@
       "Description": "Location of file to download",
       "Type": "String",
       "Default": ""
+    },
+    "PipelineName": {
+      "Description": "Name of the attached pipeline",
+      "Type": "String",
+      "Default": ""
+    },
+    "CodeBuildS3LogBucket": {
+      "Description": "S3 bucket for storing execution logs for codebuild runs",
+      "Type": "String"
     }
   },
   "Resources": {
@@ -45,7 +54,8 @@
             {
               "Effect": "Allow",
               "Action": [
-                "s3:GetObject"
+                "s3:GetObject",
+                "s3:GetObjectVersion"
               ],
               "Resource": "arn:aws:s3:::*"
             },
@@ -57,6 +67,16 @@
                 "logs:PutLogEvents"
               ],
               "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codepipeline:GetPipeline",
+                "codepipeline:GetPipelineExecution"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
+              }
             }
             ]
           }
@@ -68,7 +88,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "lambda_function.lambda_handler",
-        "MemorySize": 256,
+        "MemorySize": 192,
         "Role": {
           "Fn::GetAtt": [
             "NotificationRole",
@@ -87,6 +107,9 @@
             },
             "SOURCE_BUCKET_OBJECT_KEY": {
               "Ref": "SourceBucketObjectKey"
+            },
+            "S3_LOG_BUCKET": {
+              "Ref": "CodeBuildS3LogBucket"
             }
           }
         },
