@@ -334,7 +334,10 @@
               "Principal": {
                 "Service": "codebuild.amazonaws.com"
               },
-              "Action": "sts:AssumeRole"
+              "Action": [
+                "sts:AssumeRole",
+                "ecr:GetAuthorizationToken"
+            ]
             }
           ]
         },
@@ -365,25 +368,13 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "ecr:*",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
                     "cloudtrail:LookupEvents"
                   ],
-                  "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:aws:ecr:",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ":",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":repository/build/suricata-devops"
-                      ]
-                    ]
-                  }
+                  "Resource": [
+                    "arn:aws:ecr:eu-west-1:389941814333:repository/*"
+                  ]
                 }
               ]
             }
