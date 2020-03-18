@@ -20,10 +20,14 @@
         "IAMRole": {
             "Description": "Iam role arn passed from master template",
             "Type": "String"
+        },
+        "CodeBuildS3LogBucket": {
+            "Description": "S3 bucket for storing execution logs for codebuild runs",
+            "Type": "String"
         }
     },
     "Resources": {
-        "Unittest": {
+        "Coccinelle": {
             "Type": "AWS::CodeBuild::Project",
             "Properties": {
                 "Name": {
