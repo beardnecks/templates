@@ -21,8 +21,6 @@ ACTION_CHANGE = "CodePipeline Action Execution State Change"
 
 PIPELINE_CONTEXT = "neckbeards-ci"
 
-user = "beardnecks"
-repo = "suricata"
 token = os.environ["TOKEN"]
 
 
@@ -147,7 +145,13 @@ class ActionStates(Enum):
 
 
 def update_github_status(
-    state: str, context: str, description: str, target_url: str, commit_id: str,
+    state: str,
+    context: str,
+    description: str,
+    target_url: str,
+    commit_id: str,
+    user: str,
+    repo: str,
 ):
     r = requests.post(
         "https://api.github.com/repos/" + user + "/" + repo + "/statuses/" + commit_id,
@@ -163,7 +167,9 @@ def update_github_status(
     return r
 
 
-def pipeline_change(state: PipelineStates, request: dict, push: bool):
+def pipeline_change(
+    state: PipelineStates, request: dict, push: bool, user: str, repo: str
+):
     if push:
         commit_id = request["body-json"]["head_commit"]["id"]
     else:
@@ -177,10 +183,14 @@ def pipeline_change(state: PipelineStates, request: dict, push: bool):
         state.get_description_from_pipeline_state(state),
         "http://localhost",
         commit_id,
+        user,
+        repo,
     )
 
 
-def stage_change(state: StageStates, request: dict, stage: str, push: bool):
+def stage_change(
+    state: StageStates, request: dict, stage: str, push: bool, user: str, repo: str
+):
     if push:
         commit_id = request["body-json"]["head_commit"]["id"]
     else:
@@ -194,11 +204,19 @@ def stage_change(state: StageStates, request: dict, stage: str, push: bool):
         state.get_description_from_stage_state(state),
         "http://localhost",
         commit_id,
+        user,
+        repo,
     )
 
 
 def action_change(
-    state: ActionStates, request: dict, stage: str, action: str, push: bool
+    state: ActionStates,
+    request: dict,
+    stage: str,
+    action: str,
+    push: bool,
+    user: str,
+    repo: str,
 ):
     if push:
         commit_id = request["body-json"]["head_commit"]["id"]
@@ -213,10 +231,14 @@ def action_change(
         state.get_description_from_action_state(state),
         "http://localhost",
         commit_id,
+        user,
+        repo,
     )
 
 
-def update_all_stages_actions(pipeline_name: str, request: dict, push: bool):
+def update_all_stages_actions(
+    pipeline_name: str, request: dict, push: bool, user: str, repo: str
+):
     logger.info("Updating all stages/actions")
     codepipeline = client("codepipeline")
 
@@ -227,11 +249,17 @@ def update_all_stages_actions(pipeline_name: str, request: dict, push: bool):
             logger.info("Skipping source stage")
             continue
         logger.info("Updating stage %s" % stage["name"])
-        stage_change(StageStates.STARTED, request, stage["name"], push)
+        stage_change(StageStates.STARTED, request, stage["name"], push, user, repo)
         for action in stage["actions"]:
             logger.info("Updating action %s" % action["name"])
             action_change(
-                ActionStates.STARTED, request, stage["name"], action["name"], push
+                ActionStates.STARTED,
+                request,
+                stage["name"],
+                action["name"],
+                push,
+                user,
+                repo,
             )
 
 
@@ -275,6 +303,9 @@ def lambda_handler(event, context):
             "Unknown git host %s" % request["params"]["header"]["User-Agent"]
         )
 
+    user = request["body-json"]["repository"]["full_name"].split("/")[0]
+    repo = request["body-json"]["repository"]["full_name"].split("/")[1]
+
     push = False
     if request["params"]["header"]["X-GitHub-Event"] == "push":
         push = True
@@ -283,13 +314,15 @@ def lambda_handler(event, context):
     if message["detail-type"] == PIPELINE_CHANGE:
         logger.info(message["detail"]["state"])
         if message["detail"]["state"] == PipelineStates.STARTED.value:
-            update_all_stages_actions(message["detail"]["pipeline"], request, push)
+            update_all_stages_actions(
+                message["detail"]["pipeline"], request, push, user, repo
+            )
 
         for pipeline_state in PipelineStates:
             logger.info(pipeline_state)
             if message["detail"]["state"] == pipeline_state.value:
                 logger.info("Pipeline change func")
-                pipeline_change(pipeline_state, request, push)
+                pipeline_change(pipeline_state, request, push, user, repo)
 
                 return
     elif message["detail-type"] == STAGE_CHANGE:
@@ -298,7 +331,9 @@ def lambda_handler(event, context):
             logger.info(stage_state)
             if message["detail"]["state"] == stage_state.value:
                 logger.info("Stage change func")
-                stage_change(stage_state, request, message["detail"]["stage"], push)
+                stage_change(
+                    stage_state, request, message["detail"]["stage"], push, user, repo
+                )
 
                 return
     elif message["detail-type"] == ACTION_CHANGE:
@@ -313,6 +348,8 @@ def lambda_handler(event, context):
                     message["detail"]["stage"],
                     message["detail"]["action"],
                     push,
+                    user,
+                    repo,
                 )
 
                 return

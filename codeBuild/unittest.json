@@ -74,8 +74,11 @@
                         "Status": "ENABLED"
                     },
                     "S3Logs": {
-                        "Status": "DISABLED",
-                        "EncryptionDisabled": false
+                        "Status": "ENABLED",
+                        "EncryptionDisabled": false,
+                        "Location": {
+                            "Fn::Sub": "arn:aws:s3:::${CodeBuildS3LogBucket}/${BuildName}"
+                        }
                     }
                 }
             }
