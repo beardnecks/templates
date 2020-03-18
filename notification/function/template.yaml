@@ -23,6 +23,10 @@
       "Type": "String",
       "Default": ""
     },
+    "CodeBuildS3LogBucket": {
+      "Description": "S3 bucket for storing execution logs for codebuild runs",
+      "Type": "String"
+    }
   },
   "Resources": {
     "NotificationRole": {
@@ -84,7 +88,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "lambda_function.lambda_handler",
-        "MemorySize": 196,
+        "MemorySize": 192,
         "Role": {
           "Fn::GetAtt": [
             "NotificationRole",
@@ -103,6 +107,9 @@
             },
             "SOURCE_BUCKET_OBJECT_KEY": {
               "Ref": "SourceBucketObjectKey"
+            },
+            "S3_LOG_BUCKET": {
+              "Ref": "CodeBuildS3LogBucket"
             }
           }
         },
