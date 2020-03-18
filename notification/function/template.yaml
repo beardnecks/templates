@@ -4,8 +4,9 @@
   "Description": "Creates notification lambda function",
   "Parameters": {
     "token": {
-      "Description": "Github Token",
+      "Description": "Github Token or bitbucket user:apppassword",
       "Type": "String",
+      "NoEcho": True,
       "Default": ""
     },
     "SourceBucket": {
@@ -29,6 +30,18 @@
     }
   },
   "Resources": {
+    "NotifySecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "${PipelineName}-NotifySecret"
+        },
+        "Description": "Credentials for GH or BB REST APIs",
+        "SecretString": {
+          "Ref": "token"
+        }
+      }
+    },
     "NotificationRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -77,6 +90,15 @@
               "Resource": {
                 "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
               }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": {
+                "Ref": "NotifySecret"
+              }
             }
             ]
           }
@@ -99,9 +121,6 @@
         "Timeout": 300,
         "Environment": {
           "Variables": {
-            "TOKEN": {
-              "Ref": "token"
-            },
             "SOURCE_BUCKET": {
               "Ref": "SourceBucket"
             },

@@ -92,7 +92,7 @@
           "default": "Display name of SNS Topic"
         },
         "token": {
-          "default": "Github token for notification system"
+          "default": "gitub token or bitbucket user:password for REST API calls"
         },
         "CodeBuildS3LogBucket": {
           "default": "S3 bucket for storing execution logs for codebuild runs (leave empty to disable logging)"
@@ -228,6 +228,7 @@
     "token": {
       "Description": "Github Token",
       "Type": "String",
+      "NoEcho": true,
       "Default": ""
     },
     "ArtifactStoreName": {
@@ -273,10 +274,7 @@
         "BucketName": {
           "Ref": "CodeBuildS3LogBucket"
         },
-        "Tags": [],
-        "VersioningConfiguration": {
-          "Status": "Enabled"
-        }
+        "Tags": []
       }
     },
     "CodeBuildIamRole": {
@@ -489,7 +487,7 @@
       "Properties": {
         "Parameters": {
           "token": {
-                "Ref": "token"
+            "Ref": "token"
           },
           "SourceBucket": {
             "Ref": "SourceBucket"
