@@ -26,20 +26,6 @@
       "Type": "String"
     }
   },
-  "Conditions": {
-    "EnableS3Log": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            {
-              "Ref": "CodeBuildS3LogBucket"
-            },
-            ""
-          ]
-        }
-      ]
-    }
-  },
   "Resources": {
     "Clang": {
       "Type": "AWS::CodeBuild::Project",
@@ -88,22 +74,10 @@
             "Status": "ENABLED"
           },
           "S3Logs": {
-            "Status": {
-              "Fn::If": [
-                "EnableS3Log",
-                "ENABLED",
-                "DISABLED"
-              ]
-            },
+            "Status": "ENABLED",
             "EncryptionDisabled": true,
             "Location": {
-              "Fn::If": [
-                "EnableS3Log",
-                {
-                  "Fn::Sub": "arn:aws:s3:::${CodeBuildS3LogBucket}/${BuildName}"
-                },
-                ""
-              ]
+              "Fn::Sub": "arn:aws:s3:::${CodeBuildS3LogBucket}/${BuildName}"
             }
           }
         }
