@@ -211,61 +211,6 @@ def update_github_status(
     return r
 
 
-def pipeline_change_gh(
-    state: PipelineStates,
-    request: dict,
-    push: bool,
-    user: str,
-    repo: str,
-    pipeline_name: str,
-):
-    if push:
-        commit_id = request["body-json"]["head_commit"]["id"]
-    else:
-        commit_id = request["body-json"]["pull_request"]["head"]["sha"]
-
-    logger.info("Commit id is: %s" % commit_id)
-
-    update_github_status(
-        state.get_github_status_from_pipeline_state(state).value,
-        PIPELINE_CONTEXT,
-        state.get_description_from_pipeline_state(state),
-        "http://localhost",
-        commit_id,
-        user,
-        repo,
-        pipeline_name,
-    )
-
-
-def stage_change_gh(
-    state: StageStates,
-    request: dict,
-    stage: str,
-    push: bool,
-    user: str,
-    repo: str,
-    pipeline_name: str,
-):
-    if push:
-        commit_id = request["body-json"]["head_commit"]["id"]
-    else:
-        commit_id = request["body-json"]["pull_request"]["head"]["sha"]
-
-    logger.info("Commit id is: %s" % commit_id)
-
-    update_github_status(
-        state.get_github_status_from_stage_state(state).value,
-        PIPELINE_CONTEXT + "/" + stage,
-        state.get_description_from_stage_state(state),
-        "http://localhost",
-        commit_id,
-        user,
-        repo,
-        pipeline_name,
-    )
-
-
 def action_change_gh(
     state: ActionStates,
     request: dict,
@@ -330,41 +275,9 @@ def get_bb_commit_link(request: dict, push):
             "self"
         ]["href"]
 
-    return request["body-json"]["pullrequest"]["source"]["commit"]["links"]["self"]["href"]
-
-
-def pipeline_change_bb(
-    state: PipelineStates, request: dict, push: bool, pipeline_name: str,
-):
-    link = get_bb_commit_link(request, push)
-
-    logger.info("Commit id is: %s" % link.split("/")[-1])
-
-    update_bitbucket_status(
-        state.get_bitbucket_status_from_pipeline_state(state).value,
-        PIPELINE_CONTEXT,
-        state.get_description_from_pipeline_state(state),
-        "http://localhost",
-        link,
-        pipeline_name,
-    )
-
-
-def stage_change_bb(
-    state: StageStates, request: dict, stage: str, push: bool, pipeline_name: str,
-):
-    link = get_bb_commit_link(request, push)
-
-    logger.info("Commit id is: %s" % link.split("/")[-1])
-
-    update_bitbucket_status(
-        state.get_bitbucket_status_from_stage_state(state).value,
-        PIPELINE_CONTEXT + "/" + stage,
-        state.get_description_from_stage_state(state),
-        "http://localhost",
-        link,
-        pipeline_name,
-    )
+    return request["body-json"]["pullrequest"]["source"]["commit"]["links"]["self"][
+        "href"
+    ]
 
 
 def action_change_bb(
@@ -401,16 +314,7 @@ def update_all_stages_actions_gh(
         if stage["name"] == "Source":
             logger.info("Skipping source stage")
             continue
-        logger.info("Updating stage %s" % stage["name"])
-        stage_change_gh(
-            StageStates.STARTED,
-            request,
-            stage["name"],
-            push,
-            user,
-            repo,
-            pipeline_name,
-        )
+
         for action in stage["actions"]:
             logger.info("Updating action %s" % action["name"])
             action_change_gh(
@@ -437,10 +341,7 @@ def update_all_stages_actions_bb(
         if stage["name"] == "Source":
             logger.info("Skipping source stage")
             continue
-        logger.info("Updating stage %s" % stage["name"])
-        stage_change_bb(
-            StageStates.STARTED, request, stage["name"], push, pipeline_name,
-        )
+
         for action in stage["actions"]:
             logger.info("Updating action %s" % action["name"])
             action_change_bb(
@@ -461,46 +362,16 @@ def github_state_update(request: dict, message: dict):
     if request["params"]["header"]["X-GitHub-Event"] == "push":
         push = True
 
-    logger.info(message["detail-type"] + "  -:-  " + PIPELINE_CHANGE)
+    logger.info(message["detail-type"])
     if message["detail-type"] == PIPELINE_CHANGE:
         logger.info(message["detail"]["state"])
         if message["detail"]["state"] == PipelineStates.STARTED.value:
             update_all_stages_actions_gh(
                 request, push, user, repo, message["detail"]["pipeline"],
             )
+        return
 
-        for pipeline_state in PipelineStates:
-            logger.info(pipeline_state)
-            if message["detail"]["state"] == pipeline_state.value:
-                logger.info("Pipeline change func")
-                pipeline_change_gh(
-                    pipeline_state,
-                    request,
-                    push,
-                    user,
-                    repo,
-                    message["detail"]["pipeline"],
-                )
-
-                return
-    elif message["detail-type"] == STAGE_CHANGE:
-        logger.info(message["detail"]["state"])
-        for stage_state in StageStates:
-            logger.info(stage_state)
-            if message["detail"]["state"] == stage_state.value:
-                logger.info("Stage change func")
-                stage_change_gh(
-                    stage_state,
-                    request,
-                    message["detail"]["stage"],
-                    push,
-                    user,
-                    repo,
-                    message["detail"]["pipeline"],
-                )
-
-                return
-    elif message["detail-type"] == ACTION_CHANGE:
+    if message["detail-type"] == ACTION_CHANGE:
         logger.info(message["detail"]["state"])
         for action_state in ActionStates:
             logger.info(action_state)
@@ -536,31 +407,9 @@ def bitbucket_state_update(request: dict, message: dict):
                 request, push, user, repo, message["detail"]["pipeline"],
             )
 
-        for pipeline_state in PipelineStates:
-            logger.info(pipeline_state)
-            if message["detail"]["state"] == pipeline_state.value:
-                logger.info("Pipeline change func")
-                pipeline_change_bb(
-                    pipeline_state, request, push, message["detail"]["pipeline"],
-                )
+        return
 
-                return
-    elif message["detail-type"] == STAGE_CHANGE:
-        logger.info(message["detail"]["state"])
-        for stage_state in StageStates:
-            logger.info(stage_state)
-            if message["detail"]["state"] == stage_state.value:
-                logger.info("Stage change func")
-                stage_change_bb(
-                    stage_state,
-                    request,
-                    message["detail"]["stage"],
-                    push,
-                    message["detail"]["pipeline"],
-                )
-
-                return
-    elif message["detail-type"] == ACTION_CHANGE:
+    if message["detail-type"] == ACTION_CHANGE:
         logger.info(message["detail"]["state"])
         for action_state in ActionStates:
             logger.info(action_state)
@@ -633,7 +482,9 @@ def get_secret(pipeline_name: str):
     ssm_client = sess.client(service_name="secretsmanager", region_name=region_name,)
 
     try:
-        logger.info("Getting secret with name %s in region %s" % (secret_name, region_name))
+        logger.info(
+            "Getting secret with name %s in region %s" % (secret_name, region_name)
+        )
         get_secret_value_response = ssm_client.get_secret_value(SecretId=secret_name)
     except ClientError as e:
         if e.response["Error"]["Code"] == "ResourceNotFoundException":
