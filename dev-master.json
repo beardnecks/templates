@@ -84,7 +84,7 @@
       ],
       "ParameterLabels": {
         "token": {
-          "default": "(optional, will not create if not assigned)Github token for notification system"
+          "default": "gitub token or bitbucket user:password for REST API calls"
         },
         "CodeBuildS3LogBucket": {
           "default": "S3 bucket for storing execution logs for codebuild runs (leave empty to disable logging)"
@@ -220,6 +220,7 @@
     "token": {
       "Description": "(optional, will not create if not assigned)Github Token",
       "Type": "String",
+      "NoEcho": true,
       "Default": ""
     },
     "ArtifactStoreName": {
@@ -291,10 +292,7 @@
         "BucketName": {
           "Ref": "CodeBuildS3LogBucket"
         },
-        "Tags": [],
-        "VersioningConfiguration": {
-          "Status": "Enabled"
-        }
+        "Tags": []
       }
     },
     "CodeBuildIamRole": {
@@ -504,19 +502,10 @@
     },
     "NotificationSystem": {
       "Type": "AWS::CloudFormation::Stack",
-      "Condition": "HasToken",
       "Properties": {
         "Parameters": {
           "token": {
-            "Fn::If": [
-              "HasToken",
-              {
-                "Ref": "token"
-              },
-              {
-                "Ref": "AWS::NoValue"
-              }
-            ]
+            "Ref": "token"
           },
           "SourceBucket": {
             "Ref": "SourceBucket"
