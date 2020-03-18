@@ -335,8 +335,7 @@
                 "Service": "codebuild.amazonaws.com"
               },
               "Action": [
-                "sts:AssumeRole",
-                "ecr:GetAuthorizationToken"
+                "sts:AssumeRole"
             ]
             }
           ]
@@ -372,9 +371,7 @@
                     "ecr:BatchGetImage",
                     "cloudtrail:LookupEvents"
                   ],
-                  "Resource": [
-                    "arn:aws:ecr:eu-west-1:389941814333:repository/*"
-                  ]
+                  "Resource": "*"
                 }
               ]
             }
