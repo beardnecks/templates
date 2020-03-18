@@ -70,6 +70,10 @@
       "Description": "ARN of notification function",
       "Type": "String",
       "Default": ""
+    },
+    "CodeBuildS3LogBucket": {
+      "Description": "S3 bucket for storing execution logs for codebuild runs",
+      "Type": "String"
     }
   },
   "Resources": {
@@ -119,7 +123,7 @@
             "aws.codepipeline"
           ],
           "detail-type": [
-            "CodePipeline Pipeline Execution State Change",
+            "CodePipeline Pipeline Execution State Change"
           ],
           "detail": {
             "pipeline": [
@@ -202,7 +206,11 @@
               }
             ],
             "type": {
-              "category": ["Deploy", "Build", "Test"]
+              "category": [
+                "Deploy",
+                "Build",
+                "Test"
+              ]
             },
             "stage": [
               "Testing"
