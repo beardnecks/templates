@@ -390,26 +390,12 @@
               "Statement": [
                 {
                   "Action": [
-                    "autoscaling:Describe*",
                     "cloudwatch:*",
                     "logs:*",
-                    "sns:*",
-                    "iam:GetPolicy",
-                    "iam:GetPolicyVersion",
-                    "iam:GetRole"
+                    "sns:*"
                   ],
                   "Effect": "Allow",
                   "Resource": "*"
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": "iam:CreateServiceLinkedRole",
-                  "Resource": "arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*",
-                  "Condition": {
-                    "StringLike": {
-                      "iam:AWSServiceName": "events.amazonaws.com"
-                    }
-                  }
                 }
               ]
             }
@@ -422,35 +408,15 @@
                   "Action": [
                     "codepipeline:*",
                     "codebuild:BatchGetProjects",
-                    "codebuild:CreateProject",
                     "codebuild:ListCuratedEnvironmentImages",
                     "codebuild:ListProjects",
                     "codecommit:GetBranch",
-                    "codecommit:GetRepositoryTriggers",
-                    "codecommit:ListBranches",
-                    "codecommit:ListRepositories",
-                    "codecommit:PutRepositoryTriggers",
-                    "codecommit:GetReferences",
                     "codedeploy:GetApplication",
                     "codedeploy:BatchGetApplications",
                     "codedeploy:GetDeploymentGroup",
                     "codedeploy:BatchGetDeploymentGroups",
                     "codedeploy:ListApplications",
                     "codedeploy:ListDeploymentGroups",
-                    "ecr:DescribeRepositories",
-                    "ecr:ListImages",
-                    "iam:ListRoles",
-                    "iam:GetRole",
-                    "lambda:GetFunctionConfiguration",
-                    "lambda:ListFunctions",
-                    "events:ListRules",
-                    "events:ListTargetsByRule",
-                    "events:DescribeRule",
-                    "s3:GetBucketPolicy",
-                    "s3:GetBucketVersioning",
-                    "s3:GetObjectVersion",
-                    "s3:ListAllMyBuckets",
-                    "s3:ListBucket",
                     "sns:ListTopics"
                   ],
                   "Effect": "Allow",
@@ -464,49 +430,6 @@
                   ],
                   "Effect": "Allow",
                   "Resource": "arn:aws:s3::*:codepipeline-*"
-                },
-                {
-                  "Action": [
-                    "iam:PassRole"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:iam::*:role/service-role/cwe-role-*"
-                  ],
-                  "Condition": {
-                    "StringEquals": {
-                      "iam:PassedToService": [
-                        "events.amazonaws.com"
-                      ]
-                    }
-                  }
-                },
-                {
-                  "Action": [
-                    "iam:PassRole"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "*",
-                  "Condition": {
-                    "StringEquals": {
-                      "iam:PassedToService": [
-                        "codepipeline.amazonaws.com"
-                      ]
-                    }
-                  }
-                },
-                {
-                  "Action": [
-                    "events:PutRule",
-                    "events:PutTargets",
-                    "events:DeleteRule",
-                    "events:DisableRule",
-                    "events:RemoveTargets"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:events:*:*:rule/codepipeline-*"
-                  ]
                 }
               ],
               "Version": "2012-10-17"
