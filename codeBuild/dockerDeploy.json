@@ -1,81 +1,80 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Builds and deploys the docker image",
-    "Parameters": {
-        "BuildName": {
-            "Description": "Name of the build project",
-            "Type": "String",
-            "Default": "packaging"
-        },
-        "BuildSpecFileName": {
-            "Description": "Filename of the buildspec.yaml",
-            "Type": "String",
-            "Default": "buildspec-packaging-centos8.yml"
-        },
-        "IAMRole": {
-            "Description": "Iam role arn passed from master template",
-            "Type": "String"
-        },
-        "CodeBuildS3LogBucket": {
-            "Description": "S3 bucket for storing execution logs for codebuild runs",
-            "Type": "String"
-        }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Builds and deploys the docker image",
+  "Parameters": {
+    "BuildName": {
+      "Description": "Name of the build project",
+      "Type": "String",
+      "Default": "packaging"
     },
-    "Resources": {
-        "DockerDeploy": {
-            "Description": "CodeBuild project",
-            "Type": "AWS::CodeBuild::Project",
-            "Properties": {
-                "Name": {
-                    "Ref": "BuildName"
-                },
-                "Source": {
-                    "Type": "CODEPIPELINE",
-                    "BuildSpec": {
-                        "Ref": "BuildSpecFileName"
-                    },
-                    "InsecureSsl": false
-                },
-                "SecondarySourceVersions": [],
-                "Artifacts": {
-                    "Type": "CODEPIPELINE",
-                    "Name": {
-                        "Fn::Sub": "${BuildName}-artifact"
-                    },
-                    "Packaging": "NONE",
-                    "EncryptionDisabled": false
-                },
-                "Cache": {
-                    "Type": "NO_CACHE"
-                },
-                "Environment": {
-                    "Type": "LINUX_CONTAINER",
-                    "Image": "aws/codebuild/standard:3.0",
-                    "ComputeType": "BUILD_GENERAL1_SMALL",
-                    "EnvironmentVariables": [],
-                    "PrivilegedMode": true,
-                    "ImagePullCredentialsType": "CODEBUILD"
-                },
-                "ServiceRole": {
-                    "Ref": "IAMRole"
-                },
-                "TimeoutInMinutes": 60,
-                "QueuedTimeoutInMinutes": 480,
-                "Tags": [],
-                "BadgeEnabled": false,
-                "LogsConfig": {
-                    "CloudWatchLogs": {
-                        "Status": "ENABLED"
-                    },
-                    "S3Logs": {
-                        "Status": "ENABLED",
-                        "EncryptionDisabled": true,
-                        "Location": {
-                            "Fn::Sub": "arn:aws:s3:::${CodeBuildS3LogBucket}/${BuildName}"
-                        }
-                    }
-                }
-            }
-        }
+    "BuildSpecFileName": {
+      "Description": "Filename of the buildspec.yaml",
+      "Type": "String",
+      "Default": "buildspec-packaging-centos8.yml"
+    },
+    "IAMRole": {
+      "Description": "Iam role arn passed from master template",
+      "Type": "String"
+    },
+    "CodeBuildS3LogBucket": {
+      "Description": "S3 bucket for storing execution logs for codebuild runs",
+      "Type": "String"
     }
+  },
+  "Resources": {
+    "DockerDeploy": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Name": {
+          "Ref": "BuildName"
+        },
+        "Source": {
+          "Type": "CODEPIPELINE",
+          "BuildSpec": {
+            "Ref": "BuildSpecFileName"
+          },
+          "InsecureSsl": false
+        },
+        "SecondarySourceVersions": [],
+        "Artifacts": {
+          "Type": "CODEPIPELINE",
+          "Name": {
+            "Fn::Sub": "${BuildName}-artifact"
+          },
+          "Packaging": "NONE",
+          "EncryptionDisabled": false
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
+        "Environment": {
+          "Type": "LINUX_CONTAINER",
+          "Image": "aws/codebuild/standard:3.0",
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "EnvironmentVariables": [],
+          "PrivilegedMode": true,
+          "ImagePullCredentialsType": "CODEBUILD"
+        },
+        "ServiceRole": {
+          "Ref": "IAMRole"
+        },
+        "TimeoutInMinutes": 60,
+        "QueuedTimeoutInMinutes": 480,
+        "Tags": [],
+        "BadgeEnabled": false,
+        "LogsConfig": {
+          "CloudWatchLogs": {
+            "Status": "ENABLED"
+          },
+          "S3Logs": {
+            "Status": "ENABLED",
+            "EncryptionDisabled": true,
+            "Location": {
+              "Fn::Sub": "arn:aws:s3:::${CodeBuildS3LogBucket}/${BuildName}"
+            }
+          }
+        }
+      }
+    }
+  }
 }
