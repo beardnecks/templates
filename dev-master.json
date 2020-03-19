@@ -456,15 +456,7 @@
             "Fn::Sub": "arn:aws:s3:::${PipelineName}-CoccinelleTest"
           },
           "RustTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-RustTest"
           },
           "ClangTestName": {
             "Fn::Sub": "arn:aws:s3:::${PipelineName}-ClangTest"
