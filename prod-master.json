@@ -130,19 +130,19 @@
           "default": "File path of the buildspec file of the coccinelle tests"
         },
         "ClangBuildSpecFileName": {
-          "default": "File path of the buildspec file of the coccinelle tests"
+          "default": "File path of the buildspec file of the Clang tests"
         },
         "RustBuildSpecFileName": {
-          "default": "File path of the buildspec file of the coccinelle tests"
+          "default": "File path of the buildspec file of the Rust tests"
         },
         "PackagingBuildSpecFileName": {
           "default": "File path of the buildspec file of the packaging stage"
         },
         "DockerBuildBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Docker stage"
+          "default": "File path of the buildspec file of the Docker Build stage"
         },
         "DockerDeployBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Docker stage"
+          "default": "File path of the buildspec file of the Docker Deploy stage"
         },
         "BuildImage": {
           "default": "ECR address of docker image used for building"
@@ -169,10 +169,10 @@
           "default": "S3 URL of packaging template"
         },
         "DockerBuildTemplateURL": {
-          "default": "S3 URL of Docker template"
+          "default": "S3 URL of Docker Build template"
         },
         "DockerDeployTemplateURL": {
-          "default": "S3 URL of Docker template"
+          "default": "S3 URL of Docker Deploy template"
         },
         "NotificationTemplateURL": {
           "default": "S3 URL of notification system template"
@@ -184,13 +184,13 @@
           "default": "Name of the CodePipeline"
         },
         "SourceBucket": {
-          "default": "S3 bucket source for the pipeline"
+          "default": "S3 bucket that contains the source code for the pipeline"
         },
         "SourceBucketObjectKey": {
           "default": "Zip file containing source code inside Source Code Bucket"
         },
         "OutputBucketName": {
-          "default": "Bucket containing the output artifact from the pipeline"
+          "default": "Bucket containing the RPM file (finished product) from the pipeline"
         },
         "PipelineTemplateURL": {
           "default": "S3 URL for the pipeline template"
@@ -205,12 +205,12 @@
       "Default": ""
     },
     "UnitTestBuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename of the Unittest buildspec.yaml",
       "Type": "String",
       "Default": ""
     },
     "VerifyBuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename of the Verifytest buildspec.yaml",
       "Type": "String",
       "Default": ""
     },
@@ -230,22 +230,22 @@
       "Default": ""
     },
     "PackagingBuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename of the packaging buildspec.yaml",
       "Type": "String",
       "Default": ""
     },
     "DockerBuildBuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename of the Docker Build buildspec.yaml",
       "Type": "String",
       "Default": ""
     },
     "DockerDeployBuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename of the Docker Deploy buildspec.yaml",
       "Type": "String",
       "Default": ""
     },
     "BuildImage": {
-      "Description": "Docker container to run the build",
+      "Description": "Docker container to run the pipeline stages",
       "Type": "String",
       "Default": ""
     },
@@ -290,7 +290,7 @@
       "Default": ""
     },
     "DockerDeployTemplateURL": {
-      "Description": "S3 URL for docker build template",
+      "Description": "S3 URL for docker deploy template",
       "Type": "String",
       "Default": ""
     },
@@ -312,7 +312,7 @@
     "SourceBucket": {
       "Type": "String",
       "Default": "",
-      "Description": "S3 bucket source for the pipeline"
+      "Description": "S3 bucket containing the source code for the pipeline"
     },
     "SourceBucketObjectKey": {
       "Type": "String",
@@ -322,7 +322,7 @@
     "OutputBucketName": {
       "Type": "String",
       "Default": "Pipeline-output-bucket",
-      "Description": "Bucket containing the output artifact from the pipeline"
+      "Description": "Bucket containing the RPM file (finished product) from the pipeline"
     },
     "PipelineTemplateURL": {
       "Type": "String",
