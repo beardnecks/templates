@@ -9,8 +9,7 @@
             "default": "General Settings"
           },
           "Parameters": [
-            "BuildImage",
-            "CodeBuildS3LogBucket"
+            "BuildImage"
           ]
         },
         {
@@ -121,9 +120,6 @@
         "token": {
           "default": "Github token for notification system"
         },
-        "CodeBuildS3LogBucket": {
-          "default": "S3 bucket for storing execution logs for codebuild runs (leave empty to disable logging)"
-        },
         "UnitTestBuildSpecFileName": {
           "default": "File path of the buildspec file of the unit test"
         },
@@ -203,11 +199,6 @@
     }
   },
   "Parameters": {
-    "CodeBuildS3LogBucket": {
-      "Description": "S3 bucket for storing execution logs for codebuild runs",
-      "Type": "String",
-      "Default": ""
-    },
     "token": {
       "Description": "Github Token",
       "Type": "String",
@@ -350,15 +341,6 @@
     }
   },
   "Resources": {
-    "LogBucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "CodeBuildS3LogBucket"
-        },
-        "Tags": []
-      }
-    },
     "TestingIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -717,15 +699,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-UnitTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -738,9 +712,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -753,15 +724,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-VerifyTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -774,9 +737,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -789,15 +749,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-CoccinelleTest"
           },
           "BuildImage": {
             "Ref": "CoccinelleBuildImage"
@@ -810,9 +762,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -825,15 +774,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-ClangTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -846,9 +787,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -861,15 +799,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-RustTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -882,9 +812,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -897,15 +824,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-Packaging"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-Packaging"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -918,9 +837,6 @@
               "PackagingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -933,15 +849,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerBuild"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerBuild"
           },
           "BuildSpecFileName": {
             "Ref": "DockerBuildBuildSpecFileName"
@@ -951,9 +859,6 @@
               "DockerBuildIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -966,15 +871,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerDeploy"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerDeploy"
           },
           "BuildSpecFileName": {
             "Ref": "DockerDeployBuildSpecFileName"
@@ -984,9 +881,6 @@
               "DockerDeployIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -1009,9 +903,6 @@
           },
           "PipelineName": {
             "Ref": "PipelineName"
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -1041,96 +932,29 @@
           "OutputBucketName": {
             "Ref": "OutputBucketName"
           },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
-          },
           "UnitTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-UnitTest"
           },
           "VerifyTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-VerifyTest"
           },
           "CoccinelleTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-CoccinelleTest"
           },
           "RustTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-RustTest"
           },
           "ClangTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-ClangTest"
           },
           "PackagingName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-Packaging"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-Packaging"
           },
           "DockerBuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerBuild"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerBuild"
           },
           "DockerDeployName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerDeploy"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerDeploy"
           },
           "snsTopicName": {
             "Ref": "snsTopicName"

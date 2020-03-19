@@ -9,8 +9,7 @@
             "default": "General Settings"
           },
           "Parameters": [
-            "BuildImage",
-            "CodeBuildS3LogBucket"
+            "BuildImage"
           ]
         },
         {
@@ -94,9 +93,6 @@
         "token": {
           "default": "Github token for notification system"
         },
-        "CodeBuildS3LogBucket": {
-          "default": "S3 bucket for storing execution logs for codebuild runs (leave empty to disable logging)"
-        },
         "UnitTestBuildSpecFileName": {
           "default": "File path of the buildspec file of the unit test"
         },
@@ -155,11 +151,6 @@
     }
   },
   "Parameters": {
-    "CodeBuildS3LogBucket": {
-      "Description": "S3 bucket for storing execution logs for codebuild runs",
-      "Type": "String",
-      "Default": ""
-    },
     "UnitTestBuildSpecFileName": {
       "Description": "Filename of the buildspec.yaml",
       "Type": "String",
@@ -267,15 +258,6 @@
     }
   },
   "Resources": {
-    "LogBucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "CodeBuildS3LogBucket"
-        },
-        "Tags": []
-      }
-    },
     "CodeBuildIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -306,15 +288,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-UnitTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -327,9 +301,6 @@
               "CodeBuildIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -342,15 +313,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-VerifyTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -363,9 +326,6 @@
               "CodeBuildIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -378,15 +338,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-CoccinelleTest"
           },
           "BuildImage": {
             "Ref": "CoccinelleBuildImage"
@@ -399,9 +351,6 @@
               "CodeBuildIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -414,15 +363,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-ClangTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -435,9 +376,6 @@
               "CodeBuildIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -450,15 +388,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-RustTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -471,9 +401,6 @@
               "CodeBuildIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -496,9 +423,6 @@
           },
           "PipelineName": {
             "Ref": "PipelineName"
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -522,63 +446,20 @@
           "SourceBucketObjectKey": {
             "Ref": "SourceBucketObjectKey"
           },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
-          },
           "UnitTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-UnitTest"
           },
           "VerifyTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-VerifyTest"
           },
           "CoccinelleTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-CoccinelleTest"
           },
           "RustTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-RustTest"
           },
           "ClangTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-ClangTest"
           },
           "snsTopicName": {
             "Ref": "snsTopicName"

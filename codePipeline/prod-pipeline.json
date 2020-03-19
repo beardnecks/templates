@@ -90,10 +90,6 @@
       "Description": "ARN of notification function",
       "Type": "String",
       "Default": ""
-    },
-    "CodeBuildS3LogBucket": {
-      "Description": "S3 bucket for storing execution logs for codebuild runs",
-      "Type": "String"
     }
   },
   "Resources": {
