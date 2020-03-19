@@ -20,6 +20,10 @@
         "IAMRole": {
             "Description": "Iam role arn passed from master template",
             "Type": "String"
+        },
+        "CodeBuildS3LogBucket": {
+            "Description": "S3 bucket for storing execution logs for codebuild runs",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -71,8 +75,11 @@
                         "Status": "ENABLED"
                     },
                     "S3Logs": {
-                        "Status": "DISABLED",
-                        "EncryptionDisabled": false
+                        "Status": "ENABLED",
+                        "EncryptionDisabled": true,
+                        "Location": {
+                            "Fn::Sub": "arn:aws:s3:::${CodeBuildS3LogBucket}/${BuildName}"
+                        }
                     }
                 }
             }

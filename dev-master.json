@@ -9,7 +9,8 @@
             "default": "General Settings"
           },
           "Parameters": [
-            "BuildImage"
+            "BuildImage",
+            "CodeBuildS3LogBucket"
           ]
         },
         {
@@ -73,17 +74,28 @@
         },
         {
           "Label": {
-            "default": "(Optional) Notification system settings"
+            "default": "Notification system settings"
           },
           "Parameters": [
             "token",
-            "NotificationTemplateURL"
+            "NotificationTemplateURL",
+            "snsDisplayName",
+            "snsTopicName"
           ]
         }
       ],
       "ParameterLabels": {
+        "snsTopicName": {
+          "default": "Name of SNS topic"
+        },
+        "snsDisplayName": {
+          "default": "Display name of SNS Topic"
+        },
         "token": {
-          "default": "(optional, will not create if not assigned)Github token for notification system"
+          "default": "gitub token or bitbucket user:password for REST API calls"
+        },
+        "CodeBuildS3LogBucket": {
+          "default": "S3 bucket for storing execution logs for codebuild runs (leave empty to disable logging)"
         },
         "UnitTestBuildSpecFileName": {
           "default": "File path of the buildspec file of the unit test"
@@ -143,6 +155,11 @@
     }
   },
   "Parameters": {
+    "CodeBuildS3LogBucket": {
+      "Description": "S3 bucket for storing execution logs for codebuild runs",
+      "Type": "String",
+      "Default": ""
+    },
     "UnitTestBuildSpecFileName": {
       "Description": "Filename of the buildspec.yaml",
       "Type": "String",
@@ -209,8 +226,9 @@
       "Default": ""
     },
     "token": {
-      "Description": "(optional, will not create if not assigned)Github Token",
+      "Description": "Github Token",
       "Type": "String",
+      "NoEcho": true,
       "Default": ""
     },
     "ArtifactStoreName": {
@@ -249,33 +267,16 @@
       "Description": "Display Name of sns topic"
     }
   },
-  "Conditions": {
-    "HasToken": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            "",
-            {
-              "Ref": "token"
-            }
-          ]
-        }
-      ]
-    },
-    "HasNotificationURL": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            "",
-            {
-              "Ref": "NotificationTemplateURL"
-            }
-          ]
-        }
-      ]
-    }
-  },
   "Resources": {
+    "LogBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "CodeBuildS3LogBucket"
+        },
+        "Tags": []
+      }
+    },
     "CodeBuildIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -327,6 +328,9 @@
               "CodeBuildIamRole",
               "Arn"
             ]
+          },
+          "CodeBuildS3LogBucket": {
+            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -360,6 +364,9 @@
               "CodeBuildIamRole",
               "Arn"
             ]
+          },
+          "CodeBuildS3LogBucket": {
+            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -393,6 +400,9 @@
               "CodeBuildIamRole",
               "Arn"
             ]
+          },
+          "CodeBuildS3LogBucket": {
+            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -426,6 +436,9 @@
               "CodeBuildIamRole",
               "Arn"
             ]
+          },
+          "CodeBuildS3LogBucket": {
+            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -459,6 +472,9 @@
               "CodeBuildIamRole",
               "Arn"
             ]
+          },
+          "CodeBuildS3LogBucket": {
+            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -468,37 +484,26 @@
     },
     "NotificationSystem": {
       "Type": "AWS::CloudFormation::Stack",
-      "Condition": "HasToken",
       "Properties": {
         "Parameters": {
           "token": {
-            "Fn::If": [
-              "HasToken",
-              {
-                "Ref": "token"
-              },
-              {
-                "Ref": "AWS::NoValue"
-              }
-            ]
+            "Ref": "token"
           },
           "SourceBucket": {
             "Ref": "SourceBucket"
           },
           "SourceBucketObjectKey": {
             "Ref": "SourceBucketObjectKey"
+          },
+          "PipelineName": {
+            "Ref": "PipelineName"
+          },
+          "CodeBuildS3LogBucket": {
+            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
-          "Fn::If": [
-            "HasNotificationURL",
-            {
               "Ref": "NotificationTemplateURL"
-            },
-            {
-              "Ref": "AWS::NoValue"
-            }
-          ]
         }
       }
     },
@@ -517,6 +522,9 @@
           },
           "SourceBucketObjectKey": {
             "Ref": "SourceBucketObjectKey"
+          },
+          "CodeBuildS3LogBucket": {
+            "Ref": "CodeBuildS3LogBucket"
           },
           "UnitTestName": {
             "Fn::Join": [

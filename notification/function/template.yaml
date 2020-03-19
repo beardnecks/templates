@@ -4,8 +4,9 @@
   "Description": "Creates notification lambda function",
   "Parameters": {
     "token": {
-      "Description": "Github Token",
+      "Description": "Github Token or bitbucket user:apppassword",
       "Type": "String",
+      "NoEcho": True,
       "Default": ""
     },
     "SourceBucket": {
@@ -17,9 +18,30 @@
       "Description": "Location of file to download",
       "Type": "String",
       "Default": ""
+    },
+    "PipelineName": {
+      "Description": "Name of the attached pipeline",
+      "Type": "String",
+      "Default": ""
+    },
+    "CodeBuildS3LogBucket": {
+      "Description": "S3 bucket for storing execution logs for codebuild runs",
+      "Type": "String"
     }
   },
   "Resources": {
+    "NotifySecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "${PipelineName}-NotifySecret"
+        },
+        "Description": "Credentials for GH or BB REST APIs",
+        "SecretString": {
+          "Ref": "token"
+        }
+      }
+    },
     "NotificationRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -45,7 +67,8 @@
             {
               "Effect": "Allow",
               "Action": [
-                "s3:GetObject"
+                "s3:GetObject",
+                "s3:GetObjectVersion"
               ],
               "Resource": "arn:aws:s3:::*"
             },
@@ -57,6 +80,25 @@
                 "logs:PutLogEvents"
               ],
               "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codepipeline:GetPipeline",
+                "codepipeline:GetPipelineExecution"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": {
+                "Ref": "NotifySecret"
+              }
             }
             ]
           }
@@ -68,7 +110,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "lambda_function.lambda_handler",
-        "MemorySize": 256,
+        "MemorySize": 192,
         "Role": {
           "Fn::GetAtt": [
             "NotificationRole",
@@ -79,14 +121,14 @@
         "Timeout": 300,
         "Environment": {
           "Variables": {
-            "TOKEN": {
-              "Ref": "token"
-            },
             "SOURCE_BUCKET": {
               "Ref": "SourceBucket"
             },
             "SOURCE_BUCKET_OBJECT_KEY": {
               "Ref": "SourceBucketObjectKey"
+            },
+            "S3_LOG_BUCKET": {
+              "Ref": "CodeBuildS3LogBucket"
             }
           }
         },

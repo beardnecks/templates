@@ -70,6 +70,10 @@
       "Description": "ARN of notification function",
       "Type": "String",
       "Default": ""
+    },
+    "CodeBuildS3LogBucket": {
+      "Description": "S3 bucket for storing execution logs for codebuild runs",
+      "Type": "String"
     }
   },
   "Resources": {
@@ -110,7 +114,7 @@
         ]
       }
     },
-    "notifyRule": {
+    "notifyRulePipeline": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "Description": "--",
@@ -119,11 +123,98 @@
             "aws.codepipeline"
           ],
           "detail-type": [
-            "CodePipeline Pipeline Execution State Change",
-            "CodePipeline Stage Execution State Change",
-            "CodePipeline Action Execution State Change"
-
+            "CodePipeline Pipeline Execution State Change"
+          ],
+          "detail": {
+            "pipeline": [
+              {
+                "Ref": "PipelineName"
+              }
+            ]
+          }
+        },
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "snsTopic"
+            },
+            "Id": "t-topic-target"
+          }
+        ],
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "NotifyCloudWatchEventRole",
+            "Arn"
           ]
+        }
+      }
+    },
+    "notifyRuleStage": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "--",
+        "EventPattern": {
+          "source": [
+            "aws.codepipeline"
+          ],
+          "detail-type": [
+            "CodePipeline Stage Execution State Change"
+          ],
+          "detail": {
+            "pipeline": [
+              {
+                "Ref": "PipelineName"
+              }
+            ],
+            "stage": [
+              "Testing"
+            ]
+          }
+        },
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "snsTopic"
+            },
+            "Id": "t-topic-target"
+          }
+        ],
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "NotifyCloudWatchEventRole",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "notifyRuleActions": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "--",
+        "EventPattern": {
+          "source": [
+            "aws.codepipeline"
+          ],
+          "detail-type": [
+            "CodePipeline Action Execution State Change"
+          ],
+          "detail": {
+            "pipeline": [
+              {
+                "Ref": "PipelineName"
+              }
+            ],
+            "type": {
+              "category": [
+                "Deploy",
+                "Build",
+                "Test"
+              ]
+            },
+            "stage": [
+              "Testing"
+            ]
+          }
         },
         "Targets": [
           {
@@ -532,7 +623,7 @@
               {
                 "Name": "Unittest",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -556,7 +647,7 @@
               {
                 "Name": "RustTest",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -580,7 +671,7 @@
               {
                 "Name": "Coccinelle",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -604,7 +695,7 @@
               {
                 "Name": "ClangTest",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"
@@ -628,7 +719,7 @@
               {
                 "Name": "Suricata-verify",
                 "ActionTypeId": {
-                  "Category": "Build",
+                  "Category": "Test",
                   "Owner": "AWS",
                   "Provider": "CodeBuild",
                   "Version": "1"

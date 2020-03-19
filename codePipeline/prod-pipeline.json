@@ -83,6 +83,7 @@
         "BucketName": {
           "Ref": "OutputBucketName"
         },
+<<<<<<< HEAD
         "Tags": []
       }
     },
@@ -92,6 +93,277 @@
         "Path": "/service-role/",
         "RoleName": {
           "Fn::Sub": "AWSCodePipelineServiceRole-eu-west-1-${PipelineName}"
+=======
+        "DockerDeployName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Project name of docker"
+        },
+        "snsTopicName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Name of sns topic"
+        },
+        "snsDisplayName": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Display Name of sns topic"
+        },
+        "NotificationTemplateURL": {
+            "Description": "S3 URL for notification system template",
+            "Type": "String",
+            "Default": ""
+        },
+        "token": {
+            "Description": "(optional, will not create if not assigned)Github Token",
+            "Type": "String",
+            "Default": ""
+        },
+        "notificationFunctionArn": {
+            "Description": "ARN of notification function",
+            "Type": "String",
+            "Default": ""
+        },
+        "CodeBuildS3LogBucket": {
+            "Description": "S3 bucket for storing execution logs for codebuild runs",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "NotifyCloudWatchEventRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "events.amazonaws.com"
+                                ]
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "cwe-lambdanotification-execution",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "sns:Publish",
+                                    "Resource": {
+                                        "Ref": "snsTopic"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "notifyRulePipeline": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "--",
+                "EventPattern": {
+                    "source": [
+                        "aws.codepipeline"
+                    ],
+                    "detail-type": [
+                        "CodePipeline Pipeline Execution State Change"
+                    ],
+                    "detail": {
+                        "pipeline": [
+                            {
+                                "Ref": "PipelineName"
+                            }
+                        ]
+                    }
+                },
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Ref": "snsTopic"
+                        },
+                        "Id": "t-topic-target"
+                    }
+                ],
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "NotifyCloudWatchEventRole",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "notifyRuleStage": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "--",
+                "EventPattern": {
+                    "source": [
+                        "aws.codepipeline"
+                    ],
+                    "detail-type": [
+                        "CodePipeline Pipeline Execution State Change",
+                        "CodePipeline Stage Execution State Change"
+                    ],
+                    "detail": {
+                        "pipeline": [
+                            {
+                                "Ref": "PipelineName"
+                            }
+                        ],
+                        "stage": [
+                            "Testing"
+                        ]
+                    }
+                },
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Ref": "snsTopic"
+                        },
+                        "Id": "t-topic-target"
+                    }
+                ],
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "NotifyCloudWatchEventRole",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "notifyRuleActions": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "--",
+                "EventPattern": {
+                    "source": [
+                        "aws.codepipeline"
+                    ],
+                    "detail-type": [
+                        "CodePipeline Action Execution State Change"
+                    ],
+                    "detail": {
+                        "pipeline": [
+                            {
+                                "Ref": "PipelineName"
+                            }
+                        ],
+                        "type": {
+                            "category": [
+                                "Deploy",
+                                "Build",
+                                "Test"
+                            ]
+                        },
+                        "stage": [
+                            "Testing"
+                        ]
+                    }
+                },
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Ref": "snsTopic"
+                        },
+                        "Id": "t-topic-target"
+                    }
+                ],
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "NotifyCloudWatchEventRole",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "snsTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "DisplayName": {
+                    "Ref": "snsDisplayName"
+                },
+                "TopicName": {
+                    "Ref": "snsTopicName"
+                }
+            }
+        },
+        "snsTopicPolicy": {
+            "Type": "AWS::SNS::TopicPolicy",
+            "Properties": {
+                "Topics": [
+                    {
+                        "Ref": "snsTopic"
+                    }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": {
+                        "Effect": "Allow",
+                        "Action": [
+                            "SNS:GetTopicAttributes",
+                            "SNS:SetTopicAttributes",
+                            "SNS:AddPermission",
+                            "SNS:RemovePermission",
+                            "SNS:DeleteTopic",
+                            "SNS:Subscribe",
+                            "SNS:ListSubscriptionsByTopic",
+                            "SNS:Publish",
+                            "SNS:Receive"
+                        ],
+                        "Resource": {
+                            "Ref": "snsTopic"
+                        },
+                        "Principal": {
+                            "Service": "events.amazonaws.com"
+                        }
+                    }
+                }
+            }
+        },
+        "snsTopicSubscription": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+                "TopicArn": {
+                    "Ref": "snsTopic"
+                },
+                "Endpoint": {
+                    "Ref": "notificationFunctionArn"
+                },
+                "Protocol": "lambda"
+            }
+        },
+        "LambdaInvokePermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:InvokeFunction",
+                "Principal": "sns.amazonaws.com",
+                "SourceArn": {
+                    "Ref": "snsTopic"
+                },
+                "FunctionName": {
+                    "Ref": "notificationFunctionArn"
+                }
+            }
+        },
+        "ArtifacStoreBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {
+                    "Fn::Sub": "${PipelineName}-${ArtifactStoreName}"
+                },
+                "Tags": []
+            } 
+>>>>>>> 9afbf1977c5048ea331bf508a96464d4988fbe12
         },
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -493,10 +765,136 @@
                   "",
                   [
                     {
+<<<<<<< HEAD
                       "Fn::GetAtt": [
                         "AWSCloudTrailBucket",
                         "Arn"
                       ]
+=======
+                        "Name": "Testing",
+                        "Actions": [
+                            {
+                                "Name": "Unittest",
+                                "ActionTypeId": {
+                                    "Category": "Test",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "UnitTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
+                            },
+                            {
+                                "Name": "RustTest",
+                                "ActionTypeId": {
+                                    "Category": "Test",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 1,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "RustTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
+                            },
+                            {
+                                "Name": "Coccinelle",
+                                "ActionTypeId": {
+                                    "Category": "Test",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "CoccinelleTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
+                            },
+                            {
+                                "Name": "ClangTest",
+                                "ActionTypeId": {
+                                    "Category": "Test",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "ClangTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
+                            },
+                            {
+                                "Name": "Suricata-verify",
+                                "ActionTypeId": {
+                                    "Category": "Test",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": "1"
+                                },
+                                "RunOrder": 2,
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "VerifyTestName"
+                                    }
+                                },
+                                "OutputArtifacts": [],
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "Region": {
+                                    "Ref": "AWS::Region"
+                                }
+                            }
+                        ]
+>>>>>>> 9afbf1977c5048ea331bf508a96464d4988fbe12
                     },
                     "/AWSLogs/",
                     {
