@@ -362,7 +362,95 @@
         }
       }
     },
-    "CodeBuildIamRole": {
+    "TestingIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "s3",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ecr",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "cloudtrail:LookupEvents"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "cloudwatch",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "autoscaling:Describe*",
+                    "cloudwatch:*",
+                    "logs:*",
+                    "sns:*",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:GetRole"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "iam:CreateServiceLinkedRole",
+                  "Resource": "arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*",
+                  "Condition": {
+                    "StringLike": {
+                      "iam:AWSServiceName": "events.amazonaws.com"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "PackagingIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -378,12 +466,252 @@
           ]
         },
         "Path": "/",
-        "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
-          "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
-          "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-          "arn:aws:iam::aws:policy/CloudWatchFullAccess",
-          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+        "Policies": [
+          {
+            "PolicyName": "s3",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ecr",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "cloudtrail:LookupEvents"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "cloudwatch",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "autoscaling:Describe*",
+                    "cloudwatch:*",
+                    "logs:*",
+                    "sns:*",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:GetRole"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "iam:CreateServiceLinkedRole",
+                  "Resource": "arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*",
+                  "Condition": {
+                    "StringLike": {
+                      "iam:AWSServiceName": "events.amazonaws.com"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "DockerBuildIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "s3",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ecr",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "cloudtrail:LookupEvents"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "cloudwatch",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "autoscaling:Describe*",
+                    "cloudwatch:*",
+                    "logs:*",
+                    "sns:*",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:GetRole"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "iam:CreateServiceLinkedRole",
+                  "Resource": "arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*",
+                  "Condition": {
+                    "StringLike": {
+                      "iam:AWSServiceName": "events.amazonaws.com"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "DockerDeployIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "s3",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ecr",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:PutImage",
+                    "ecr:InitiateLayerUpload",
+                    "ecr:UploadLayerPart",
+                    "ecr:CompleteLayerUpload",
+                    "cloudtrail:LookupEvents"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "cloudwatch",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "autoscaling:Describe*",
+                    "cloudwatch:*",
+                    "logs:*",
+                    "sns:*",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:GetRole"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "iam:CreateServiceLinkedRole",
+                  "Resource": "arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*",
+                  "Condition": {
+                    "StringLike": {
+                      "iam:AWSServiceName": "events.amazonaws.com"
+                    }
+                  }
+                }
+              ]
+            }
+          }
         ]
       }
     },
@@ -410,7 +738,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           },
@@ -446,7 +774,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           },
@@ -482,7 +810,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           },
@@ -518,7 +846,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           },
@@ -554,7 +882,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "TestingIamRole",
               "Arn"
             ]
           },
@@ -590,7 +918,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "PackagingIamRole",
               "Arn"
             ]
           },
@@ -623,7 +951,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "DockerBuildIamRole",
               "Arn"
             ]
           },
@@ -656,7 +984,7 @@
           },
           "IAMRole": {
             "Fn::GetAtt": [
-              "CodeBuildIamRole",
+              "DockerDeployIamRole",
               "Arn"
             ]
           },
