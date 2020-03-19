@@ -103,10 +103,10 @@
           "default": "File path of the buildspec file of the coccinelle tests"
         },
         "ClangBuildSpecFileName": {
-          "default": "File path of the buildspec file of the coccinelle tests"
+          "default": "File path of the buildspec file of the Clang tests"
         },
         "RustBuildSpecFileName": {
-          "default": "File path of the buildspec file of the coccinelle tests"
+          "default": "File path of the buildspec file of the Rust tests"
         },
         "BuildImage": {
           "default": "ECR address of docker image used for building"
@@ -139,7 +139,7 @@
           "default": "Name of the CodePipeline"
         },
         "SourceBucket": {
-          "default": "S3 bucket source for the pipeline"
+          "default": "S3 bucket the source code for the pipeline"
         },
         "SourceBucketObjectKey": {
           "default": "Zip file containing source code inside Source Code Bucket"
@@ -152,12 +152,12 @@
   },
   "Parameters": {
     "UnitTestBuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename of the unit test buildspec.yaml",
       "Type": "String",
       "Default": ""
     },
     "VerifyBuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename of the verify test buildspec.yaml",
       "Type": "String",
       "Default": ""
     },
@@ -177,7 +177,7 @@
       "Default": ""
     },
     "BuildImage": {
-      "Description": "Docker container to run the build",
+      "Description": "Docker container to run the builds",
       "Type": "String",
       "Default": ""
     },
@@ -234,7 +234,7 @@
     "SourceBucket": {
       "Type": "String",
       "Default": "",
-      "Description": "S3 bucket source for the pipeline"
+      "Description": "S3 bucket containing the source code for the pipeline"
     },
     "SourceBucketObjectKey": {
       "Type": "String",
