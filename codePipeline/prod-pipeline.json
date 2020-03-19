@@ -97,15 +97,6 @@
     }
   },
   "Resources": {
-    "ArtifacStoreBucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Fn::Sub": "${PipelineName}-${ArtifactStoreName}"
-        },
-        "Tags": []
-      }
-    },
     "OutputBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -339,7 +330,7 @@
         }
       }
     },
-    "ArtifacStoreBucket": {
+    "ArtifactStoreBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
@@ -589,8 +580,7 @@
             }
           }
         ],
-        "MaxSessionDuration": 3600,
-        "Description": "Service Role for CodePipeline"
+        "MaxSessionDuration": 3600
       }
     },
     "AmazonCloudWatchEventRole": {
