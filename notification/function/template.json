@@ -6,7 +6,7 @@
     "token": {
       "Description": "Github Token or bitbucket user:apppassword",
       "Type": "String",
-      "NoEcho": True,
+      "NoEcho": true,
       "Default": ""
     },
     "SourceBucket": {
