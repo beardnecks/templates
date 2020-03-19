@@ -699,15 +699,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-UnitTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -732,15 +724,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-VerifyTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -765,15 +749,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-CoccinelleTest"
           },
           "BuildImage": {
             "Ref": "CoccinelleBuildImage"
@@ -798,15 +774,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-ClangTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -831,15 +799,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-RustTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -864,15 +824,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-Packaging"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-Packaging"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -897,15 +849,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerBuild"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerBuild"
           },
           "BuildSpecFileName": {
             "Ref": "DockerBuildBuildSpecFileName"
@@ -927,15 +871,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerDeploy"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerDeploy"
           },
           "BuildSpecFileName": {
             "Ref": "DockerDeployBuildSpecFileName"
@@ -997,92 +933,28 @@
             "Ref": "OutputBucketName"
           },
           "UnitTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-UnitTest"
           },
           "VerifyTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-VerifyTest"
           },
           "CoccinelleTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-CoccinelleTest"
           },
           "RustTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-RustTest"
           },
           "ClangTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-ClangTest"
           },
           "PackagingName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-Packaging"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-Packaging"
           },
           "DockerBuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerBuild"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerBuild"
           },
           "DockerDeployName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-DockerDeploy"
-              ]
-            ]
+            "Fn::Sub": "${PipelineName}-DockerDeploy"
           },
           "snsTopicName": {
             "Ref": "snsTopicName"

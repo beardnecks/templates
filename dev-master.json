@@ -288,15 +288,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-UnitTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -321,15 +313,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-VerifyTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -354,15 +338,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-CoccinelleTest"
           },
           "BuildImage": {
             "Ref": "CoccinelleBuildImage"
@@ -387,15 +363,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-ClangTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -420,15 +388,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-RustTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-RustTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -487,37 +447,13 @@
             "Ref": "SourceBucketObjectKey"
           },
           "UnitTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-UnitTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-UnitTest"
           },
           "VerifyTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-VerifyTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-VerifyTest"
           },
           "CoccinelleTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-CoccinelleTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-CoccinelleTest"
           },
           "RustTestName": {
             "Fn::Join": [
@@ -531,15 +467,7 @@
             ]
           },
           "ClangTestName": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Ref": "PipelineName"
-                },
-                "-ClangTest"
-              ]
-            ]
+            "Fn::Sub": "arn:aws:s3:::${PipelineName}-ClangTest"
           },
           "snsTopicName": {
             "Ref": "snsTopicName"
