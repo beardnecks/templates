@@ -9,8 +9,7 @@
             "default": "General Settings"
           },
           "Parameters": [
-            "BuildImage",
-            "CodeBuildS3LogBucket"
+            "BuildImage"
           ]
         },
         {
@@ -121,9 +120,6 @@
         "token": {
           "default": "Github token for notification system"
         },
-        "CodeBuildS3LogBucket": {
-          "default": "S3 bucket for storing execution logs for codebuild runs (leave empty to disable logging)"
-        },
         "UnitTestBuildSpecFileName": {
           "default": "File path of the buildspec file of the unit test"
         },
@@ -203,11 +199,6 @@
     }
   },
   "Parameters": {
-    "CodeBuildS3LogBucket": {
-      "Description": "S3 bucket for storing execution logs for codebuild runs",
-      "Type": "String",
-      "Default": ""
-    },
     "token": {
       "Description": "Github Token",
       "Type": "String",
@@ -350,15 +341,6 @@
     }
   },
   "Resources": {
-    "LogBucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "CodeBuildS3LogBucket"
-        },
-        "Tags": []
-      }
-    },
     "TestingIamRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -738,9 +720,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -774,9 +753,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -810,9 +786,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -846,9 +819,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -882,9 +852,6 @@
               "TestingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -918,9 +885,6 @@
               "PackagingIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -951,9 +915,6 @@
               "DockerBuildIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -984,9 +945,6 @@
               "DockerDeployIamRole",
               "Arn"
             ]
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -1009,9 +967,6 @@
           },
           "PipelineName": {
             "Ref": "PipelineName"
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           }
         },
         "TemplateURL": {
@@ -1040,9 +995,6 @@
           },
           "OutputBucketName": {
             "Ref": "OutputBucketName"
-          },
-          "CodeBuildS3LogBucket": {
-            "Ref": "CodeBuildS3LogBucket"
           },
           "UnitTestName": {
             "Fn::Join": [

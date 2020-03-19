@@ -23,10 +23,6 @@
       "Description": "Name of the attached pipeline",
       "Type": "String",
       "Default": ""
-    },
-    "CodeBuildS3LogBucket": {
-      "Description": "S3 bucket for storing execution logs for codebuild runs",
-      "Type": "String"
     }
   },
   "Resources": {
@@ -126,9 +122,6 @@
             },
             "SOURCE_BUCKET_OBJECT_KEY": {
               "Ref": "SourceBucketObjectKey"
-            },
-            "S3_LOG_BUCKET": {
-              "Ref": "CodeBuildS3LogBucket"
             }
           }
         },
