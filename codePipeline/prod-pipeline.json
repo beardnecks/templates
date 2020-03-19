@@ -339,7 +339,7 @@
       "Properties": {
         "Path": "/service-role/",
         "RoleName": {
-          "Fn::Sub": "AWSCodePipelineServiceRole-eu-west-1-${PipelineName}"
+          "Fn::Sub": "AWSCodePipelineServiceRole-${AWS::Region}-${PipelineName}"
         },
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
