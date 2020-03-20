@@ -366,7 +366,7 @@
                     "s3:GetObject"
                     ],
                   "Resource": [
-                    "arn:aws:s3:::*",
+                    "*",
                     {
                       "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
                     },
