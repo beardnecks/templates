@@ -367,8 +367,8 @@
                     ],
                   "Resource": {
                     "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*",
-                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${SourceBucket}/*",
-                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${OutputBucketName}/*"
+                    "Fn::Sub": "arn:aws:s3:::${SourceBucket}/*",
+                    "Fn::Sub": "arn:aws:s3:::${OutputBucketName}/*"
                   }
                 }
               ]
