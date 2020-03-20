@@ -361,8 +361,13 @@
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Action": "s3:*",
-                  "Resource": "*"
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject"
+                    ],
+                  "Resource": { 
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                  }
                 }
               ]
             }
