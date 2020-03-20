@@ -365,7 +365,9 @@
                     "s3:PutObject",
                     "s3:GetObject"
                     ],
-                  "Resource": "arn:aws:s3:::t-martin-outputbucket"
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:s3:::${SourceBucket}/${SourceBucketObjectKey}"
+                  }
                 }
               ]
             }
