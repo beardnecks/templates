@@ -366,7 +366,9 @@
                     "s3:PutObject",
                     "s3:GetObject"
                     ],
-                  "Resource": "*"
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:s3:::${SourceBucket}"
+                  }
                 }
               ]
             }
