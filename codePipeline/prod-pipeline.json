@@ -414,19 +414,6 @@
                   ],
                   "Effect": "Allow",
                   "Resource": "arn:aws:s3::*:codepipeline-*"
-                },
-                {
-                  "Action": [
-                    "events:PutRule",
-                    "events:PutTargets",
-                    "events:DeleteRule",
-                    "events:DisableRule",
-                    "events:RemoveTargets"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:events:*:*:rule/codepipeline-*"
-                  ]
                 }
               ],
               "Version": "2012-10-17"
@@ -462,15 +449,6 @@
                     "ssm:PutParameter"
                   ],
                   "Resource": "arn:aws:ssm:*:*:parameter/CodeBuild/*"
-                },
-                {
-                  "Sid": "SNSTopicListAccess",
-                  "Effect": "Allow",
-                  "Action": [
-                    "sns:ListTopics",
-                    "sns:GetTopicAttributes"
-                  ],
-                  "Resource": "*"
                 }
               ]
             }

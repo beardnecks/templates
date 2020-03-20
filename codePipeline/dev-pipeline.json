@@ -380,19 +380,6 @@
                   ],
                   "Effect": "Allow",
                   "Resource": "arn:aws:s3::*:codepipeline-*"
-                },
-                {
-                  "Action": [
-                    "events:PutRule",
-                    "events:PutTargets",
-                    "events:DeleteRule",
-                    "events:DisableRule",
-                    "events:RemoveTargets"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:events:*:*:rule/codepipeline-*"
-                  ]
                 }
               ],
               "Version": "2012-10-17"
