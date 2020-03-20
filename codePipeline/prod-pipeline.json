@@ -362,13 +362,10 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "s3:*",
                     "s3:PutObject",
                     "s3:GetObject"
                     ],
-                  "Resource": {
-                    "Fn::Sub": "arn:aws:s3:::${SourceBucket}"
-                  }
+                  "Resource": "*"
                 }
               ]
             }
