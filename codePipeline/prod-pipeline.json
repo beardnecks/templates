@@ -355,29 +355,17 @@
         },
         "Policies": [
           {
-            "PolicyName": "ecr",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "ecr:*",
-                    "cloudtrail:LookupEvents"
-                  ],
-                  "Resource": "*"
-                }
-              ]
-            }
-          },
-          {
             "PolicyName": "s3",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Action": "s3:*",
+                  "Action": [
+                    "s3:*",
+                    "s3:PutObject",
+                    "s3:GetObject"
+                    ],
                   "Resource": "*"
                 }
               ]
@@ -407,10 +395,6 @@
                 {
                   "Action": [
                     "codepipeline:*",
-                    "codebuild:BatchGetProjects",
-                    "codebuild:ListCuratedEnvironmentImages",
-                    "codebuild:ListProjects",
-                    "codecommit:GetBranch",
                     "codedeploy:GetApplication",
                     "codedeploy:BatchGetApplications",
                     "codedeploy:GetDeploymentGroup",
@@ -430,6 +414,19 @@
                   ],
                   "Effect": "Allow",
                   "Resource": "arn:aws:s3::*:codepipeline-*"
+                },
+                {
+                  "Action": [
+                    "events:PutRule",
+                    "events:PutTargets",
+                    "events:DeleteRule",
+                    "events:DisableRule",
+                    "events:RemoveTargets"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:events:*:*:rule/codepipeline-*"
+                  ]
                 }
               ],
               "Version": "2012-10-17"
@@ -442,12 +439,29 @@
               "Statement": [
                 {
                   "Action": [
+                    "codebuild:StartBuild",
+                    "codebuild:BatchGetBuilds",
                     "codebuild:BatchGetProjects",
                     "codebuild:ListCuratedEnvironmentImages",
-                    "codebuild:ListProjects"
+                    "codebuild:ListProjects",
+                    "logs:GetLogEvents"
                   ],
                   "Effect": "Allow",
                   "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "logs:DeleteLogGroup"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:PutParameter"
+                  ],
+                  "Resource": "arn:aws:ssm:*:*:parameter/CodeBuild/*"
                 },
                 {
                   "Sid": "SNSTopicListAccess",

@@ -325,13 +325,81 @@
             }
           ]
         },
-        "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess",
-          "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-          "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+        "Policies": [
+          {
+            "PolicyName": "s3",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:*",
+                    "s3:PutObject",
+                    "s3:GetObject"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "cloudwatch",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "cloudwatch:*",
+                    "logs:*",
+                    "sns:*"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "codepipeline",
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "codepipeline:*",
+                    "sns:ListTopics"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:CreateBucket",
+                    "s3:PutBucketPolicy"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:s3::*:codepipeline-*"
+                },
+                {
+                  "Action": [
+                    "events:PutRule",
+                    "events:PutTargets",
+                    "events:DeleteRule",
+                    "events:DisableRule",
+                    "events:RemoveTargets"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:events:*:*:rule/codepipeline-*"
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            }
+          }
         ],
-        "MaxSessionDuration": 3600,
-        "Description": "Service Role for CodePipeline"
+        "MaxSessionDuration": 3600
       }
     },
     "AmazonCloudWatchEventRole": {
