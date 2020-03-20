@@ -407,10 +407,6 @@
                 {
                   "Action": [
                     "codepipeline:*",
-                    "codebuild:BatchGetProjects",
-                    "codebuild:CreateProject",
-                    "codebuild:ListCuratedEnvironmentImages",
-                    "codebuild:ListProjects",
                     "codedeploy:GetApplication",
                     "codedeploy:BatchGetApplications",
                     "codedeploy:GetDeploymentGroup",
@@ -455,7 +451,11 @@
               "Statement": [
                 {
                   "Action": [
-                    "codebuild:*",
+                    "codebuild:StartBuild",
+                    "codebuild:BatchGetProjects",
+                    "codebuild:CreateProject",
+                    "codebuild:ListCuratedEnvironmentImages",
+                    "codebuild:ListProjects",
                     "logs:GetLogEvents"
                   ],
                   "Effect": "Allow",
