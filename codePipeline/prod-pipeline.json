@@ -355,22 +355,6 @@
         },
         "Policies": [
           {
-            "PolicyName": "ecr",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "ecr:*",
-                    "cloudtrail:LookupEvents"
-                  ],
-                  "Resource": "*"
-                }
-              ]
-            }
-          },
-          {
             "PolicyName": "s3",
             "PolicyDocument": {
               "Version": "2012-10-17",
