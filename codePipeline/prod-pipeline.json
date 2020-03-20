@@ -365,12 +365,13 @@
                     "s3:PutObject",
                     "s3:GetObject"
                     ],
-                  "Resource": {
-                    "Fn::Sub": "arn:aws:s3:::*/*",
-                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*",
-                    "Fn::Sub": "arn:aws:s3:::${SourceBucket}/*",
-                    "Fn::Sub": "arn:aws:s3:::${OutputBucketName}/*"
-                  }
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*",
+                      "Fn::Sub": "arn:aws:s3:::${SourceBucket}/*",
+                      "Fn::Sub": "arn:aws:s3:::${OutputBucketName}/*"
+                    }
+                  ]
                 }
               ]
             }
