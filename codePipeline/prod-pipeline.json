@@ -436,6 +436,7 @@
                 {
                   "Action": [
                     "codebuild:StartBuild",
+                    "codebuild:BatchGetBuilds",
                     "codebuild:BatchGetProjects",
                     "codebuild:CreateProject",
                     "codebuild:ListCuratedEnvironmentImages",
