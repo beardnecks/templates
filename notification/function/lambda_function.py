@@ -1,3 +1,11 @@
+"""Provides Github/Bitbucket build status updates
+
+The function takes subscribes an SNS topic where CloudWatch publishes
+pipeline, stage and action events. On pipeline start it will mark all the pipeline
+actions as in progress on the relevant commit on either Bitbucket or Github, and
+will continuously update the status as the progress continues.
+"""
+
 import base64
 import json
 import logging
@@ -10,7 +18,7 @@ from boto3 import client, session
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 logger.handlers[0].setFormatter(
     logging.Formatter("[%(asctime)s][%(levelname)s] %(message)s")
 )
@@ -21,10 +29,13 @@ PIPELINE_CHANGE = "CodePipeline Pipeline Execution State Change"
 STAGE_CHANGE = "CodePipeline Stage Execution State Change"
 ACTION_CHANGE = "CodePipeline Action Execution State Change"
 
-PIPELINE_CONTEXT = "neckbeards-ci"
+PIPELINE_CONTEXT = "neckbeards-ci"  # Prefix used for all build statuses, e.g. neckbeards-ci/testing/unittest
 
 
 class GithubStatus(Enum):
+    """Github build statuses
+    """
+
     ERROR = "error"
     FAILURE = "failure"
     PENDING = "pending"
@@ -32,6 +43,9 @@ class GithubStatus(Enum):
 
 
 class BitbucketStatus(Enum):
+    """Bitbucket build status
+    """
+
     STOPPED = "STOPPED"
     FAILED = "FAILED"
     INPROGRESS = "INPROGRESS"
@@ -39,6 +53,13 @@ class BitbucketStatus(Enum):
 
 
 class PipelineStates(Enum):
+    """CodePipeline states
+
+    Provides an enum of possible pipeline states. Provides
+    functions to turn status into description, or to convert
+    CodePipeline states into Bitbucket and Github statuses.
+    """
+
     # The pipeline execution is currently running.
     STARTED = "STARTED"
     # The pipeline execution was completed successfully.
@@ -54,7 +75,14 @@ class PipelineStates(Enum):
     SUPERSEDED = "SUPERSEDED"
     STOPPED = "STOPPED"
 
-    def get_description_from_pipeline_state(self, pipeline_state):
+    @staticmethod
+    def get_description_from_pipeline_state(pipeline_state) -> str:
+        """Returns description of provided pipeline state
+
+        :param pipeline_state: A pipeline state for which to return description
+        :return: A description of the provided state
+        """
+
         switcher = {
             PipelineStates.STARTED: "The pipeline has started!",
             PipelineStates.RESUMED: "The pipeline has resumed",
@@ -66,7 +94,14 @@ class PipelineStates(Enum):
         }
         return switcher[pipeline_state]
 
-    def get_github_status_from_pipeline_state(self, pipeline_state):
+    @staticmethod
+    def get_github_status_from_pipeline_state(pipeline_state) -> GithubStatus:
+        """Convert a CodePipeline state into Github status
+
+        :param pipeline_state: A pipeline state to convert
+        :return: A matching GithubStatus
+        """
+
         switcher = {
             PipelineStates.STARTED: GithubStatus.PENDING,
             PipelineStates.RESUMED: GithubStatus.PENDING,
@@ -78,7 +113,14 @@ class PipelineStates(Enum):
         }
         return switcher[pipeline_state]
 
-    def get_bitbucket_status_from_pipeline_state(self, pipeline_state):
+    @staticmethod
+    def get_bitbucket_status_from_pipeline_state(pipeline_state) -> BitbucketStatus:
+        """Convert a CodePipeline state into Bitbucket status
+
+        :param pipeline_state: A pipeline state to convert
+        :return: A matching BitbucketStatus
+        """
+
         switcher = {
             PipelineStates.STARTED: BitbucketStatus.INPROGRESS,
             PipelineStates.RESUMED: BitbucketStatus.INPROGRESS,
@@ -92,6 +134,13 @@ class PipelineStates(Enum):
 
 
 class StageStates(Enum):
+    """CodePipeline stage states
+
+    Provides an enum of possible pipeline stage states. Provides
+    functions to turn status into description, or to convert
+    CodePipeline stage states into Bitbucket and Github statuses.
+    """
+
     # The stage is currently running.
     STARTED = "STARTED"
     # The stage was completed successfully.
@@ -104,7 +153,14 @@ class StageStates(Enum):
     CANCELED = "CANCELED"
     STOPPED = "STOPPED"
 
-    def get_description_from_stage_state(self, stage_state):
+    @staticmethod
+    def get_description_from_stage_state(stage_state) -> str:
+        """Returns description of provided pipeline stage state
+
+        :param stage_state: A pipeline stage state for which to return description
+        :return: A description of the provided state
+        """
+
         switcher = {
             StageStates.STARTED: "The stage has started!",
             StageStates.RESUMED: "The stage has resumed",
@@ -115,7 +171,14 @@ class StageStates(Enum):
         }
         return switcher[stage_state]
 
-    def get_github_status_from_stage_state(self, stage_state):
+    @staticmethod
+    def get_github_status_from_stage_state(stage_state) -> GithubStatus:
+        """Convert a CodePipeline state into Github status
+
+        :param stage_state: A pipeline stage state to convert
+        :return: A matching GithubStatus
+        """
+
         switcher = {
             StageStates.STARTED: GithubStatus.PENDING,
             StageStates.RESUMED: GithubStatus.PENDING,
@@ -126,7 +189,14 @@ class StageStates(Enum):
         }
         return switcher[stage_state]
 
-    def get_bitbucket_status_from_stage_state(self, stage_state):
+    @staticmethod
+    def get_bitbucket_status_from_stage_state(stage_state) -> BitbucketStatus:
+        """Convert a CodePipeline state into Bitbucket status
+
+        :param stage_state: A pipeline stage state to convert
+        :return: A matching BitbucketStatus
+        """
+
         switcher = {
             StageStates.STARTED: BitbucketStatus.INPROGRESS,
             StageStates.RESUMED: BitbucketStatus.INPROGRESS,
@@ -139,6 +209,13 @@ class StageStates(Enum):
 
 
 class ActionStates(Enum):
+    """CodePipeline action states
+
+    Provides an enum of possible pipeline action states. Provides
+    functions to turn status into description, or to convert
+    CodePipeline action states into Bitbucket and Github statuses.
+    """
+
     # The action is currently running.
     STARTED = "STARTED"
     # The action was completed successfully.
@@ -151,7 +228,14 @@ class ActionStates(Enum):
     STOPPED = "STOPPED"
     ABANDONED = "ABANDONED"
 
-    def get_description_from_action_state(self, action_state):
+    @staticmethod
+    def get_description_from_action_state(action_state) -> str:
+        """Returns description of provided pipeline action state
+
+        :param action_state: A pipeline action state for which to return description
+        :return: A description of the provided state
+        """
+
         switcher = {
             ActionStates.STARTED: "The action has started!",
             ActionStates.CANCELED: "The action was canceled",
@@ -162,7 +246,14 @@ class ActionStates(Enum):
         }
         return switcher[action_state]
 
-    def get_github_status_from_action_state(self, action_state):
+    @staticmethod
+    def get_github_status_from_action_state(action_state) -> GithubStatus:
+        """Convert a CodePipeline action into Github status
+
+        :param action_state: A pipeline action state to convert
+        :return: A matching GithubStatus
+        """
+
         switcher = {
             ActionStates.STARTED: GithubStatus.PENDING,
             ActionStates.CANCELED: GithubStatus.FAILURE,
@@ -173,7 +264,14 @@ class ActionStates(Enum):
         }
         return switcher[action_state]
 
-    def get_bitbucket_status_from_action_state(self, action_state):
+    @staticmethod
+    def get_bitbucket_status_from_action_state(action_state) -> BitbucketStatus:
+        """Convert a CodePipeline action into Bitbucket status
+
+        :param action_state: A pipeline action state to convert
+        :return: A matching BitbucketStatus
+        """
+
         switcher = {
             ActionStates.STARTED: BitbucketStatus.INPROGRESS,
             ActionStates.CANCELED: BitbucketStatus.FAILED,
@@ -194,7 +292,24 @@ def update_github_status(
     user: str,
     repo: str,
     pipeline_name: str,
-):
+) -> requests.Response:
+    """Update build status of commit using Github REST API
+
+    Sends a post request to the Github REST API to update the
+    build status of a given commit in a given repo.
+
+    :param state: The build state
+    :param context: What build status to update, e.g neckbeards-ci/unittest
+    :param description: A description of the current status
+    :param target_url: A url a user on Github can click for more information about the current build
+    :param commit_id: The git commit sha to update the status on
+    :param user: The user/organization hosting the repository
+    :param repo: The name of the repository where the commit was made
+    :param pipeline_name: The name of the pipeline that triggered the notification function.
+            Used for getting the correct API token
+    :return: Returns the post request response
+    """
+
     token = get_secret(pipeline_name)
 
     r = requests.post(
@@ -221,6 +336,19 @@ def action_change_gh(
     repo: str,
     pipeline_name: str,
 ):
+    """Updates the Github build status of a given action
+
+    :param state: State of the action
+    :param request: The original request received when the repo source was cloned.
+    :param stage: What pipeline stage the action is in
+    :param action: The name of the action
+    :param push: If the request is a push or not
+    :param user: The user/organization that hosts the repository
+    :param repo: The name of the repository
+    :param pipeline_name: The name of the pipeline running
+    :return:
+    """
+
     if push:
         commit_id = request["body-json"]["head_commit"]["id"]
     else:
@@ -247,10 +375,25 @@ def update_bitbucket_status(
     target_url: str,
     link: str,
     pipeline_name: str,
-):
+) -> requests.Response:
+    """Update build status of commit using Bitbucket REST API
+
+    Sends a post request to the Bitbucket REST API to update the
+    build status of a given commit in a given repo.
+
+    :param state: The build state
+    :param context: What build status to update, e.g neckbeards-ci/unittest
+    :param description: A description of the current status
+    :param target_url: A url a user on Github can click for more information about the current build
+    :param link: API link to a given commit that should get status updated
+    :param pipeline_name: The name of the pipeline that triggered the notification function.
+            Used for getting the correct API token
+    :return: Returns the post request response
+    """
+
     token = get_secret(pipeline_name)
     logger.info(token)
-    base64_token = base64.b64encode(str.encode(token))
+    base64_token_bytes = base64.b64encode(str.encode(token))
     logger.info("link is %s" % link + "/statuses/build")
     r = requests.post(
         link + "/statuses/build",
@@ -261,7 +404,7 @@ def update_bitbucket_status(
             "name": context,
             "description": description,
         },
-        headers={"Authorization": "Basic " + base64_token.decode("utf-8")},
+        headers={"Authorization": "Basic " + base64_token_bytes.decode("utf-8")},
     )
     logger.info(
         "Request response for commit id %s: %s" % (link.split("/")[-1], r.status_code)
@@ -269,7 +412,14 @@ def update_bitbucket_status(
     return r
 
 
-def get_bb_commit_link(request: dict, push):
+def get_bb_commit_link(request: dict, push) -> str:
+    """Returns API link to commit for a Bitbucket event
+
+    :param request:  The original request received when the repo source was cloned.
+    :param push: If the request is a push or not
+    :return: A string with API url to the commit
+    """
+
     if push:
         return request["body-json"]["push"]["changes"][0]["commits"][0]["links"][
             "self"
@@ -288,6 +438,17 @@ def action_change_bb(
     push: bool,
     pipeline_name: str,
 ):
+    """Updates the Bitbucket build status of a given action
+
+    :param state: State of the action
+    :param request: The original request received when the repo source was cloned.
+    :param stage: What pipeline stage the action is in
+    :param action: The name of the action
+    :param push: If the request is a push or not
+    :param pipeline_name: The name of the pipeline running
+    :return:
+    """
+
     link = get_bb_commit_link(request, push)
 
     logger.info("Commit id is: %s" % link.split("/")[-1])
@@ -305,6 +466,17 @@ def action_change_bb(
 def update_all_stages_actions_gh(
     request: dict, push: bool, user: str, repo: str, pipeline_name: str,
 ):
+    """Set all pipeline actions as started on commit
+
+    When the pipeline is started, get all the actions in the pipeline and set them all as started
+    :param request: The original request received when the repo source was cloned.
+    :param push: If the commit was a push or not
+    :param user: The user/organization that hosts the repository
+    :param repo: The name of the repository
+    :param pipeline_name: The name of the running pipeline
+    :return:
+    """
+
     logger.info("Updating all stages/actions")
     codepipeline = client("codepipeline")
 
@@ -329,9 +501,16 @@ def update_all_stages_actions_gh(
             )
 
 
-def update_all_stages_actions_bb(
-    request: dict, push: bool, user: str, repo: str, pipeline_name: str,
-):
+def update_all_stages_actions_bb(request: dict, push: bool, pipeline_name: str):
+    """Set all pipeline actions as started on commit
+
+    When the pipeline is started, get all the actions in the pipeline and set them all as started
+    :param request: The original request received when the repo source was cloned.
+    :param push: If the commit was a push or not
+    :param pipeline_name: The name of the running pipeline
+    :return:
+    """
+
     logger.info("Updating all stages/actions")
     codepipeline = client("codepipeline")
 
@@ -355,6 +534,13 @@ def update_all_stages_actions_bb(
 
 
 def github_state_update(request: dict, message: dict):
+    """Update the build state on a Github commit
+
+    :param request: The original request received when the repo source was cloned.
+    :param message: The message field from the SNS event
+    :return:
+    """
+
     user = request["body-json"]["repository"]["full_name"].split("/")[0]
     repo = request["body-json"]["repository"]["full_name"].split("/")[1]
 
@@ -392,29 +578,33 @@ def github_state_update(request: dict, message: dict):
 
 
 def bitbucket_state_update(request: dict, message: dict):
-    user = request["body-json"]["repository"]["full_name"].split("/")[0]
-    repo = request["body-json"]["repository"]["full_name"].split("/")[1]
+    """Update the build state on a Bitbucket commit
+
+    :param request: The original request received when the repo source was cloned.
+    :param message: The message field from the SNS event
+    :return:
+    """
 
     push = False
     if request["params"]["header"]["X-Event-Key"] == "repo:push":
         push = True
 
-    logger.info(message["detail-type"] + "  -:-  " + PIPELINE_CHANGE)
+    logger.info(message["detail-type"])
     if message["detail-type"] == PIPELINE_CHANGE:
         logger.info(message["detail"]["state"])
         if message["detail"]["state"] == PipelineStates.STARTED.value:
             update_all_stages_actions_bb(
-                request, push, user, repo, message["detail"]["pipeline"],
+                request, push, message["detail"]["pipeline"],
             )
 
-        return
+        return  # The state change is not action, no point in going further
 
     if message["detail-type"] == ACTION_CHANGE:
         logger.info(message["detail"]["state"])
         for action_state in ActionStates:
             logger.info(action_state)
             if message["detail"]["state"] == action_state.value:
-                logger.info("Stage change func")
+                logger.info("Updating pipeline action %s" % message["detail"]["action"])
                 action_change_bb(
                     action_state,
                     request,
@@ -424,17 +614,27 @@ def bitbucket_state_update(request: dict, message: dict):
                     message["detail"]["pipeline"],
                 )
 
-                return
+                return  # Found matching action, return and skip rest of for loop
 
 
 def lambda_handler(event, context):
-    print(event)
+    """Update build status for a git repository based on pipeline events
+
+    :param event: Lambda event information provided by SNS
+    :param context: Not used
+    :return:
+    """
+
+    logger.info(event)
     message = json.loads(event["Records"][0]["Sns"]["Message"])
 
     source_bucket = os.environ["SOURCE_BUCKET"]
     source_bucket_object_key = os.environ["SOURCE_BUCKET_OBJECT_KEY"]
+
     s3 = client("s3")
     codepipeline = client("codepipeline")
+
+    # Get S3 file version of the source zip used in the pipeline execution to get the correct version.
     pipeline_execution = codepipeline.get_pipeline_execution(
         pipelineName=message["detail"]["pipeline"],
         pipelineExecutionId=message["detail"]["execution-id"],
@@ -452,11 +652,12 @@ def lambda_handler(event, context):
         "/tmp/code.zip",
         ExtraArgs={"VersionId": s3_version_id},
     )
+
     logger.info("Unzipping top /tmp/code...")
     code_zip = ZipFile("/tmp/code.zip", "r")
     ZipFile.extractall(code_zip, "/tmp/code")
 
-    # Open json file
+    # Open json file containing event data from when the source zip was created
     f = open("/tmp/code/event.json", "r")
     content = f.readline()
     request = json.loads(content)
@@ -465,16 +666,18 @@ def lambda_handler(event, context):
         github_state_update(request, message)
     elif "Bitbucket" in request["params"]["header"]["User-Agent"]:
         bitbucket_state_update(request, message)
-    else:
-        logger.error("Unknown git host %s" % request["params"]["header"]["User-Agent"])
-        raise Exception(
-            "Unknown git host %s" % request["params"]["header"]["User-Agent"]
-        )
 
-    logger.error("Detail Type did not match pipeline, stage or action change!")
+    logger.error("Unknown git host %s" % request["params"]["header"]["User-Agent"])
+    raise Exception("Unknown git host %s" % request["params"]["header"]["User-Agent"])
 
 
-def get_secret(pipeline_name: str):
+def get_secret(pipeline_name: str) -> str:
+    """Get API secret from SecretsManager for a given pipeline
+
+    :param pipeline_name: Name of the executing pipeline
+    :return: The secret
+    """
+
     region_name = os.environ["AWS_REGION"]
     secret_name = pipeline_name + "-NotifySecret"
 
