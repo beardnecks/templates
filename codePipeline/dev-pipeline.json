@@ -145,44 +145,6 @@
         }
       }
     },
-    "notifyRuleStage": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": "--",
-        "EventPattern": {
-          "source": [
-            "aws.codepipeline"
-          ],
-          "detail-type": [
-            "CodePipeline Stage Execution State Change"
-          ],
-          "detail": {
-            "pipeline": [
-              {
-                "Ref": "PipelineName"
-              }
-            ],
-            "stage": [
-              "Testing"
-            ]
-          }
-        },
-        "Targets": [
-          {
-            "Arn": {
-              "Ref": "snsTopic"
-            },
-            "Id": "t-topic-target"
-          }
-        ],
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "NotifyCloudWatchEventRole",
-            "Arn"
-          ]
-        }
-      }
-    },
     "notifyRuleActions": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -206,10 +168,7 @@
                 "Build",
                 "Test"
               ]
-            },
-            "stage": [
-              "Testing"
-            ]
+            }
           }
         },
         "Targets": [
