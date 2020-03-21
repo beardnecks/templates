@@ -1,11 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
-    "ArtifactStoreName": {
-      "Type": "String",
-      "Default": "",
-      "Description": "S3 bucket that stores pipeline artifacts."
-    },
     "PipelineName": {
       "Type": "String",
       "Default": "",
@@ -55,16 +50,6 @@
       "Type": "String",
       "Default": "",
       "Description": "Display Name of sns topic"
-    },
-    "NotificationTemplateURL": {
-      "Description": "S3 URL for notification system template",
-      "Type": "String",
-      "Default": ""
-    },
-    "token": {
-      "Description": "(optional, will not create if not assigned)Github Token",
-      "Type": "String",
-      "Default": ""
     },
     "notificationFunctionArn": {
       "Description": "ARN of notification function",
@@ -256,11 +241,11 @@
         }
       }
     },
-    "ArtifacStoreBucket": {
+    "ArtifactStoreBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "${PipelineName}-${ArtifactStoreName}"
+          "Fn::Sub": "${PipelineName}-ArtifactStore"
         },
         "Tags": []
       }
@@ -469,7 +454,8 @@
     },
     "AWSCloudTrailBucket": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "AWSCloudTrailBucketPolicy": {
       "Type": "AWS::S3::BucketPolicy",
@@ -589,7 +575,7 @@
         "ArtifactStore": {
           "Type": "S3",
           "Location": {
-            "Fn::Sub": "${PipelineName}-${ArtifactStoreName}"
+            "Fn::Sub": "${PipelineName}-ArtifactStore"
           }
         },
         "Stages": [
