@@ -90,7 +90,6 @@
             "default": "CodePipeline settings"
           },
           "Parameters": [
-            "ArtifactStoreName",
             "PipelineName",
             "SourceBucket",
             "SourceBucketObjectKey",
@@ -176,9 +175,6 @@
         },
         "NotificationTemplateURL": {
           "default": "S3 URL of notification system template"
-        },
-        "ArtifactStoreName": {
-          "default": "S3 bucket that stores pipeline artifacts."
         },
         "PipelineName": {
           "default": "Name of the CodePipeline"
@@ -298,11 +294,6 @@
       "Description": "S3 URL for notification system template",
       "Type": "String",
       "Default": ""
-    },
-    "ArtifactStoreName": {
-      "Type": "String",
-      "Default": "",
-      "Description": "S3 bucket that stores pipeline artifacts."
     },
     "PipelineName": {
       "Type": "String",
@@ -861,9 +852,6 @@
           "Ref": "PipelineTemplateURL"
         },
         "Parameters": {
-          "ArtifactStoreName": {
-            "Ref": "ArtifactStoreName"
-          },
           "PipelineName": {
             "Ref": "PipelineName"
           },

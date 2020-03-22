@@ -64,7 +64,6 @@
             "default": "CodePipeline settings"
           },
           "Parameters": [
-            "ArtifactStoreName",
             "PipelineName",
             "SourceBucket",
             "SourceBucketObjectKey",
@@ -131,9 +130,6 @@
         },
         "NotificationTemplateURL": {
           "default": "S3 URL of notification system template"
-        },
-        "ArtifactStoreName": {
-          "default": "S3 bucket that stores pipeline artifacts."
         },
         "PipelineName": {
           "default": "Name of the CodePipeline"
@@ -220,11 +216,6 @@
       "Description": "Github Token",
       "Type": "String",
       "Default": ""
-    },
-    "ArtifactStoreName": {
-      "Type": "String",
-      "Default": "",
-      "Description": "S3 bucket that stores pipeline artifacts."
     },
     "PipelineName": {
       "Type": "String",
@@ -483,9 +474,6 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "ArtifactStoreName": {
-            "Ref": "ArtifactStoreName"
-          },
           "PipelineName": {
             "Ref": "PipelineName"
           },
