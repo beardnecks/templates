@@ -329,13 +329,12 @@
             }
           },
           {
-            "PolicyName": "cloudwatch",
+            "PolicyName": "logs",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
                 {
                   "Action": [
-                    "cloudwatch:*",
                     "logs:*",
                     "sns:*"
                   ],
