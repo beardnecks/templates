@@ -90,7 +90,6 @@
             "default": "CodePipeline settings"
           },
           "Parameters": [
-            "ArtifactStoreName",
             "PipelineName",
             "SourceBucket",
             "SourceBucketObjectKey",
@@ -176,9 +175,6 @@
         },
         "NotificationTemplateURL": {
           "default": "S3 URL of notification system template"
-        },
-        "ArtifactStoreName": {
-          "default": "S3 bucket that stores pipeline artifacts."
         },
         "PipelineName": {
           "default": "Name of the CodePipeline"
@@ -299,11 +295,6 @@
       "Type": "String",
       "Default": ""
     },
-    "ArtifactStoreName": {
-      "Type": "String",
-      "Default": "",
-      "Description": "S3 bucket that stores pipeline artifacts."
-    },
     "PipelineName": {
       "Type": "String",
       "Default": "",
@@ -371,7 +362,7 @@
                     "s3:GetObject"
                   ],
                   "Resource": {
-                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-artifactstore/*"
                   }
                 }
               ]
@@ -444,7 +435,7 @@
                     "s3:GetObject"
                   ],
                   "Resource": {
-                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-artifactstore/*"
                   }
                 }
               ]
@@ -517,7 +508,7 @@
                     "s3:GetObject"
                   ],
                   "Resource": {
-                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-artifactstore/*"
                   }
                 }
               ]
@@ -589,7 +580,7 @@
                     "s3:GetObject"
                   ],
                   "Resource": {
-                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-${ArtifactStoreName}/*"
+                    "Fn::Sub": "arn:aws:s3:::${PipelineName}-artifactstore/*"
                   }
                 }
               ]
@@ -861,9 +852,6 @@
           "Ref": "PipelineTemplateURL"
         },
         "Parameters": {
-          "ArtifactStoreName": {
-            "Ref": "ArtifactStoreName"
-          },
           "PipelineName": {
             "Ref": "PipelineName"
           },

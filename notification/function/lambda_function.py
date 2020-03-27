@@ -664,8 +664,10 @@ def lambda_handler(event, context):
 
     if "GitHub" in request["params"]["header"]["User-Agent"]:
         github_state_update(request, message)
+        return
     elif "Bitbucket" in request["params"]["header"]["User-Agent"]:
         bitbucket_state_update(request, message)
+        return
 
     logger.error("Unknown git host %s" % request["params"]["header"]["User-Agent"])
     raise Exception("Unknown git host %s" % request["params"]["header"]["User-Agent"])

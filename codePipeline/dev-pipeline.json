@@ -278,9 +278,22 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "s3:*",
+                    "s3:GetBucketPolicyStatus",
+                    "s3:GetBucketLogging",
+                    "s3:GetAccelerateConfiguration",
+                    "s3:GetBucketVersioning",
+                    "s3:UpdateJobStatus",
+                    "s3:GetBucketAcl",
+                    "s3:GetBucketNotification",
+                    "s3:GetBucketPolicy",
+                    "s3:GetBucketObjectLockConfiguration",
                     "s3:PutObject",
-                    "s3:GetObject"
+                    "s3:GetObjectAcl",
+                    "s3:GetObject",
+                    "s3:DescribeJob",
+                    "s3:UpdateJobPriority",
+                    "s3:GetBucketLocation",
+                    "s3:GetObjectVersion"
                   ],
                   "Resource": "*"
                 }
@@ -288,13 +301,12 @@
             }
           },
           {
-            "PolicyName": "cloudwatch",
+            "PolicyName": "logs",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
                 {
                   "Action": [
-                    "cloudwatch:*",
                     "logs:*",
                     "sns:*"
                   ],
