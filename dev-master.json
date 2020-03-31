@@ -328,7 +328,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-UnitTest"
+            "Fn::Sub": "{PipelineName}-UnitTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -353,7 +353,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-VerifyTest"
+            "Fn::Sub": "${PipelineName}-VerifyTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -378,7 +378,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-CoccinelleTest"
+            "Fn::Sub": "${PipelineName}-CoccinelleTest"
           },
           "BuildImage": {
             "Ref": "CoccinelleBuildImage"
@@ -403,7 +403,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-ClangTest"
+            "Fn::Sub": "${PipelineName}-ClangTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -428,7 +428,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-RustTest"
+            "Fn::Sub": "${PipelineName}-RustTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
@@ -484,19 +484,19 @@
             "Ref": "SourceBucketObjectKey"
           },
           "UnitTestName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-UnitTest"
+            "Fn::Sub": "${PipelineName}-UnitTest"
           },
           "VerifyTestName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-VerifyTest"
+            "Fn::Sub": "${PipelineName}-VerifyTest"
           },
           "CoccinelleTestName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-CoccinelleTest"
+            "Fn::Sub": "${PipelineName}-CoccinelleTest"
           },
           "RustTestName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-RustTest"
+            "Fn::Sub": "${PipelineName}-RustTest"
           },
           "ClangTestName": {
-            "Fn::Sub": "arn:aws:s3:::${PipelineName}-ClangTest"
+            "Fn::Sub": "${PipelineName}-ClangTest"
           },
           "snsTopicName": {
             "Ref": "snsTopicName"
