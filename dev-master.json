@@ -328,7 +328,7 @@
       "Properties": {
         "Parameters": {
           "BuildName": {
-            "Fn::Sub": "{PipelineName}-UnitTest"
+            "Fn::Sub": "${PipelineName}-UnitTest"
           },
           "BuildImage": {
             "Ref": "BuildImage"
