@@ -245,7 +245,7 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "${PipelineName}-ArtifactStore"
+          "Fn::Sub": "${PipelineName}-artifactstore"
         },
         "Tags": []
       }
@@ -587,7 +587,7 @@
         "ArtifactStore": {
           "Type": "S3",
           "Location": {
-            "Fn::Sub": "${PipelineName}-ArtifactStore"
+            "Fn::Sub": "${PipelineName}-artifactstore"
           }
         },
         "Stages": [
