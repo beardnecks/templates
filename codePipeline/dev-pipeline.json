@@ -629,7 +629,7 @@
             "Name": "Testing",
             "Actions": [
               {
-                "Name": "Unittest",
+                "Name": "UnitTest",
                 "ActionTypeId": {
                   "Category": "Test",
                   "Owner": "AWS",
@@ -725,7 +725,7 @@
                 }
               },
               {
-                "Name": "Suricata-verify",
+                "Name": "SuricataVerify",
                 "ActionTypeId": {
                   "Category": "Test",
                   "Owner": "AWS",

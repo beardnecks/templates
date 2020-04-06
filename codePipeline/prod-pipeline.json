@@ -697,7 +697,7 @@
             "Name": "Testing",
             "Actions": [
               {
-                "Name": "Unittest",
+                "Name": "UnitTest",
                 "ActionTypeId": {
                   "Category": "Test",
                   "Owner": "AWS",
@@ -793,7 +793,7 @@
                 }
               },
               {
-                "Name": "Suricata-verify",
+                "Name": "SuricataVerify",
                 "ActionTypeId": {
                   "Category": "Test",
                   "Owner": "AWS",
@@ -822,7 +822,7 @@
             "Name": "Build",
             "Actions": [
               {
-                "Name": "packaging-rpm",
+                "Name": "PackagingRPM",
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "AWS",
@@ -851,7 +851,7 @@
                 "Namespace": "BuildVariables"
               },
               {
-                "Name": "docker-build",
+                "Name": "DockerBuild",
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "AWS",
@@ -884,7 +884,7 @@
             "Name": "Deploy",
             "Actions": [
               {
-                "Name": "deploy-s3",
+                "Name": "DeployS3",
                 "ActionTypeId": {
                   "Category": "Deploy",
                   "Owner": "AWS",
@@ -909,7 +909,7 @@
                 }
               },
               {
-                "Name": "docker-deploy",
+                "Name": "DockerDepoloy",
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "AWS",

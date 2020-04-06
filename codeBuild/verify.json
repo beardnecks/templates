@@ -5,7 +5,7 @@
     "BuildName": {
       "Description": "Name of the build project",
       "Type": "String",
-      "Default": "suricata_verify"
+      "Default": "SuricataVerify"
     },
     "BuildSpecFileName": {
       "Description": "Filename of the buildspec.yaml",
