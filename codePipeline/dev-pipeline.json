@@ -245,7 +245,7 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "${PipelineName}-ArtifactStore"
+          "Fn::Sub": "${PipelineName}-artifactstore"
         },
         "Tags": []
       }
@@ -339,6 +339,40 @@
                 }
               ],
               "Version": "2012-10-17"
+            }
+          },
+          {
+            "PolicyName": "codebuild",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "codebuild:StartBuild",
+                    "codebuild:BatchGetBuilds",
+                    "codebuild:BatchGetProjects",
+                    "codebuild:ListCuratedEnvironmentImages",
+                    "codebuild:ListProjects",
+                    "logs:GetLogEvents"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "logs:DeleteLogGroup"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:PutParameter"
+                  ],
+                  "Resource": "arn:aws:ssm:*:*:parameter/CodeBuild/*"
+                }
+              ]
             }
           }
         ],
@@ -587,7 +621,7 @@
         "ArtifactStore": {
           "Type": "S3",
           "Location": {
-            "Fn::Sub": "${PipelineName}-ArtifactStore"
+            "Fn::Sub": "${PipelineName}-artifactstore"
           }
         },
         "Stages": [
