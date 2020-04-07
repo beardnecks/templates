@@ -322,7 +322,7 @@
                     "s3:UpdateJobPriority",
                     "s3:GetBucketLocation",
                     "s3:GetObjectVersion"
-                    ],
+                  ],
                   "Resource": "*"
                 }
               ]
@@ -909,7 +909,7 @@
                 }
               },
               {
-                "Name": "DockerDepoloy",
+                "Name": "DockerDeploy",
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "AWS",
