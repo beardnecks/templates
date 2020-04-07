@@ -41,7 +41,7 @@ aws cloudformation create-stack --stack-name ${STACKNAME} --template-body file:/
   ParameterKey=CoccinelleBuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-coccinelle" \
   ParameterKey=PipelineName,ParameterValue=${STACKNAME} \
   ParameterKey=SourceBucket,ParameterValue="${SOURCE_BUCKET_NAME}" \
-  ParameterKey=SourceBucketObjectKey,ParameterValue="${USERNAME}/${REPONAME}/prod/${USERNAME}_${REPONAME}.zip" \
+  ParameterKey=SourceBucketObjectKey,ParameterValue="${REPO_USERNAME}/${REPO_NAME}/prod/${REPO_USERNAME}_${REPO_NAME}.zip" \
   ParameterKey=PipelineTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codePipeline/prod-pipeline.json" \
   ParameterKey=UnitTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/unittest.json" \
   ParameterKey=VerifyTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/verify.json" \
