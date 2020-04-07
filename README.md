@@ -10,8 +10,8 @@ All parameters will be passed to the Master CFN tempalte which will then assign 
 # Example
 ```bash
 # Example of how to deploy from cli
-PREFIX="p-neckbeards-$1/"
-STACKNAME="p-neckbeards-pipeline-$1"
+PREFIX="p-neckbeards/"
+STACKNAME="p-neckbeards-pipeline"
 UPLOAD_BUCKET="p-neckbeards-stackinit"
 
 sam build --use-container -t notification/function/template.json
