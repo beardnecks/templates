@@ -11,7 +11,7 @@ All parameters will be passed to the Master CFN tempalte which will then assign 
 ```bash
 # Example of how to deploy from cli
 PREFIX="<STACK_UPLOAD_PREFIX>/"
-STACKNAME="<STACKNAME>"/
+STACKNAME="<STACKNAME>"
 UPLOAD_BUCKET="<TEMPLATE_UPLOAD_BUCKET>"
 ACCOUNT_ID="<ACCOUNT_ID>"
 SOURCE_BUCKET_NAME="<SOURCE_BUCKET_NAME>"
