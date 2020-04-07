@@ -13,6 +13,11 @@ All parameters will be passed to the Master CFN tempalte which will then assign 
 PREFIX="<STACK_UPLOAD_PREFIX>/"
 STACKNAME="<STACKNAME>"/
 UPLOAD_BUCKET="<TEMPLATE_UPLOAD_BUCKET>"
+ACCOUNT_ID="<ACCOUNT_ID>"
+SOURCE_BUCKET_NAME="<SOURCE_BUCKET_NAME>"
+REPO_USERNAME="<USERNAME>"
+REPO_NAME="<REPO_NAME>"
+API_TOKEN="<API_TOKEN>"
 
 sam build --use-container -t notification/function/template.json
 sam package -t .aws-sam/build/notificationFunction/template.json --s3-bucket $UPLOAD_BUCKET --use-json --output-template-file notification/function.json --s3-prefix ${PREFIX: : -1}
@@ -32,11 +37,11 @@ aws cloudformation create-stack --stack-name ${STACKNAME} --template-body file:/
   ParameterKey=PackagingBuildSpecFileName,ParameterValue="qa/buildspec/packaging.yml" \
   ParameterKey=DockerBuildBuildSpecFileName,ParameterValue="qa/buildspec/dockerbuild.yml" \
   ParameterKey=DockerDeployBuildSpecFileName,ParameterValue="dockerdeploy.yml" \
-  ParameterKey=BuildImage,ParameterValue="<ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-devops" \
-  ParameterKey=CoccinelleBuildImage,ParameterValue="<ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-coccinelle" \
+  ParameterKey=BuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-devops" \
+  ParameterKey=CoccinelleBuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-coccinelle" \
   ParameterKey=PipelineName,ParameterValue=${STACKNAME} \
-  ParameterKey=SourceBucket,ParameterValue="<SOURCE_BUCKET_NAME>" \
-  ParameterKey=SourceBucketObjectKey,ParameterValue="<USERNAME>/<REPONAME>/prod/<USERNAME>_<REPONAME>.zip" \
+  ParameterKey=SourceBucket,ParameterValue="${SOURCE_BUCKET_NAME}" \
+  ParameterKey=SourceBucketObjectKey,ParameterValue="${USERNAME}/${REPONAME}/prod/${USERNAME}_${REPONAME}.zip" \
   ParameterKey=PipelineTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codePipeline/prod-pipeline.json" \
   ParameterKey=UnitTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/unittest.json" \
   ParameterKey=VerifyTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/verify.json" \
@@ -48,9 +53,7 @@ aws cloudformation create-stack --stack-name ${STACKNAME} --template-body file:/
   ParameterKey=DockerDeployTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/dockerDeploy.json" \
   ParameterKey=NotificationTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}notification/function.json" \
   ParameterKey=OutputBucketName,ParameterValue="${PREFIX: : -1}-rpm" \
-  ParameterKey=token,ParameterValue="<API_TOKEN>" \
+  ParameterKey=token,ParameterValue="${API_TOKEN}" \
   ParameterKey=snsTopicName,ParameterValue="${PREFIX: : -1}-sns" \
   ParameterKey=snsDisplayName,ParameterValue="Github Notification Service"
-
-# Needs parameter keys and values for S3 URLs as well
 ```
