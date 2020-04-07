@@ -10,9 +10,9 @@ All parameters will be passed to the Master CFN tempalte which will then assign 
 # Example
 ```bash
 # Example of how to deploy from cli
-PREFIX="p-neckbeards/"
-STACKNAME="p-neckbeards-pipeline"
-UPLOAD_BUCKET="p-neckbeards-stackinit"
+PREFIX="<STACK_UPLOAD_PREFIX>/"
+STACKNAME="<STACKNAME>"/
+UPLOAD_BUCKET="<TEMPLATE_UPLOAD_BUCKET>"
 
 sam build --use-container -t notification/function/template.json
 sam package -t .aws-sam/build/notificationFunction/template.json --s3-bucket $UPLOAD_BUCKET --use-json --output-template-file notification/function.json --s3-prefix ${PREFIX: : -1}
