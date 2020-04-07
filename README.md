@@ -108,6 +108,6 @@ aws cloudformation create-stack --stack-name "${DEV_PREFIX}-${STACKNAME}" --temp
   ParameterKey=RustTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/rust.json" \
   ParameterKey=NotificationTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}notification/function.json" \
   ParameterKey=token,ParameterValue="${API_TOKEN}" \
-  ParameterKey=snsTopicName,ParameterValue="${PROD_PREFIX}-${PREFIX: : -1}-sns" \
+  ParameterKey=snsTopicName,ParameterValue="${DEV_PREFIX}-${PREFIX: : -1}-sns" \
   ParameterKey=snsDisplayName,ParameterValue="Github Notification Service"
 ```
