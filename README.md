@@ -1,13 +1,12 @@
-# Cloudformation Templates
-The master template will initiate the nested stacks to create the pipeline.
+# CloudFormation Templates
+The master template will initiate the nested stacks to create a pipeline in AWS CodePipeline.
 
-# Templates
-The templates must be uploaded to an S3 bucket.
+## IAM Policy
+The master templates creates a `DevOpsLogViewPolicy` and `DevOpsLogViewGroup` that admins can use to give developers read only access
+to the pipeline created in the stack. The user will be able to view the execution state, history and logs of the pipeline, but will not have rights to
+modify, stop, run or otherwise affect the pipeline. It also does not provide access to other parts of the AWS account
 
-# Parameters
-All parameters will be passed to the Master CFN tempalte which will then assign the correct values to the correct templates
-
-# Example
+# Deployment Example
 ## Preparation
 The pipelines have several configurable parameters. Configure all the environment variables below in your terminal environment before moving on.
 ```bash
