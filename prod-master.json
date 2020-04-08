@@ -903,85 +903,93 @@
         }
       }
     },
-    "DevOpsLogViewPolicy": {
-      "Type": "AWS::IAM::Policy",
+    "DevOpsLogViewGroup": {
+      "Type": "AWS::IAM::Group",
       "Properties": {
-        "PolicyName": {
-          "Fn::Sub": "${PipelineName}-LogReadOnly"
+        "GroupName": {
+          "Fn::Sub": "DevOpsLogViewGroup-${PipelineName}-${AWS::Region}"
+        }
+      }
+    },
+    "DevOpsLogViewPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "ManagedPolicyName": {
+          "Fn::Sub": "ViewLogPolicy-${PipelineName}-${AWS::Region}"
         },
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Version": "2012-10-17",
-              "Statement": [
+              "Sid": "0",
+              "Effect": "Allow",
+              "Action": [
+                "codepipeline:ListPipelineExecutions",
+                "codepipeline:ListActionExecutions",
+                "codepipeline:GetPipeline",
+                "codebuild:ListBuildsForProject",
+                "codepipeline:GetPipelineState",
+                "codebuild:BatchGetBuilds",
+                "codepipeline:GetPipelineExecution"
+              ],
+              "Resource": [
                 {
-                  "Sid": "0",
-                  "Effect": "Allow",
-                  "Action": [
-                    "codepipeline:ListPipelineExecutions",
-                    "codepipeline:ListActionExecutions",
-                    "codepipeline:GetPipeline",
-                    "codebuild:ListBuildsForProject",
-                    "codepipeline:GetPipelineState",
-                    "codebuild:BatchGetBuilds",
-                    "codepipeline:GetPipelineExecution"
-                  ],
-                  "Resource": [
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-ClangTest"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-RustTest"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-CoccinelleTest"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-UnitTest"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-VerifyTest"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-Packaging"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-DockerBuild"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-DockerDeploy"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
-                    }
-                  ]
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-ClangTest"
                 },
                 {
-                  "Sid": "1",
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:GetLogRecord",
-                    "logs:GetLogEvents"
-                  ],
-                  "Resource": {
-                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
-                  }
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-RustTest"
                 },
                 {
-                  "Sid": "2",
-                  "Effect": "Allow",
-                  "Action": [
-                    "codepipeline:ListPipelines"
-                  ],
-                  "Resource": {
-                    "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:*"
-                  }
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-CoccinelleTest"
+                },
+                {
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-UnitTest"
+                },
+                {
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-VerifyTest"
+                },
+                {
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-Packaging"
+                },
+                {
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-DockerBuild"
+                },
+                {
+                  "Fn::Sub": "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${PipelineName}-DockerDeploy"
+                },
+                {
+                  "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
                 }
               ]
+            },
+            {
+              "Sid": "1",
+              "Effect": "Allow",
+              "Action": [
+                "logs:GetLogRecord",
+                "logs:GetLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+              }
+            },
+            {
+              "Sid": "2",
+              "Effect": "Allow",
+              "Action": [
+                "codepipeline:ListPipelines"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:*"
+              }
             }
           ]
-        }
+        },
+        "Groups": [
+          {
+            "Ref": "DevOpsLogViewGroup"
+          }
+        ]
       }
     }
   }
