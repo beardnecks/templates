@@ -81,7 +81,8 @@
               "Effect": "Allow",
               "Action": [
                 "codepipeline:GetPipeline",
-                "codepipeline:GetPipelineExecution"
+                "codepipeline:GetPipelineExecution",
+                "codepipeline:ListActionExecutions"
               ],
               "Resource": {
                 "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
