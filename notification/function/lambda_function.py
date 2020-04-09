@@ -18,7 +18,7 @@ from boto3 import client, session
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 logger.handlers[0].setFormatter(
     logging.Formatter("[%(asctime)s][%(levelname)s] %(message)s")
 )
