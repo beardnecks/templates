@@ -463,8 +463,39 @@ def action_change_bb(
     )
 
 
+def pipeline_stop_skip_actions(
+    codepipeline_client: client, pipeline_name: str, execution_id: str
+):
+    """Returns list of pipeline actions that have executed in a pipeline run
+
+    Returns a list of pipeline actions that have executed in a pipeline run. This can be used to
+    determine what actions in the pipeline have not yet executed.
+    :param codepipeline_client: A boto3 codepipeline client
+    :param pipeline_name: The name of the running pipeline
+    :param execution_id: Execution ID of current pipeline run
+    :return: List of actions to skip
+    """
+    skip_actions = []
+
+    action_executions = codepipeline_client.list_action_executions(
+        pipelineName=pipeline_name, filter={"pipelineExecutionId": execution_id}
+    )
+    logger.info("Action executions list")
+    logger.info(action_executions)
+    for action in action_executions["actionExecutionDetails"]:
+        skip_actions.append(action["actionName"])
+
+    return skip_actions
+
+
 def update_all_stages_actions_gh(
-    request: dict, push: bool, user: str, repo: str, pipeline_name: str,
+    request: dict,
+    push: bool,
+    user: str,
+    repo: str,
+    pipeline_name: str,
+    state: ActionStates,
+    execution_id: str,
 ):
     """Set all pipeline actions as started on commit
 
@@ -474,6 +505,8 @@ def update_all_stages_actions_gh(
     :param user: The user/organization that hosts the repository
     :param repo: The name of the repository
     :param pipeline_name: The name of the running pipeline
+    :param state: The action state to update to
+    :param execution_id: Execution ID of current pipeline run
     :return:
     """
 
@@ -482,15 +515,26 @@ def update_all_stages_actions_gh(
 
     pipeline = codepipeline.get_pipeline(name=pipeline_name)
 
+    skip_actions = []
+
+    if state == ActionStates.STOPPED:
+        skip_actions = pipeline_stop_skip_actions(
+            codepipeline, pipeline_name, execution_id
+        )
+
     for stage in pipeline["pipeline"]["stages"]:
         if stage["name"] == "Source":
             logger.info("Skipping source stage")
             continue
 
         for action in stage["actions"]:
+            if action["name"] in skip_actions:
+                logger.info("Skipping action %s" % action["name"])
+                continue
+
             logger.info("Updating action %s" % action["name"])
             action_change_gh(
-                ActionStates.STARTED,
+                state,
                 request,
                 stage["name"],
                 action["name"],
@@ -501,13 +545,21 @@ def update_all_stages_actions_gh(
             )
 
 
-def update_all_stages_actions_bb(request: dict, push: bool, pipeline_name: str):
+def update_all_stages_actions_bb(
+    request: dict,
+    push: bool,
+    pipeline_name: str,
+    state: ActionStates,
+    execution_id: str,
+):
     """Set all pipeline actions as started on commit
 
     When the pipeline is started, get all the actions in the pipeline and set them all as started
     :param request: The original request received when the repo source was cloned.
     :param push: If the commit was a push or not
     :param pipeline_name: The name of the running pipeline
+    :param state: The action state to update to
+    :param execution_id: Execution ID of current pipeline run
     :return:
     """
 
@@ -516,20 +568,26 @@ def update_all_stages_actions_bb(request: dict, push: bool, pipeline_name: str):
 
     pipeline = codepipeline.get_pipeline(name=pipeline_name)
 
+    skip_actions = []
+
+    if state == ActionStates.STOPPED:
+        skip_actions = pipeline_stop_skip_actions(
+            codepipeline, pipeline_name, execution_id
+        )
+
     for stage in pipeline["pipeline"]["stages"]:
         if stage["name"] == "Source":
             logger.info("Skipping source stage")
             continue
 
         for action in stage["actions"]:
+            if action["name"] in skip_actions:
+                logger.info("Skipping action %s" % action["name"])
+                continue
+
             logger.info("Updating action %s" % action["name"])
             action_change_bb(
-                ActionStates.STARTED,
-                request,
-                stage["name"],
-                action["name"],
-                push,
-                pipeline_name,
+                state, request, stage["name"], action["name"], push, pipeline_name,
             )
 
 
@@ -553,7 +611,23 @@ def github_state_update(request: dict, message: dict):
         logger.info(message["detail"]["state"])
         if message["detail"]["state"] == PipelineStates.STARTED.value:
             update_all_stages_actions_gh(
-                request, push, user, repo, message["detail"]["pipeline"],
+                request,
+                push,
+                user,
+                repo,
+                message["detail"]["pipeline"],
+                ActionStates.STARTED,
+                message["detail"]["execution-id"],
+            )
+        elif message["detail"]["state"] == PipelineStates.STOPPED.value:
+            update_all_stages_actions_gh(
+                request,
+                push,
+                user,
+                repo,
+                message["detail"]["pipeline"],
+                ActionStates.STOPPED,
+                message["detail"]["execution-id"],
             )
         return
 
@@ -594,7 +668,19 @@ def bitbucket_state_update(request: dict, message: dict):
         logger.info(message["detail"]["state"])
         if message["detail"]["state"] == PipelineStates.STARTED.value:
             update_all_stages_actions_bb(
-                request, push, message["detail"]["pipeline"],
+                request,
+                push,
+                message["detail"]["pipeline"],
+                ActionStates.STARTED,
+                message["detail"]["execution-id"],
+            )
+        elif message["detail"]["state"] == PipelineStates.STOPPED.value:
+            update_all_stages_actions_bb(
+                request,
+                push,
+                message["detail"]["pipeline"],
+                ActionStates.STOPPED,
+                message["detail"]["execution-id"],
             )
 
         return  # The state change is not action, no point in going further
