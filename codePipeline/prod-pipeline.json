@@ -83,6 +83,15 @@
       "Properties": {
         "BucketName": {
           "Ref": "OutputBucketName"
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
         }
       }
     },
