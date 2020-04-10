@@ -642,6 +642,10 @@ def lambda_handler(event, context):
     s3_version_id = pipeline_execution["pipelineExecution"]["artifactRevisions"][0][
         "revisionId"
     ]
+    source_bucket_object_key = (
+        source_bucket_object_key.rsplit("/", 1)[0] + "/events/%s" % s3_version_id
+    )
+
     logger.info(
         "Downloading source from s3://%s/%s with VersionId %s"
         % (source_bucket, source_bucket_object_key, s3_version_id)
@@ -649,16 +653,11 @@ def lambda_handler(event, context):
     s3.download_file(
         source_bucket,
         source_bucket_object_key,
-        "/tmp/code.zip",
-        ExtraArgs={"VersionId": s3_version_id},
+        "/tmp/event.json",
     )
 
-    logger.info("Unzipping top /tmp/code...")
-    code_zip = ZipFile("/tmp/code.zip", "r")
-    ZipFile.extractall(code_zip, "/tmp/code")
-
     # Open json file containing event data from when the source zip was created
-    f = open("/tmp/code/event.json", "r")
+    f = open("/tmp/event.json", "r")
     content = f.readline()
     request = json.loads(content)
 

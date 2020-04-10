@@ -106,7 +106,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "lambda_function.lambda_handler",
-        "MemorySize": 192,
+        "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
             "NotificationRole",
