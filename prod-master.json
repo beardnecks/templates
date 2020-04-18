@@ -107,6 +107,14 @@
             "snsDisplayName",
             "snsTopicName"
           ]
+        },
+        {
+          "Label": {
+            "default": "Provisioning lambda settings"
+          },
+          "Parameters": [
+            "ProvisionTemplateURL"
+          ]
         }
       ],
       "ParameterLabels": {
@@ -175,6 +183,9 @@
         },
         "NotificationTemplateURL": {
           "default": "S3 URL of notification system template"
+        },
+        "ProvisionTemplateURL": {
+          "default": "S3 URL of provision lambda template"
         },
         "PipelineName": {
           "default": "Name of the CodePipeline"
@@ -310,6 +321,11 @@
       "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
       "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Type": "String"
+    },
+    "ProvisionTemplateURL": {
+      "Description": "S3 URL of provision lambda template",
+      "Type": "String",
+      "Default": ""
     },
     "PipelineName": {
       "Type": "String",
@@ -866,48 +882,28 @@
         }
       }
     },
-    "pipeline": {
+    "ProvisionFunction": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+        },
+        "TemplateURL": {
+          "Ref": "ProvisionTemplateURL"
+        }
+      }
+    },
+    "pipelineMaster": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": {
           "Ref": "PipelineTemplateURL"
         },
         "Parameters": {
-          "PipelineName": {
-            "Ref": "PipelineName"
-          },
           "SourceBucket": {
             "Ref": "SourceBucket"
           },
-          "SourceBucketObjectKey": {
-            "Ref": "SourceBucketObjectKey"
-          },
           "OutputBucketName": {
             "Ref": "OutputBucketName"
-          },
-          "UnitTestName": {
-            "Fn::Sub": "${PipelineName}-UnitTest"
-          },
-          "VerifyTestName": {
-            "Fn::Sub": "${PipelineName}-VerifyTest"
-          },
-          "CoccinelleTestName": {
-            "Fn::Sub": "${PipelineName}-CoccinelleTest"
-          },
-          "RustTestName": {
-            "Fn::Sub": "${PipelineName}-RustTest"
-          },
-          "ClangTestName": {
-            "Fn::Sub": "${PipelineName}-ClangTest"
-          },
-          "PackagingName": {
-            "Fn::Sub": "${PipelineName}-Packaging"
-          },
-          "DockerBuildName": {
-            "Fn::Sub": "${PipelineName}-DockerBuild"
-          },
-          "DockerDeployName": {
-            "Fn::Sub": "${PipelineName}-DockerDeploy"
           },
           "snsTopicName": {
             "Ref": "snsTopicName"
@@ -919,6 +915,12 @@
             "Fn::GetAtt": [
               "NotificationSystem",
               "Outputs.notificationFunctionArn"
+            ]
+          },
+          "provisionFunctionArn": {
+            "Fn::GetAtt": [
+              "ProvisionFunction",
+              "Outputs.provisionFunctionArn"
             ]
           }
         }

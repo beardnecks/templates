@@ -1,0 +1,544 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "SourceBucket": {
+      "Type": "String",
+      "Default": "",
+      "Description": "S3 bucket source for the pipeline"
+    },
+    "OutputBucketName": {
+      "Type": "String",
+      "Default": "Pipeline-output-bucket",
+      "Description": "Bucket containing the output artifact from the pipeline"
+    },
+    "snsTopicName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Name of sns topic"
+    },
+    "snsDisplayName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Display Name of sns topic"
+    },
+    "notificationFunctionArn": {
+      "Description": "ARN of notification function",
+      "Type": "String",
+      "Default": ""
+    },
+    "provisionFunctionArn": {
+      "Description": "ARN of provision function",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Resources": {
+    "OutputBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "OutputBucketName"
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "NotifyCloudWatchEventRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "cwe-lambdanotification-execution",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "sns:Publish",
+                  "Resource": {
+                    "Ref": "snsTopic"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "notifyRulePipeline": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "--",
+        "EventPattern": {
+          "source": [
+            "aws.codepipeline"
+          ],
+          "detail-type": [
+            "CodePipeline Pipeline Execution State Change"
+          ]
+        },
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "snsTopic"
+            },
+            "Id": "t-topic-target"
+          }
+        ],
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "NotifyCloudWatchEventRole",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "notifyRuleActions": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "--",
+        "EventPattern": {
+          "source": [
+            "aws.codepipeline"
+          ],
+          "detail-type": [
+            "CodePipeline Action Execution State Change"
+          ],
+          "detail": {
+            "type": {
+              "category": [
+                "Deploy",
+                "Build",
+                "Test"
+              ]
+            }
+          }
+        },
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "snsTopic"
+            },
+            "Id": "t-topic-target"
+          }
+        ],
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "NotifyCloudWatchEventRole",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "snsTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": {
+          "Ref": "snsDisplayName"
+        },
+        "TopicName": {
+          "Ref": "snsTopicName"
+        }
+      }
+    },
+    "snsTopicPolicy": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "Topics": [
+          {
+            "Ref": "snsTopic"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Action": [
+              "SNS:GetTopicAttributes",
+              "SNS:SetTopicAttributes",
+              "SNS:AddPermission",
+              "SNS:RemovePermission",
+              "SNS:DeleteTopic",
+              "SNS:Subscribe",
+              "SNS:ListSubscriptionsByTopic",
+              "SNS:Publish",
+              "SNS:Receive"
+            ],
+            "Resource": {
+              "Ref": "snsTopic"
+            },
+            "Principal": {
+              "Service": "events.amazonaws.com"
+            }
+          }
+        }
+      }
+    },
+    "snsTopicSubscription": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "TopicArn": {
+          "Ref": "snsTopic"
+        },
+        "Endpoint": {
+          "Ref": "notificationFunctionArn"
+        },
+        "Protocol": "lambda"
+      }
+    },
+    "NotificationLambdaInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "snsTopic"
+        },
+        "FunctionName": {
+          "Ref": "notificationFunctionArn"
+        }
+      }
+    },
+    "ServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Path": "/service-role/",
+        "RoleName": {
+          "Fn::Sub": "AWSCodePipelineServiceRole-${AWS::Region}-codepipelineMasterRole"
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codepipeline.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "s3",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetBucketPolicyStatus",
+                    "s3:GetBucketLogging",
+                    "s3:GetAccelerateConfiguration",
+                    "s3:GetBucketVersioning",
+                    "s3:UpdateJobStatus",
+                    "s3:GetBucketAcl",
+                    "s3:GetBucketNotification",
+                    "s3:GetBucketPolicy",
+                    "s3:GetBucketObjectLockConfiguration",
+                    "s3:PutObject",
+                    "s3:GetObjectAcl",
+                    "s3:GetObject",
+                    "s3:DescribeJob",
+                    "s3:UpdateJobPriority",
+                    "s3:GetBucketLocation",
+                    "s3:GetObjectVersion"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "logs",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "logs:*",
+                    "sns:*"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "codepipeline",
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "codepipeline:*",
+                    "codedeploy:GetApplication",
+                    "codedeploy:BatchGetApplications",
+                    "codedeploy:GetDeploymentGroup",
+                    "codedeploy:BatchGetDeploymentGroups",
+                    "codedeploy:ListApplications",
+                    "codedeploy:ListDeploymentGroups",
+                    "sns:ListTopics"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:CreateBucket",
+                    "s3:PutBucketPolicy"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:s3::*:codepipeline-*"
+                }
+              ],
+              "Version": "2012-10-17"
+            }
+          },
+          {
+            "PolicyName": "codebuild",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "codebuild:StartBuild",
+                    "codebuild:BatchGetBuilds",
+                    "codebuild:BatchGetProjects",
+                    "codebuild:ListCuratedEnvironmentImages",
+                    "codebuild:ListProjects",
+                    "logs:GetLogEvents"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                },
+                {
+                  "Action": [
+                    "logs:DeleteLogGroup"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:PutParameter"
+                  ],
+                  "Resource": "arn:aws:ssm:*:*:parameter/CodeBuild/*"
+                }
+              ]
+            }
+          }
+        ],
+        "MaxSessionDuration": 3600
+      }
+    },
+    "AWSCloudTrailBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "AWSCloudTrailBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "AWSCloudTrailBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AWSCloudTrailAclCheck",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "cloudtrail.amazonaws.com"
+                ]
+              },
+              "Action": "s3:GetBucketAcl",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AWSCloudTrailBucket",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Sid": "AWSCloudTrailWrite",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "cloudtrail.amazonaws.com"
+                ]
+              },
+              "Action": "s3:PutObject",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "AWSCloudTrailBucket",
+                        "Arn"
+                      ]
+                    },
+                    "/AWSLogs/",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "/*"
+                  ]
+                ]
+              },
+              "Condition": {
+                "StringEquals": {
+                  "s3:x-amz-acl": "bucket-owner-full-control"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AwsCloudTrail": {
+      "DependsOn": [
+        "AWSCloudTrailBucketPolicy"
+      ],
+      "Type": "AWS::CloudTrail::Trail",
+      "Properties": {
+        "S3BucketName": {
+          "Ref": "AWSCloudTrailBucket"
+        },
+        "EventSelectors": [
+          {
+            "DataResources": [
+              {
+                "Type": "AWS::S3::Object",
+                "Values": [
+                  {
+                    "Fn::Sub": "arn:aws:s3:::${SourceBucket}/"
+                  }
+                ]
+              }
+            ],
+            "ReadWriteType": "WriteOnly"
+          }
+        ],
+        "IncludeGlobalServiceEvents": true,
+        "IsLogging": true,
+        "IsMultiRegionTrail": true
+      }
+    },
+    "ProvisionCloudWatchEventRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+
+        ]
+      }
+    },
+    "ProvisionLambdaInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "provisionEventRule",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Ref": "provisionFunctionArn"
+        }
+      }
+    },
+    "provisionEventRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "--",
+        "EventPattern": {
+          "source": [
+            "aws.s3"
+          ],
+          "detail-type": [
+            "AWS API Call via CloudTrail"
+          ],
+          "detail": {
+            "eventSource": [
+              "s3.amazonaws.com"
+            ],
+            "eventName": [
+              "PutObject",
+              "CompleteMultipartUpload",
+              "CopyObject"
+            ],
+            "requestParameters": {
+              "bucketName": [
+                {
+                  "Fn::Sub": "${SourceBucket}"
+                }
+              ]
+            }
+          }
+        },
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "provisionFunctionArn"
+            },
+            "Id": "provision-lambda-target"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ServiceRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ServiceRole",
+          "Arn"
+        ]
+      }
+    }
+  }
+}
