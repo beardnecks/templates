@@ -33,5 +33,41 @@ def lambda_handler(event, context):
     :param context: Not used
     :return:
     """
+    pipeline_prefix = os.environ["PIPELINE_NAME"]
+
     logger.info("Function was triggered!")
     logger.info(event)
+
+    updated_file = event["detail"]["requestParameters"]["key"]
+
+    if ".zip" not in updated_file:
+        logger.error("File is not a source code zip file, ignoring")
+        return
+
+    # Get branch
+    branch = updated_file.replace(".zip", "").rsplit("/", 1)[1]
+    logger.info("Branch is %s" % branch)
+
+    # Check if pipeline for that branch already exists
+
+    codepipeline = client("codepipeline")
+    response = codepipeline.list_pipelines()
+    pipelines = response["pipelines"]
+
+    logger.info(response)
+
+    while "nextToken" in response:
+        response = codepipeline.list_pipelines(nextToken=response["nextToken"])
+        pipelines.extend(response["pipelines"])
+        logger.info("nextToken: %s" % response["nextToken"])
+
+    logger.info("Pipelines: ")
+    logger.info(pipelines)
+
+    for pipeline in pipelines:
+        if "%s-%s" % (pipeline_prefix, branch) in pipeline["name"]:
+            logger.error("Pipeline already exists for branch, exiting...")
+            return
+
+    # Create pipeline
+    logger.info("Pipeline does not exist for current branch, creating...")
