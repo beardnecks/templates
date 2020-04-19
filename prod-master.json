@@ -910,6 +910,12 @@
           "ProdPipelineTemplateURL": {
             "Ref": "ProdPipelineTemplateURL"
           },
+          "OutputBucketName": {
+            "Ref": "OutputBucketName"
+          },
+          "ServiceRoleArn": {
+            "Fn::Sub": "arn:aws:iam:${AWS::AccountId}:role/service-role/codepipelineMasterRole-Suricata-${AWS::Region}-"
+          },
           "DevPipelineTemplateURL": {
             "Ref": "DevPipelineTemplateURL"
           }
