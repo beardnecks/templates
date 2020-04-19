@@ -2,6 +2,23 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
   "Description": "Creates notification lambda function",
+  "Parameters": {
+    "PipelineName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "prefix for CodePipeline"
+    },
+    "ProdPipelineTemplateUrl": {
+      "Type": "String",
+      "Default": "",
+      "Description": "URL for production pipeline cfn template"
+    },
+    "DevPipelineTemplateUrl": {
+      "Type": "String",
+      "Default": "",
+      "Description": "URL for development pipeline cfn template"
+    }
+  },
   "Resources": {
     "ProvisionRole": {
       "Type": "AWS::IAM::Role",
@@ -51,6 +68,15 @@
                   "Resource": {
                     "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:*"
                   }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cloudformation:CreateStack"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:*"
+                  }
                 }
               ]
             }
@@ -73,6 +99,15 @@
         "Timeout": 300,
         "Environment": {
           "Variables": {
+            "PIPELINE_NAME": {
+              "Ref": "PipelineName"
+            },
+            "PROD_TEMPLATE_URL": {
+              "Ref": "ProdPipelineTemplateUrl"
+            },
+            "DEV_TEMPLATE_URL": {
+              "Ref": "DevPipelineTemplateUrl"
+            }
           }
         },
         "CodeUri": "."
