@@ -8,12 +8,12 @@
       "Default": "",
       "Description": "prefix for CodePipeline"
     },
-    "ProdPipelineTemplateUrl": {
+    "ProdPipelineTemplateURL": {
       "Type": "String",
       "Default": "",
       "Description": "URL for production pipeline cfn template"
     },
-    "DevPipelineTemplateUrl": {
+    "DevPipelineTemplateURL": {
       "Type": "String",
       "Default": "",
       "Description": "URL for development pipeline cfn template"
@@ -103,10 +103,10 @@
               "Ref": "PipelineName"
             },
             "PROD_TEMPLATE_URL": {
-              "Ref": "ProdPipelineTemplateUrl"
+              "Ref": "ProdPipelineTemplateURL"
             },
             "DEV_TEMPLATE_URL": {
-              "Ref": "DevPipelineTemplateUrl"
+              "Ref": "DevPipelineTemplateURL"
             }
           }
         },
