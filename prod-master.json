@@ -94,7 +94,9 @@
             "SourceBucket",
             "SourceBucketObjectKey",
             "OutputBucketName",
-            "PipelineTemplateURL"
+            "PipelineTemplateURL",
+            "ProdPipelineTemplateURL",
+            "DevPipelineTemplateURL"
           ]
         },
         {
@@ -200,6 +202,12 @@
           "default": "Bucket containing the RPM file (finished product) from the pipeline"
         },
         "PipelineTemplateURL": {
+          "default": "S3 URL for the pipeline template"
+        },
+        "ProdPipelineTemplateURL": {
+          "default": "S3 URL for the pipeline template"
+        },
+        "DevPipelineTemplateURL": {
           "default": "S3 URL for the pipeline template"
         }
       }
@@ -355,6 +363,16 @@
       "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
       "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Description": "S3 URL for the pipeline template"
+    },
+    "ProdPipelineTemplateURL": {
+      "Type": "String",
+      "Default": "",
+      "Description": "S3 URL for the production pipeline template"
+    },
+    "DevPipelineTemplateURL": {
+      "Type": "String",
+      "Default": "",
+      "Description": "S3 URL for the development pipeline template"
     },
     "snsTopicName": {
       "Type": "String",
@@ -886,6 +904,15 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
+          "PipelineName": {
+            "Ref": "PipelineName"
+          },
+          "ProdPipelineTemplateURL": {
+            "Ref": "ProdPipelineTemplateURL"
+          },
+          "DevPipelineTemplateURL": {
+            "Ref": "DevPipelineTemplateURL"
+          }
         },
         "TemplateURL": {
           "Ref": "ProvisionTemplateURL"
