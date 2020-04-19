@@ -18,7 +18,7 @@
     },
     "snsDisplayName": {
       "Type": "String",
-      "Default": "",
+      "Default": "Suricata Pipeline Notification Topic",
       "Description": "Display Name of sns topic"
     },
     "notificationFunctionArn": {
@@ -226,7 +226,7 @@
       "Properties": {
         "Path": "/service-role/",
         "RoleName": {
-          "Fn::Sub": "AWSCodePipelineServiceRole-${AWS::Region}-codepipelineMasterRole"
+          "Fn::Sub": "Suricata-${AWS::Region}-codepipelineMasterRole"
         },
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -356,16 +356,16 @@
         "MaxSessionDuration": 3600
       }
     },
-    "AWSCloudTrailBucket": {
+    "CloudTrailBucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
     },
-    "AWSCloudTrailBucketPolicy": {
+    "CloudTrailBucketPolicy": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "AWSCloudTrailBucket"
+          "Ref": "CloudTrailBucket"
         },
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -381,7 +381,7 @@
               "Action": "s3:GetBucketAcl",
               "Resource": {
                 "Fn::GetAtt": [
-                  "AWSCloudTrailBucket",
+                  "CloudTrailBucket",
                   "Arn"
                 ]
               }
@@ -401,7 +401,7 @@
                   [
                     {
                       "Fn::GetAtt": [
-                        "AWSCloudTrailBucket",
+                        "CloudTrailBucket",
                         "Arn"
                       ]
                     },
@@ -423,14 +423,14 @@
         }
       }
     },
-    "AwsCloudTrail": {
+    "CloudTrail": {
       "DependsOn": [
-        "AWSCloudTrailBucketPolicy"
+        "CloudTrailBucketPolicy"
       ],
       "Type": "AWS::CloudTrail::Trail",
       "Properties": {
         "S3BucketName": {
-          "Ref": "AWSCloudTrailBucket"
+          "Ref": "CloudTrailBucket"
         },
         "EventSelectors": [
           {
