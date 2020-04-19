@@ -8,6 +8,16 @@
       "Default": "",
       "Description": "prefix for CodePipeline"
     },
+   "ServiceRoleArn": {
+     "Type": "String",
+     "Default": "",
+     "Description": "Arn of codepipeline service role"
+   },
+    "OutputBucketName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Name of output bucket for deployment of RPM"
+    },
     "ProdPipelineTemplateURL": {
       "Type": "String",
       "Default": "",
@@ -102,6 +112,12 @@
             "PIPELINE_NAME": {
               "Ref": "PipelineName"
             },
+            "SERVICE_ROLE_ARN": {
+              "Ref": "ServiceRoleArn"
+            },
+            "OUTPUT_BUCKET": {
+              "Ref": "OutputBucketName"
+            },
             "PROD_TEMPLATE_URL": {
               "Ref": "ProdPipelineTemplateURL"
             },
@@ -117,7 +133,10 @@
   "Outputs": {
     "provisionFunctionArn": {
       "Value": {
-        "Fn::GetAtt": ["provisionFunction","Arn"]
+        "Fn::GetAtt": [
+          "provisionFunction",
+          "Arn"
+        ]
       }
     }
   }
