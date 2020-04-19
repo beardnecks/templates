@@ -34,6 +34,8 @@ def lambda_handler(event, context):
     :return:
     """
     pipeline_prefix = os.environ["PIPELINE_NAME"]
+    prod_pipeline_template_url = os.environ["PROD_TEMPLATE_URL"]
+    dev_pipeline_template_url = os.environ["DEV_TEMPLATE_URL"]
 
     logger.info("Function was triggered!")
     logger.info(event)
@@ -71,3 +73,21 @@ def lambda_handler(event, context):
 
     # Create pipeline
     logger.info("Pipeline does not exist for current branch, creating...")
+
+    # Check if prod or dev pipeline
+    prefix = updated_file.replace(".zip", "").rsplit("/", 1)[1].rsplit("/", 1)[1]
+    if prefix == "prod":
+        codepipeline.create_stack(
+            StackName="%s%sPipeline" % (pipeline_prefix, branch),
+            TemplateURL=prod_pipeline_template_url,
+            Parameters=[{}, {},],
+        )
+    elif prefix == "dev":
+        codepipeline.create_stack(
+            StackName="%s%sPipeline" % (pipeline_prefix, branch),
+            TemplateURL=dev_pipeline_template_url,
+            Parameters=[{}, {},],
+        )
+    else:
+        logger.error("Unkown pipeline type: %s" % prefix)
+        raise Exception("Unkown pipeline type: %s" % prefix)
