@@ -7,16 +7,19 @@
     },
     "SourceBucket": {
       "Type": "String",
-      "Default": "",
-      "Description": "S3 bucket for the pipeline source code"
+      "Description": "S3 bucket source for the pipeline"
     },
     "SourceBucketObjectKey": {
       "Type": "String",
       "Description": "Zip file containing source code inside Source Code Bucket"
     },
+    "ServiceRoleArn": {
+      "Description": "ARN of notification function",
+      "Type": "String"
+    },
     "OutputBucketName": {
       "Type": "String",
-      "Default": "Pipeline-output-bucket",
+      "Default": "${PipelineName}-output-bucket",
       "Description": "Bucket containing the output artifact from the pipeline"
     },
     "UnitTestName": {
@@ -58,10 +61,6 @@
       "Type": "String",
       "Default": "${PipelineName}-DockerDeploy",
       "Description": "Project name of docker"
-    },
-    "ServiceRoleArn": {
-      "Description": "ARN of notification function",
-      "Type": "String"
     }
   },
   "Resources": {
