@@ -123,7 +123,7 @@
         }
       }
     },
-    "AmazonCloudWatchEventRole": {
+    "PipelineCloudWatchEventRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -234,7 +234,7 @@
             "Id": "suricata-pipeline-target",
             "RoleArn": {
               "Fn::GetAtt": [
-                "AmazonCloudWatchEventRole",
+                "PipelineCloudWatchEventRole",
                 "Arn"
               ]
             }
@@ -244,6 +244,7 @@
     },
     "pipeline": {
       "Type": "AWS::CodePipeline::Pipeline",
+      "DependsOn": "ArtifactStoreBucket",
       "Properties": {
         "Name": {
           "Ref": "PipelineName"
