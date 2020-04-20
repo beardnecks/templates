@@ -7,7 +7,6 @@
     },
     "CodeBuildProjectPrefix": {
       "Type": "String",
-      "Default": "",
       "Description": "prefix for created CodeBuild projects"
     },
     "SourceBucket": {
