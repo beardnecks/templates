@@ -226,7 +226,7 @@
       "Properties": {
         "Path": "/service-role/",
         "RoleName": {
-          "Fn::Sub": "Suricata-${AWS::Region}-codepipelineMasterRole"
+          "Fn::Sub": "codepipelineMasterRole-suricata-${AWS::Region}"
         },
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
