@@ -8,11 +8,11 @@
       "Default": "",
       "Description": "prefix for CodePipeline"
     },
-   "ServiceRoleArn": {
-     "Type": "String",
-     "Default": "",
-     "Description": "Arn of codepipeline service role"
-   },
+    "ServiceRoleArn": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Arn of codepipeline service role"
+    },
     "OutputBucketName": {
       "Type": "String",
       "Default": "",
@@ -55,8 +55,12 @@
                 {
                   "Effect": "Allow",
                   "Action": [
+                    "s3:DeleteBucket",
+                    "s3:CreateBucket",
                     "s3:GetObject",
-                    "s3:GetObjectVersion"
+                    "s3:GetObjectVersion",
+                    "s3:PutBucketPolicy",
+                    "s3:GetBucketPolicy"
                   ],
                   "Resource": "arn:aws:s3:::*"
                 },
@@ -72,8 +76,30 @@
                 {
                   "Effect": "Allow",
                   "Action": [
+                    "iam:CreateRole",
+                    "iam:PutRolePolicy",
+                    "iam:GetRolePolicy",
+                    "iam:GetRole",
+                    "iam:PassRole"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "events:PutRule",
+                    "events:DescribeRule",
+                    "events:PutTargets"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "codepipeline:CreatePipeline",
                     "codepipeline:GetPipeline",
-                    "codepipeline:ListPipelines"
+                    "codepipeline:ListPipelines",
+                    "codepipeline:GetPipelineState"
                   ],
                   "Resource": {
                     "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:*"
