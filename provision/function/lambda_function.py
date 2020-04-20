@@ -94,7 +94,7 @@ def lambda_handler(event, context):
         logger.info(output_bucket_name)
 
         cloudformation.create_stack(
-            StackName="%s%sPipeline" % (pipeline_prefix, branch),
+            StackName="%s-%s-Pipeline" % (pipeline_prefix, branch),
             TemplateURL=prod_pipeline_template_url,
             Parameters=[
                 {"ParameterKey": "PipelineName", "ParameterValue": pipeline_name},
