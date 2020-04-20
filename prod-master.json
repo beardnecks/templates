@@ -198,7 +198,8 @@
     "token": {
       "Description": "Github Token or Bitbucket basic auth credentials",
       "Type": "String",
-      "Default": ""
+      "Default": "",
+      "NoEcho": true
     },
     "UnitTestBuildSpecFileName": {
       "Description": "Filename of the Unittest buildspec",

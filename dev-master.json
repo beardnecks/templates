@@ -150,7 +150,8 @@
     "token": {
       "Description": "Github Token",
       "Type": "String",
-      "Default": ""
+      "Default": "",
+      "NoEcho": true
     },
     "UnitTestBuildSpecFileName": {
       "Description": "Filename of the Unittest buildspec",
