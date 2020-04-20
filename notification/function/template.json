@@ -10,19 +10,16 @@
       "Default": ""
     },
     "SourceBucket": {
-      "Description": "Output Bucket where source and event is stored",
-      "Type": "String",
-      "Default": ""
+      "Description": "Source Bucket where source and event is stored",
+      "Type": "String"
     },
     "SourceBucketObjectKey": {
-      "Description": "Location of file to download",
-      "Type": "String",
-      "Default": ""
+      "Description": "Location of source code file in bucket",
+      "Type": "String"
     },
     "PipelineName": {
       "Description": "Name of the attached pipeline",
-      "Type": "String",
-      "Default": ""
+      "Type": "String"
     }
   },
   "Resources": {
