@@ -75,19 +75,67 @@ def lambda_handler(event, context):
     logger.info("Pipeline does not exist for current branch, creating...")
 
     # Check if prod or dev pipeline
-    prefix = updated_file.replace(".zip", "").rsplit("/", 1)[1].rsplit("/", 1)[1]
+    prefix = updated_file.replace(".zip", "").rsplit("/", 1)[0].rsplit("/", 1)[1]
+    source_bucket = event["detail"]["requestParameters"]["bucketName"]
+    source_bucket_object_key = updated_file
+    service_role_arn = os.environ["SERVICE_ROLE_ARN"]
+    output_bucket_name = os.environ["OUTPUT_BUCKET"]
+    cloudformation = client("cloudformation")
+
     if prefix == "prod":
-        codepipeline.create_stack(
+        pipeline_name = "prod-%s-%s" % (pipeline_prefix, branch)
+
+        logger.info(pipeline_name)
+        logger.info(source_bucket)
+        logger.info(source_bucket_object_key)
+        logger.info(service_role_arn)
+        logger.info(output_bucket_name)
+
+        cloudformation.create_stack(
             StackName="%s%sPipeline" % (pipeline_prefix, branch),
             TemplateURL=prod_pipeline_template_url,
-            Parameters=[{}, {},],
+            Parameters=[
+                {"ParameterKey": "PipelineName", "ParameterValue": pipeline_name},
+                {"ParameterKey": "SourceBucket", "ParameterValue": source_bucket},
+                {
+                    "ParameterKey": "SourceBucketObjectKey",
+                    "ParameterValue": source_bucket_object_key,
+                },
+                {"ParameterKey": "ServiceRoleArn", "ParameterValue": service_role_arn},
+                {
+                    "ParameterKey": "OutputBucketName",
+                    "ParameterValue": output_bucket_name,
+                },
+            ],
+            Capabilities=["CAPABILITY_IAM"],
         )
+
+        # Delete bucket on failure
+
     elif prefix == "dev":
-        codepipeline.create_stack(
+        pipeline_name = "dev-%s-%s" % (pipeline_prefix, branch)
+
+        cloudformation.create_stack(
             StackName="%s%sPipeline" % (pipeline_prefix, branch),
             TemplateURL=dev_pipeline_template_url,
-            Parameters=[{}, {},],
+            Parameters=[
+                {"ParameterKey": "PipelineName", "ParameterValue": pipeline_name},
+                {"ParameterKey": "SourceBucket", "ParameterValue": source_bucket},
+                {
+                    "ParameterKey": "SourceBucketObjectKey",
+                    "ParameterValue": source_bucket_object_key,
+                },
+                {"ParameterKey": "ServiceRoleArn", "ParameterValue": service_role_arn},
+                {
+                    "ParameterKey": "OutputBucketName",
+                    "ParameterValue": output_bucket_name,
+                },
+            ],
+            Capabilities=["CAPABILITY_IAM"],
         )
+
+        # Delete bucket on failure
+
     else:
         logger.error("Unkown pipeline type: %s" % prefix)
         raise Exception("Unkown pipeline type: %s" % prefix)
