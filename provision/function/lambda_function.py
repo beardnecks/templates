@@ -87,6 +87,7 @@ def lambda_handler(event, context):
         pipeline_name = "%s-%s-prod" % (pipeline_prefix, branch)
 
         logger.info(pipeline_name)
+        logger.info(codebuild_prefix)
         logger.info(source_bucket)
         logger.info(source_bucket_object_key)
         logger.info(service_role_arn)
