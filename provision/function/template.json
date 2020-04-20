@@ -5,32 +5,26 @@
   "Parameters": {
     "PipelinePrefix": {
       "Type": "String",
-      "Default": "",
       "Description": "prefix used when creating CodePipeline"
     },
     "CodeBuildProjectPrefix": {
       "Type": "String",
-      "Default": "",
       "Description": "prefix for created CodeBuild projects"
     },
     "ServiceRoleArn": {
       "Type": "String",
-      "Default": "",
       "Description": "Arn of codepipeline service role"
     },
     "OutputBucketName": {
       "Type": "String",
-      "Default": "",
       "Description": "Name of output bucket for deployment of RPM"
     },
     "ProdPipelineTemplateURL": {
       "Type": "String",
-      "Default": "",
       "Description": "URL for production pipeline cfn template"
     },
     "DevPipelineTemplateURL": {
       "Type": "String",
-      "Default": "",
       "Description": "URL for development pipeline cfn template"
     }
   },
