@@ -3,58 +3,48 @@
   "Parameters": {
     "PipelineName": {
       "Type": "String",
-      "Default": "",
       "Description": "Name of the CodePipeline"
     },
     "SourceBucket": {
       "Type": "String",
       "Default": "",
-      "Description": "S3 bucket source for the pipeline"
+      "Description": "S3 bucket for the pipeline source code"
     },
     "SourceBucketObjectKey": {
       "Type": "String",
-      "Default": "",
       "Description": "Zip file containing source code inside Source Code Bucket"
     },
     "UnitTestName": {
       "Type": "String",
-      "Default": "",
       "Description": "Project name of unit test"
     },
     "VerifyTestName": {
       "Type": "String",
-      "Default": "",
       "Description": "Project name of verify test"
     },
     "CoccinelleTestName": {
       "Type": "String",
-      "Default": "",
       "Description": "Project name of Coccinelle"
     },
     "ClangTestName": {
       "Type": "String",
-      "Default": "ClangTestName",
       "Description": "Project name of Clang test"
     },
     "RustTestName": {
       "Type": "String",
-      "Default": "",
       "Description": "Project name of Rust test"
     },
     "snsTopicName": {
       "Type": "String",
-      "Default": "",
       "Description": "Name of sns topic"
     },
     "snsDisplayName": {
       "Type": "String",
-      "Default": "",
       "Description": "Display Name of sns topic"
     },
     "notificationFunctionArn": {
       "Description": "ARN of notification function",
-      "Type": "String",
-      "Default": ""
+      "Type": "String"
     }
   },
   "Resources": {
@@ -119,7 +109,7 @@
             "Arn": {
               "Ref": "snsTopic"
             },
-            "Id": "t-topic-target"
+            "Id": "suricata-notification-targe"
           }
         ],
         "RoleArn": {
@@ -487,7 +477,7 @@
                 ]
               ]
             },
-            "Id": "t-pipeline-target",
+            "Id": "suricata-notification-targe",
             "RoleArn": {
               "Fn::GetAtt": [
                 "AmazonCloudWatchEventRole",
@@ -498,16 +488,16 @@
         ]
       }
     },
-    "AWSCloudTrailBucket": {
+    "PipelineCloudTrailBucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
     },
-    "AWSCloudTrailBucketPolicy": {
+    "PipelineCloudTrailBucketPolicy": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "AWSCloudTrailBucket"
+          "Ref": "PipelineCloudTrailBucket"
         },
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -523,7 +513,7 @@
               "Action": "s3:GetBucketAcl",
               "Resource": {
                 "Fn::GetAtt": [
-                  "AWSCloudTrailBucket",
+                  "PipelineCloudTrailBucket",
                   "Arn"
                 ]
               }
@@ -543,7 +533,7 @@
                   [
                     {
                       "Fn::GetAtt": [
-                        "AWSCloudTrailBucket",
+                        "PipelineCloudTrailBucket",
                         "Arn"
                       ]
                     },
@@ -567,12 +557,12 @@
     },
     "AwsCloudTrail": {
       "DependsOn": [
-        "AWSCloudTrailBucketPolicy"
+        "PipelineCloudTrailBucketPolicy"
       ],
       "Type": "AWS::CloudTrail::Trail",
       "Properties": {
         "S3BucketName": {
-          "Ref": "AWSCloudTrailBucket"
+          "Ref": "PipelineCloudTrailBucket"
         },
         "EventSelectors": [
           {
