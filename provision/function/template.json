@@ -6,7 +6,12 @@
     "PipelinePrefix": {
       "Type": "String",
       "Default": "",
-      "Description": "prefix for CodePipeline"
+      "Description": "prefix used when creating CodePipeline"
+    },
+    "CodeBuildProjectPrefix": {
+      "Type": "String",
+      "Default": "",
+      "Description": "prefix for created CodeBuild projects"
     },
     "ServiceRoleArn": {
       "Type": "String",
@@ -137,6 +142,9 @@
           "Variables": {
             "PIPELINE_PREFIX": {
               "Ref": "PipelinePrefix"
+            },
+            "CODEBUILD_PREFIX": {
+              "Ref": "CodeBuildProjectPrefix"
             },
             "SERVICE_ROLE_ARN": {
               "Ref": "ServiceRoleArn"

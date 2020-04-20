@@ -80,10 +80,11 @@ def lambda_handler(event, context):
     source_bucket_object_key = updated_file
     service_role_arn = os.environ["SERVICE_ROLE_ARN"]
     output_bucket_name = os.environ["OUTPUT_BUCKET"]
+    codebuild_prefix = os.environ["CODEBUILD_PREFIX"]
     cloudformation = client("cloudformation")
 
     if prefix == "prod":
-        pipeline_name = "prod-%s-%s" % (pipeline_prefix, branch)
+        pipeline_name = "%s-%s-prod" % (pipeline_prefix, branch)
 
         logger.info(pipeline_name)
         logger.info(source_bucket)
@@ -96,6 +97,7 @@ def lambda_handler(event, context):
             TemplateURL=prod_pipeline_template_url,
             Parameters=[
                 {"ParameterKey": "PipelineName", "ParameterValue": pipeline_name},
+                {"ParameterKey": "CodeBuildProjectPrefix", "ParameterValue": codebuild_prefix},
                 {"ParameterKey": "SourceBucket", "ParameterValue": source_bucket},
                 {
                     "ParameterKey": "SourceBucketObjectKey",
@@ -113,13 +115,14 @@ def lambda_handler(event, context):
         # Delete bucket on failure
 
     elif prefix == "dev":
-        pipeline_name = "dev-%s-%s" % (pipeline_prefix, branch)
+        pipeline_name = "%s-%s-dev" % (pipeline_prefix, branch)
 
         cloudformation.create_stack(
-            StackName="%s%sPipeline" % (pipeline_prefix, branch),
+            StackName="%s-%s-Pipeline" % (pipeline_prefix, branch),
             TemplateURL=dev_pipeline_template_url,
             Parameters=[
                 {"ParameterKey": "PipelineName", "ParameterValue": pipeline_name},
+                {"ParameterKey": "CodeBuildProjectPrefix", "ParameterValue": codebuild_prefix},
                 {"ParameterKey": "SourceBucket", "ParameterValue": source_bucket},
                 {
                     "ParameterKey": "SourceBucketObjectKey",
