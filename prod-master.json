@@ -905,6 +905,9 @@
           "PipelinePrefix": {
             "Ref": "PipelinePrefix"
           },
+          "CodeBuildProjectPrefix": {
+            "Ref": "CodeBuildProjectPrefix"
+          },
           "ProdPipelineTemplateURL": {
             "Ref": "ProdPipelineTemplateURL"
           },
