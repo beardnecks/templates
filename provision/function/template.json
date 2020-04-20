@@ -3,7 +3,7 @@
   "Transform": "AWS::Serverless-2016-10-31",
   "Description": "Creates notification lambda function",
   "Parameters": {
-    "PipelineName": {
+    "PipelinePrefix": {
       "Type": "String",
       "Default": "",
       "Description": "prefix for CodePipeline"
@@ -135,8 +135,8 @@
         "Timeout": 300,
         "Environment": {
           "Variables": {
-            "PIPELINE_NAME": {
-              "Ref": "PipelineName"
+            "PIPELINE_PREFIX": {
+              "Ref": "PipelinePrefix"
             },
             "SERVICE_ROLE_ARN": {
               "Ref": "ServiceRoleArn"

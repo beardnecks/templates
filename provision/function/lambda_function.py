@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     :param context: Not used
     :return:
     """
-    pipeline_prefix = os.environ["PIPELINE_NAME"]
+    pipeline_prefix = os.environ["PIPELINE_PREFIX"]
     prod_pipeline_template_url = os.environ["PROD_TEMPLATE_URL"]
     dev_pipeline_template_url = os.environ["DEV_TEMPLATE_URL"]
 
