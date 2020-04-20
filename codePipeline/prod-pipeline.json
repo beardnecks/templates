@@ -5,6 +5,11 @@
       "Type": "String",
       "Description": "Name of the CodePipeline"
     },
+    "CodeBuildProjectPrefix": {
+      "Type": "String",
+      "Default": "",
+      "Description": "prefix for created CodeBuild projects"
+    },
     "SourceBucket": {
       "Type": "String",
       "Description": "S3 bucket source for the pipeline"
@@ -266,7 +271,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-UnitTest"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-UnitTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -290,7 +295,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-RustTest"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-RustTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -314,7 +319,7 @@
                 "RunOrder": 2,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-CoccinelleTest"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-CoccinelleTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -338,7 +343,7 @@
                 "RunOrder": 2,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-ClangTest"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-ClangTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -362,7 +367,7 @@
                 "RunOrder": 2,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-VerifyTest"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-VerifyTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -391,7 +396,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-Packaging"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-Packaging"
                   }
                 },
                 "OutputArtifacts": [
@@ -420,7 +425,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-DockerBuild"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-DockerBuild"
                   }
                 },
                 "OutputArtifacts": [
@@ -478,7 +483,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::Sub": "${PipelineName}-DockerDeploy"
+                    "Fn::Sub": "${CodeBuildProjectPrefix}-DockerDeploy"
                   },
                   "PrimarySource": "SourceArtifact"
                 },
