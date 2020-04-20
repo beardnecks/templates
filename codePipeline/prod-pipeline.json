@@ -19,48 +19,7 @@
     },
     "OutputBucketName": {
       "Type": "String",
-      "Default": "${PipelineName}-output-bucket",
       "Description": "Bucket containing the output artifact from the pipeline"
-    },
-    "UnitTestName": {
-      "Type": "String",
-      "Default": "${PipelineName}-UnitTest",
-      "Description": "Project name of unit test"
-    },
-    "VerifyTestName": {
-      "Type": "String",
-      "Default": "${PipelineName}-VerifyTest",
-      "Description": "Project name of verify test"
-    },
-    "CoccinelleTestName": {
-      "Type": "String",
-      "Default": "${PipelineName}-CoccinelleTest",
-      "Description": "Project name of Coccinelle"
-    },
-    "ClangTestName": {
-      "Type": "String",
-      "Default": "${PipelineName}-ClangTest",
-      "Description": "Project name of Clang test"
-    },
-    "RustTestName": {
-      "Type": "String",
-      "Default": "${PipelineName}-RustTest",
-      "Description": "Project name of Rust test"
-    },
-    "PackagingName": {
-      "Type": "String",
-      "Default": "${PipelineName}-Packaging",
-      "Description": "Project name of packaging"
-    },
-    "DockerBuildName": {
-      "Type": "String",
-      "Default": "${PipelineName}-DockerBuild",
-      "Description": "Project name of docker"
-    },
-    "DockerDeployName": {
-      "Type": "String",
-      "Default": "${PipelineName}-DockerDeploy",
-      "Description": "Project name of docker"
     }
   },
   "Resources": {
@@ -307,7 +266,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "UnitTestName"
+                    "Fn::Sub": "${PipelineName}-UnitTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -331,7 +290,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "RustTestName"
+                    "Fn::Sub": "${PipelineName}-RustTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -355,7 +314,7 @@
                 "RunOrder": 2,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "CoccinelleTestName"
+                    "Fn::Sub": "${PipelineName}-CoccinelleTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -379,7 +338,7 @@
                 "RunOrder": 2,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "ClangTestName"
+                    "Fn::Sub": "${PipelineName}-ClangTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -403,7 +362,7 @@
                 "RunOrder": 2,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "VerifyTestName"
+                    "Fn::Sub": "${PipelineName}-VerifyTest"
                   }
                 },
                 "OutputArtifacts": [],
@@ -432,7 +391,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "PackagingName"
+                    "Fn::Sub": "${PipelineName}-Packaging"
                   }
                 },
                 "OutputArtifacts": [
@@ -461,7 +420,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "DockerBuildName"
+                    "Fn::Sub": "${PipelineName}-DockerBuild"
                   }
                 },
                 "OutputArtifacts": [
@@ -519,7 +478,7 @@
                 "RunOrder": 1,
                 "Configuration": {
                   "ProjectName": {
-                    "Ref": "DockerDeployName"
+                    "Fn::Sub": "${PipelineName}-DockerDeploy"
                   },
                   "PrimarySource": "SourceArtifact"
                 },
