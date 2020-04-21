@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
-    "PipelineName": {
+    "PipelinePrefix": {
       "Type": "String",
       "Description": "Name of the CodePipeline"
     },

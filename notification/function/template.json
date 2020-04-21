@@ -17,7 +17,7 @@
       "Description": "Location of source code file in bucket",
       "Type": "String"
     },
-    "PipelineName": {
+    "PipelinePrefix": {
       "Description": "Name of the attached pipeline",
       "Type": "String"
     }
@@ -27,7 +27,7 @@
       "Type": "AWS::SecretsManager::Secret",
       "Properties": {
         "Name": {
-          "Fn::Sub": "${PipelineName}-NotifySecret"
+          "Fn::Sub": "${PipelinePrefix}-NotifySecret"
         },
         "Description": "Credentials for GH or BB REST APIs",
         "SecretString": {
@@ -82,7 +82,7 @@
                 "codepipeline:ListActionExecutions"
               ],
               "Resource": {
-                "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}"
+                "Fn::Sub": "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelinePrefix}*"
               }
             },
             {
