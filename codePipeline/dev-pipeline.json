@@ -109,7 +109,7 @@
             "Arn": {
               "Ref": "snsTopic"
             },
-            "Id": "suricata-notification-targe"
+            "Id": "suricata-notification-target"
           }
         ],
         "RoleArn": {
@@ -151,7 +151,7 @@
             "Arn": {
               "Ref": "snsTopic"
             },
-            "Id": "t-topic-target"
+            "Id": "suricata-notification-target"
           }
         ],
         "RoleArn": {
@@ -477,7 +477,7 @@
                 ]
               ]
             },
-            "Id": "suricata-notification-targe",
+            "Id": "suricata-pipeline-target",
             "RoleArn": {
               "Fn::GetAtt": [
                 "AmazonCloudWatchEventRole",

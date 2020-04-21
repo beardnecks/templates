@@ -559,7 +559,7 @@
                 ]
               ]
             },
-            "Id": "t-pipeline-target",
+            "Id": "suricata-pipeline-target",
             "RoleArn": {
               "Fn::GetAtt": [
                 "CloudWatchEventRole",
