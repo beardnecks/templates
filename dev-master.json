@@ -155,22 +155,32 @@
     },
     "UnitTestBuildSpecFileName": {
       "Description": "Filename of the Unittest buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
       "Type": "String"
     },
     "VerifyBuildSpecFileName": {
       "Description": "Filename of the Verifytest buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
       "Type": "String"
     },
     "CoccinelleBuildSpecFileName": {
       "Description": "Name of the Coccinelle buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
       "Type": "String"
     },
     "ClangBuildSpecFileName": {
       "Description": "name of the Clang buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
       "Type": "String"
     },
     "RustBuildSpecFileName": {
       "Description": "name of the rust buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
       "Type": "String"
     },
     "BuildImage": {
@@ -183,31 +193,47 @@
     },
     "UnitTestTemplateURL": {
       "Description": "S3 URL for unit test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Type": "String"
     },
     "VerifyTestTemplateURL": {
       "Description": "S3 URL for verify test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Type": "String"
     },
     "CoccinelleTemplateURL": {
       "Description": "S3 URL for coccinelle test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Type": "String"
     },
     "ClangTemplateURL": {
       "Description": "S3 URL for clang test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Type": "String"
     },
     "RustTemplateURL": {
       "Description": "S3 URL for rust test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Type": "String"
     },
     "NotificationTemplateURL": {
       "Description": "S3 URL for notification system template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Type": "String"
     },
     "PipelineName": {
       "Type": "String",
-      "Description": "Name of the CodePipeline"
+      "Description": "Name of the CodePipeline",
+      "AllowedPattern": "[A-Za-z0-9.@\\-_]+",
+      "ConstraintDescription": "Must contain only uppercase, lowercase, numbers, dash and underscore.",
+      "MinLength": 1,
+      "MaxLength": 100
     },
     "SourceBucket": {
       "Type": "String",
@@ -215,10 +241,14 @@
     },
     "SourceBucketObjectKey": {
       "Type": "String",
+      "AllowedPattern": "[A-Za-z0-9.@\\-_]+.zip$",
+      "ConstraintDescription": "Must contain only uppercase, lowercase, numbers, dash, underscore and end with a .zip extension",
       "Description": "Zip file containing source code inside Source Code Bucket"
     },
     "PipelineTemplateURL": {
       "Type": "String",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Description": "S3 URL for the pipeline template"
     },
     "snsTopicName": {
