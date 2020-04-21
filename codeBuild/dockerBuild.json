@@ -12,7 +12,7 @@
     "BuildSpecFileName": {
       "Description": "Filename/location of the buildspec file in source code repository",
       "Type": "String",
-      "AllowedPattern": "[A-Za-z0-9/-_]+(.yml|.yaml)$",
+      "AllowedPattern": "[A-Za-z0-9/-_]+(\\.yml|\\.yaml)$",
       "ConstraintDescription": "Must be a yaml/yml file",
       "Default": "qa/buildspec/dockerbuild.yml"
     },
