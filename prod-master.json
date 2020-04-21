@@ -808,6 +808,7 @@
           "BuildSpecFileName": {
             "Ref": "DockerBuildBuildSpecFileName"
           },
+          "BuildImage": "aws/codebuild/standard:4.0",
           "IAMRole": {
             "Fn::GetAtt": [
               "DockerBuildIamRole",
@@ -830,6 +831,7 @@
           "BuildSpecFileName": {
             "Ref": "DockerDeployBuildSpecFileName"
           },
+          "BuildImage": "aws/codebuild/standard:4.0",
           "IAMRole": {
             "Fn::GetAtt": [
               "DockerDeployIamRole",

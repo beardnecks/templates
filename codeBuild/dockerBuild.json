@@ -53,7 +53,9 @@
         },
         "Environment": {
           "Type": "LINUX_CONTAINER",
-          "Image": "aws/codebuild/standard:4.0",
+          "Image": {
+            "Ref": "BuildImage"
+          },
           "ComputeType": "BUILD_GENERAL1_LARGE",
           "EnvironmentVariables": [],
           "PrivilegedMode": true,
