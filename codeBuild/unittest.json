@@ -7,7 +7,7 @@
       "Type": "String",
       "AllowedPattern": "[A-Za-z0-9][A-Za-z0-9\\-_]{1,254}",
       "ConstraintDescription": "Must begin with upper or lowercase or a number. Only uppercase, lowercase, numbers, - and _ allowed.",
-      "Default": "ClangTest"
+      "Default": "UnitTest"
     },
     "BuildSpecFileName": {
       "Description": "Filename/location of the buildspec file in source code repository",
