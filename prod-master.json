@@ -325,7 +325,7 @@
     },
     "SourceBucketObjectKey": {
       "Type": "String",
-      "AllowedPattern": "[A-Za-z0-9.@\\-_]+.zip$",
+      "AllowedPattern": "[A-Za-z0-9.@\\-_/]+.zip$",
       "ConstraintDescription": "Must contain only uppercase, lowercase, numbers, dash, underscore and end with a .zip extension",
       "Description": "Zip file containing source code inside Source Code Bucket"
     },
