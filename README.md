@@ -14,6 +14,9 @@ The pipelines have several configurable parameters. Configure all the environmen
 DEV_PREFIX="<DEV_PREFIX>"
 PROD_PREFIX="<PROD_PREFIX>"
 
+# Region stack should be deployed in
+REGION="<REGION>"
+
 # Which S3 bucket to upload templates to, and what folder to use. Bucket must already exist.
 UPLOAD_BUCKET="<TEMPLATE_UPLOAD_BUCKET>"
 PREFIX="<STACK_UPLOAD_PREFIX>/"
@@ -63,21 +66,21 @@ aws cloudformation create-stack --stack-name "${PROD_PREFIX}-${STACKNAME}" --tem
   ParameterKey=PackagingBuildSpecFileName,ParameterValue="qa/buildspec/packaging.yml" \
   ParameterKey=DockerBuildBuildSpecFileName,ParameterValue="qa/buildspec/dockerbuild.yml" \
   ParameterKey=DockerDeployBuildSpecFileName,ParameterValue="dockerdeploy.yml" \
-  ParameterKey=BuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-devops" \
-  ParameterKey=CoccinelleBuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-coccinelle" \
+  ParameterKey=BuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/build/suricata-devops" \
+  ParameterKey=CoccinelleBuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/build/suricata-coccinelle" \
   ParameterKey=PipelineName,ParameterValue="${PROD_PREFIX}-${STACKNAME}" \
   ParameterKey=SourceBucket,ParameterValue="${SOURCE_BUCKET_NAME}" \
   ParameterKey=SourceBucketObjectKey,ParameterValue="${REPO_USERNAME}/${REPO_NAME}/prod/${REPO_USERNAME}_${REPO_NAME}.zip" \
-  ParameterKey=PipelineTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codePipeline/prod-pipeline.json" \
-  ParameterKey=UnitTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/unittest.json" \
-  ParameterKey=VerifyTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/verify.json" \
-  ParameterKey=CoccinelleTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/coccinelle.json" \
-  ParameterKey=ClangTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/clang.json" \
-  ParameterKey=RustTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/rust.json" \
-  ParameterKey=PackagingTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/package.json" \
-  ParameterKey=DockerBuildTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/dockerBuild.json" \
-  ParameterKey=DockerDeployTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/dockerDeploy.json" \
-  ParameterKey=NotificationTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}notification/function.json" \
+  ParameterKey=PipelineTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codePipeline/prod-pipeline.json" \
+  ParameterKey=UnitTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/unittest.json" \
+  ParameterKey=VerifyTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/verify.json" \
+  ParameterKey=CoccinelleTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/coccinelle.json" \
+  ParameterKey=ClangTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/clang.json" \
+  ParameterKey=RustTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/rust.json" \
+  ParameterKey=PackagingTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/package.json" \
+  ParameterKey=DockerBuildTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/dockerBuild.json" \
+  ParameterKey=DockerDeployTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/dockerDeploy.json" \
+  ParameterKey=NotificationTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}notification/function.json" \
   ParameterKey=OutputBucketName,ParameterValue="${PREFIX: : -1}-rpm" \
   ParameterKey=token,ParameterValue="${API_TOKEN}" \
   ParameterKey=snsTopicName,ParameterValue="${PROD_PREFIX}-${PREFIX: : -1}-sns" \
@@ -94,18 +97,18 @@ aws cloudformation create-stack --stack-name "${DEV_PREFIX}-${STACKNAME}" --temp
   ParameterKey=CoccinelleBuildSpecFileName,ParameterValue="qa/buildspec/coccinelle.yml" \
   ParameterKey=ClangBuildSpecFileName,ParameterValue="qa/buildspec/clang.yml" \
   ParameterKey=RustBuildSpecFileName,ParameterValue="qa/buildspec/rust.yml" \
-  ParameterKey=BuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-devops" \
-  ParameterKey=CoccinelleBuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/build/suricata-coccinelle" \
+  ParameterKey=BuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/build/suricata-devops" \
+  ParameterKey=CoccinelleBuildImage,ParameterValue="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/build/suricata-coccinelle" \
   ParameterKey=PipelineName,ParameterValue="${DEV_PREFIX}-${STACKNAME}" \
   ParameterKey=SourceBucket,ParameterValue="${SOURCE_BUCKET_NAME}" \
   ParameterKey=SourceBucketObjectKey,ParameterValue="${REPO_USERNAME}/${REPO_NAME}/dev/${REPO_USERNAME}_${REPO_NAME}.zip" \
-  ParameterKey=PipelineTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codePipeline/dev-pipeline.json" \
-  ParameterKey=UnitTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/unittest.json" \
-  ParameterKey=VerifyTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/verify.json" \
-  ParameterKey=CoccinelleTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/coccinelle.json" \
-  ParameterKey=ClangTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/clang.json" \
-  ParameterKey=RustTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}codeBuild/rust.json" \
-  ParameterKey=NotificationTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3-eu-west-1.amazonaws.com/${PREFIX}notification/function.json" \
+  ParameterKey=PipelineTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codePipeline/dev-pipeline.json" \
+  ParameterKey=UnitTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/unittest.json" \
+  ParameterKey=VerifyTestTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/verify.json" \
+  ParameterKey=CoccinelleTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/coccinelle.json" \
+  ParameterKey=ClangTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/clang.json" \
+  ParameterKey=RustTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}codeBuild/rust.json" \
+  ParameterKey=NotificationTemplateURL,ParameterValue="https://${UPLOAD_BUCKET}.s3.${REGION}.amazonaws.com/${PREFIX}notification/function.json" \
   ParameterKey=token,ParameterValue="${API_TOKEN}" \
   ParameterKey=snsTopicName,ParameterValue="${DEV_PREFIX}-${PREFIX: : -1}-sns" \
   ParameterKey=snsDisplayName,ParameterValue="Github Notification Service"

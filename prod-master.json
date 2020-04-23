@@ -114,40 +114,40 @@
           "default": "Name of SNS topic"
         },
         "snsDisplayName": {
-          "default": "Display name of SNS Topic"
+          "default": "OPTIONAL: Display name of SNS Topic"
         },
         "token": {
-          "default": "Github token for notification system"
+          "default": "Optional: Github token or Bitbucket basic auth credentials for notification system. NOTE: If not provided, the notification system will still run, but not function"
         },
         "UnitTestBuildSpecFileName": {
-          "default": "File path of the buildspec file of the unit test"
+          "default": "File path of the buildspec file for the unit test"
         },
         "VerifyBuildSpecFileName": {
-          "default": "File path of the buildspec file of the verify tests"
+          "default": "File path of the buildspec file for the verify tests"
         },
         "CoccinelleBuildSpecFileName": {
-          "default": "File path of the buildspec file of the coccinelle tests"
+          "default": "File path of the buildspec file for the coccinelle tests"
         },
         "ClangBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Clang tests"
+          "default": "File path of the buildspec file for the Clang tests"
         },
         "RustBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Rust tests"
+          "default": "File path of the buildspec file for the Rust tests"
         },
         "PackagingBuildSpecFileName": {
-          "default": "File path of the buildspec file of the packaging stage"
+          "default": "File path of the buildspec file for the packaging stage"
         },
         "DockerBuildBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Docker Build stage"
+          "default": "File path of the buildspec file for the Docker Build stage"
         },
         "DockerDeployBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Docker Deploy stage"
+          "default": "File path of the buildspec file for the Docker Deploy stage"
         },
         "BuildImage": {
-          "default": "ECR address of docker image used for building"
+          "default": "Address of docker image used in CodeBuild projects"
         },
         "CoccinelleBuildImage": {
-          "default": "ECR address of docker image used for Coccinelle"
+          "default": "Address of docker image used for Coccinelle"
         },
         "UnitTestTemplateURL": {
           "default": "S3 URL of unit test template"
@@ -196,118 +196,137 @@
   },
   "Parameters": {
     "token": {
-      "Description": "Github Token",
+      "Description": "Github Token or Bitbucket basic auth credentials",
       "Type": "String",
-      "Default": ""
+      "Default": "",
+      "NoEcho": true
     },
     "UnitTestBuildSpecFileName": {
-      "Description": "Filename of the Unittest buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "Filename of the Unittest buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "VerifyBuildSpecFileName": {
-      "Description": "Filename of the Verifytest buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "Filename of the Verifytest buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "CoccinelleBuildSpecFileName": {
-      "Description": "Name of the Coccinelle buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "Name of the Coccinelle buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "ClangBuildSpecFileName": {
-      "Description": "name of the Clang buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "name of the Clang buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "RustBuildSpecFileName": {
-      "Description": "name of the rust buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "name of the rust buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "PackagingBuildSpecFileName": {
-      "Description": "Filename of the packaging buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "Filename of the packaging buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "DockerBuildBuildSpecFileName": {
-      "Description": "Filename of the Docker Build buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "Filename of the Docker Build buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "DockerDeployBuildSpecFileName": {
-      "Description": "Filename of the Docker Deploy buildspec.yaml",
-      "Type": "String",
-      "Default": ""
+      "Description": "Filename of the Docker Deploy buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
     },
     "BuildImage": {
-      "Description": "Docker container to run the pipeline stages",
-      "Type": "String",
-      "Default": ""
+      "Description": "Docker container image for CodeBuild projects",
+      "Type": "String"
     },
     "CoccinelleBuildImage": {
-      "Description": "Docker container to run the coccinelle build",
-      "Type": "String",
-      "Default": ""
+      "Description": "Docker container image for the Coccinelle CodeBuild project",
+      "Type": "String"
     },
     "UnitTestTemplateURL": {
       "Description": "S3 URL for unit test template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "VerifyTestTemplateURL": {
       "Description": "S3 URL for verify test template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "CoccinelleTemplateURL": {
       "Description": "S3 URL for coccinelle test template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "ClangTemplateURL": {
       "Description": "S3 URL for clang test template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "RustTemplateURL": {
       "Description": "S3 URL for rust test template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "PackagingTemplateURL": {
       "Description": "S3 URL for packaging build template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "DockerBuildTemplateURL": {
       "Description": "S3 URL for docker build template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "DockerDeployTemplateURL": {
       "Description": "S3 URL for docker deploy template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "NotificationTemplateURL": {
       "Description": "S3 URL for notification system template",
-      "Type": "String",
-      "Default": ""
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "PipelineName": {
       "Type": "String",
-      "Default": "",
-      "Description": "Name of the CodePipeline"
+      "Description": "Name of the CodePipeline",
+      "AllowedPattern": "[A-Za-z0-9.@\\-_]+",
+      "ConstraintDescription": "Must contain only uppercase, lowercase, numbers, dash and underscore.",
+      "MinLength": 1,
+      "MaxLength": 100
     },
     "SourceBucket": {
       "Type": "String",
-      "Default": "",
       "Description": "S3 bucket containing the source code for the pipeline"
     },
     "SourceBucketObjectKey": {
       "Type": "String",
-      "Default": "",
+      "AllowedPattern": "[A-Za-z0-9.@\\-_/]+.zip$",
+      "ConstraintDescription": "Must contain only uppercase, lowercase, numbers, dash, underscore and end with a .zip extension",
       "Description": "Zip file containing source code inside Source Code Bucket"
     },
     "OutputBucketName": {
@@ -317,17 +336,17 @@
     },
     "PipelineTemplateURL": {
       "Type": "String",
-      "Default": "",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Description": "S3 URL for the pipeline template"
     },
     "snsTopicName": {
       "Type": "String",
-      "Default": "",
       "Description": "Name of sns topic"
     },
     "snsDisplayName": {
       "Type": "String",
-      "Default": "",
+      "Default": "Suricata Pipeline Notification System",
       "Description": "Display Name of sns topic"
     }
   },
@@ -789,6 +808,7 @@
           "BuildSpecFileName": {
             "Ref": "DockerBuildBuildSpecFileName"
           },
+          "BuildImage": "aws/codebuild/standard:4.0",
           "IAMRole": {
             "Fn::GetAtt": [
               "DockerBuildIamRole",
@@ -811,6 +831,7 @@
           "BuildSpecFileName": {
             "Ref": "DockerDeployBuildSpecFileName"
           },
+          "BuildImage": "aws/codebuild/standard:4.0",
           "IAMRole": {
             "Fn::GetAtt": [
               "DockerDeployIamRole",

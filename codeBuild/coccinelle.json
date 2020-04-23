@@ -5,17 +5,20 @@
     "BuildName": {
       "Description": "Name of the build project",
       "Type": "String",
-      "Default": "Coccinelle"
+      "AllowedPattern": "[A-Za-z0-9][A-Za-z0-9\\-_]{1,254}",
+      "ConstraintDescription": "Must begin with upper or lowercase or a number. Only uppercase, lowercase, numbers, - and _ allowed.",
+      "Default": "CoccinelleTest"
     },
     "BuildSpecFileName": {
-      "Description": "Filename of the buildspec.yaml",
+      "Description": "Filename/location of the buildspec file in source code repository",
       "Type": "String",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
       "Default": "qa/buildspec/coccinelle.yml"
     },
     "BuildImage": {
-      "Description": "Docker container to run the build",
-      "Type": "String",
-      "Default": ""
+      "Description": "Docker container image used to run the build",
+      "Type": "String"
     },
     "IAMRole": {
       "Description": "Iam role arn passed from master template",

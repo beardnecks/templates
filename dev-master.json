@@ -87,31 +87,31 @@
           "default": "Name of SNS topic"
         },
         "snsDisplayName": {
-          "default": "Display name of SNS Topic"
+          "default": "OPTIONAL: Display name of SNS Topic"
         },
         "token": {
-          "default": "Github token for notification system"
+          "default": "Optional: Github token or Bitbucket basic auth credentials for notification system. NOTE: If not provided, the notification system will still run, but not function"
         },
         "UnitTestBuildSpecFileName": {
-          "default": "File path of the buildspec file of the unit test"
+          "default": "File path of the buildspec file for the unit test"
         },
         "VerifyBuildSpecFileName": {
-          "default": "File path of the buildspec file of the verify tests"
+          "default": "File path of the buildspec file for the verify tests"
         },
         "CoccinelleBuildSpecFileName": {
-          "default": "File path of the buildspec file of the coccinelle tests"
+          "default": "File path of the buildspec file for the coccinelle tests"
         },
         "ClangBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Clang tests"
+          "default": "File path of the buildspec file for the Clang tests"
         },
         "RustBuildSpecFileName": {
-          "default": "File path of the buildspec file of the Rust tests"
+          "default": "File path of the buildspec file for the Rust tests"
         },
         "BuildImage": {
-          "default": "ECR address of docker image used for building"
+          "default": "Address of docker image used in CodeBuild projects"
         },
         "CoccinelleBuildImage": {
-          "default": "ECR address of docker image used for Coccinelle"
+          "default": "Address of docker image used for Coccinelle"
         },
         "UnitTestTemplateURL": {
           "default": "S3 URL of unit test template"
@@ -135,7 +135,7 @@
           "default": "Name of the CodePipeline"
         },
         "SourceBucket": {
-          "default": "S3 bucket the source code for the pipeline"
+          "default": "S3 bucket that contains the source code for the pipeline"
         },
         "SourceBucketObjectKey": {
           "default": "Zip file containing source code inside Source Code Bucket"
@@ -147,104 +147,117 @@
     }
   },
   "Parameters": {
-    "UnitTestBuildSpecFileName": {
-      "Description": "Filename of the unit test buildspec.yaml",
-      "Type": "String",
-      "Default": ""
-    },
-    "VerifyBuildSpecFileName": {
-      "Description": "Filename of the verify test buildspec.yaml",
-      "Type": "String",
-      "Default": ""
-    },
-    "CoccinelleBuildSpecFileName": {
-      "Description": "Name of the Coccinelle buildspec.yaml",
-      "Type": "String",
-      "Default": ""
-    },
-    "ClangBuildSpecFileName": {
-      "Description": "name of the Clang buildspec.yaml",
-      "Type": "String",
-      "Default": ""
-    },
-    "RustBuildSpecFileName": {
-      "Description": "name of the rust buildspec.yaml",
-      "Type": "String",
-      "Default": ""
-    },
-    "BuildImage": {
-      "Description": "Docker container to run the builds",
-      "Type": "String",
-      "Default": ""
-    },
-    "CoccinelleBuildImage": {
-      "Description": "Docker container to run the coccinelle build",
-      "Type": "String",
-      "Default": ""
-    },
-    "UnitTestTemplateURL": {
-      "Description": "S3 URL for unit test template",
-      "Type": "String",
-      "Default": ""
-    },
-    "VerifyTestTemplateURL": {
-      "Description": "S3 URL for verify test template",
-      "Type": "String",
-      "Default": ""
-    },
-    "CoccinelleTemplateURL": {
-      "Description": "S3 URL for coccinelle test template",
-      "Type": "String",
-      "Default": ""
-    },
-    "ClangTemplateURL": {
-      "Description": "S3 URL for clang test template",
-      "Type": "String",
-      "Default": ""
-    },
-    "RustTemplateURL": {
-      "Description": "S3 URL for rust test template",
-      "Type": "String",
-      "Default": ""
-    },
-    "NotificationTemplateURL": {
-      "Description": "S3 URL for notification system template",
-      "Type": "String",
-      "Default": ""
-    },
     "token": {
       "Description": "Github Token",
       "Type": "String",
-      "Default": ""
+      "Default": "",
+      "NoEcho": true
+    },
+    "UnitTestBuildSpecFileName": {
+      "Description": "Filename of the Unittest buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
+    },
+    "VerifyBuildSpecFileName": {
+      "Description": "Filename of the Verifytest buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
+    },
+    "CoccinelleBuildSpecFileName": {
+      "Description": "Name of the Coccinelle buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
+    },
+    "ClangBuildSpecFileName": {
+      "Description": "name of the Clang buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
+    },
+    "RustBuildSpecFileName": {
+      "Description": "name of the rust buildspec",
+      "AllowedPattern": "^[A-Za-z0-9/\\-_]+(\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a yaml/yml file",
+      "Type": "String"
+    },
+    "BuildImage": {
+      "Description": "Docker container image for CodeBuild projects",
+      "Type": "String"
+    },
+    "CoccinelleBuildImage": {
+      "Description": "Docker container image for the Coccinelle CodeBuild project",
+      "Type": "String"
+    },
+    "UnitTestTemplateURL": {
+      "Description": "S3 URL for unit test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
+    },
+    "VerifyTestTemplateURL": {
+      "Description": "S3 URL for verify test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
+    },
+    "CoccinelleTemplateURL": {
+      "Description": "S3 URL for coccinelle test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
+    },
+    "ClangTemplateURL": {
+      "Description": "S3 URL for clang test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
+    },
+    "RustTemplateURL": {
+      "Description": "S3 URL for rust test template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
+    },
+    "NotificationTemplateURL": {
+      "Description": "S3 URL for notification system template",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
+      "Type": "String"
     },
     "PipelineName": {
       "Type": "String",
-      "Default": "",
-      "Description": "Name of the CodePipeline"
+      "Description": "Name of the CodePipeline",
+      "AllowedPattern": "[A-Za-z0-9.@\\-_]+",
+      "ConstraintDescription": "Must contain only uppercase, lowercase, numbers, dash and underscore.",
+      "MinLength": 1,
+      "MaxLength": 100
     },
     "SourceBucket": {
       "Type": "String",
-      "Default": "",
       "Description": "S3 bucket containing the source code for the pipeline"
     },
     "SourceBucketObjectKey": {
       "Type": "String",
-      "Default": "",
+      "AllowedPattern": "[A-Za-z0-9.@\\-_]+.zip$",
+      "ConstraintDescription": "Must contain only uppercase, lowercase, numbers, dash, underscore and end with a .zip extension",
       "Description": "Zip file containing source code inside Source Code Bucket"
     },
     "PipelineTemplateURL": {
       "Type": "String",
-      "Default": "",
+      "AllowedPattern": "^https://.*\\.s3\\..*\\.amazonaws\\.com/.*(\\.json|\\.yml|\\.yaml)$",
+      "ConstraintDescription": "Must be a S3 virtual-hosted–style request URL to a file with .yaml/.yml or .json file extension",
       "Description": "S3 URL for the pipeline template"
     },
     "snsTopicName": {
       "Type": "String",
-      "Default": "",
       "Description": "Name of sns topic"
     },
     "snsDisplayName": {
       "Type": "String",
-      "Default": "",
+      "Default": "Suricata Pipeline Notification System",
       "Description": "Display Name of sns topic"
     }
   },
