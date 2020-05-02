@@ -237,7 +237,15 @@
         "BucketName": {
           "Fn::Sub": "${PipelineName}-artifactstore"
         },
-        "Tags": []
+        "Tags": [],
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "ExpirationInDays": 7,
+              "Status": "Enabled"
+            }
+          ]
+        }
       }
     },
     "ServiceRole": {

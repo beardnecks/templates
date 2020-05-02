@@ -79,6 +79,14 @@
               }
             }
           ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "NoncurrentVersionExpirationInDays": 7,
+              "Status": "Enabled"
+            }
+          ]
         }
       }
     },
@@ -271,7 +279,15 @@
         "BucketName": {
           "Fn::Sub": "${PipelineName}-artifactstore"
         },
-        "Tags": []
+        "Tags": [],
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "ExpirationInDays": 7,
+              "Status": "Enabled"
+            }
+          ]
+        }
       }
     },
     "ArtifactStoreBucketPolicy": {
