@@ -13,10 +13,10 @@ This repository contains the pipeline service. Other relevant git repos can be f
 3. [CloudFormation Templates](#cloudformation-templates)
 4. [IAM Policy](#iam-policy)
 5. [Deployment example](#deployment-example)
-    * [Preperation](#preparation)
-    * [Build and Upload files](#build-and-upload-files)
-    * [Production Pipeline](#production-pipeline)
-    * [Development Pipeline](#development-pipeline)
+    1. [Preperation](#preparation)
+    2. [Build and Upload files](#build-and-upload-files)
+    3. [Production Pipeline](#production-pipeline)
+    4. [Development Pipeline](#development-pipeline)
 
 ## Design overview
 This High-Level design figure depics the entire solution with both integration service and the pipeline service.
