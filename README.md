@@ -21,7 +21,7 @@ This repository contains the pipeline service. Other relevant git repos can be f
 ## Design overview
 This High-Level design figure depics the entire solution with both integration service and the pipeline service.
 
-![HLD](/AWS-Plan.png)
+![HLD](/images/AWS-Plan.png)
 
 ## Necessary git repositories
 [aws-git-intgeration](https://github.com/beardnecks/aws-git-integration)
