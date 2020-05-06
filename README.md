@@ -1,3 +1,21 @@
+# Suricata pipeline
+This project is a product of a bachelor thesis written by three students from NTNU Gjøvik. 
+The projects goal is to automate testing and deployment of Suricata using AWS. 
+
+The solution is split up in two services, the first one being integration. This service integrtes GitHub or Bitbucket with AWS. The second service is the pipeline service, this service runs the CodePipeline pipeline and the notification service.
+
+The two services are connected by one S3 bucket called which contains the source code the user wants to run.
+
+## Design overview
+![HLD](/AWS-Plan.png)
+
+## Necessary git repositories
+[aws-git-intgeration](#https://github.com/beardnecks/aws-git-integration)
+* Integrate GitHub or Bitbucket to AWS by uploading source code to a S3 bucket.
+ 
+[suricata-pipeline-config-files](#https://github.com/beardnecks/suricata-pipeline-config-files)
+* Files required by the pipeline to run tests on and build Suricata
+
 # CloudFormation Templates
 The master template will initiate the nested stacks to create a pipeline in AWS CodePipeline.
 
