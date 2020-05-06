@@ -24,10 +24,10 @@ This High-Level design figure depics the entire solution with both integration s
 ![HLD](/AWS-Plan.png)
 
 ## Necessary git repositories
-[aws-git-intgeration](#https://github.com/beardnecks/aws-git-integration)
+[aws-git-intgeration](https://github.com/beardnecks/aws-git-integration)
 * Integrate GitHub or Bitbucket to AWS by uploading source code to a S3 bucket.
  
-[suricata-pipeline-config-files](#https://github.com/beardnecks/suricata-pipeline-config-files)
+[suricata-pipeline-config-files](https://github.com/beardnecks/suricata-pipeline-config-files)
 * Files required by the pipeline to run tests on and build Suricata
 
 ## CloudFormation Templates
