@@ -6,9 +6,9 @@ The solution is split up in two services, the first one being integration. This 
 
 The two services are connected by one S3 bucket called which contains the source code the user wants to run.
 
+This repository contains the pipeline service. Other relevant git repos can be found in [Necessary Git repositories](#necessary-git-repositories).
 ## Design overview
 This High-Level design figure depics the entire solution with both integration service and the pipeline service.
-
 
 ![HLD](/AWS-Plan.png)
 
