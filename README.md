@@ -1,5 +1,5 @@
 # Suricata pipeline
-This project is a product of a bachelor thesis written by three students from NTNU Gjøvik. 
+This project is a product of a bachelor thesis written by three students from NTNU Gjøvik, @Hexoplon, @martinaamodt, @joachiwi. 
 The projects goal is to automate testing and deployment of Suricata using AWS. 
 
 The solution is split up in two services, the first one being integration. This service integrtes GitHub or Bitbucket with AWS. The second service is the pipeline service, this service runs the CodePipeline pipeline and the notification service.
