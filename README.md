@@ -7,6 +7,17 @@ The solution is split up in two services, the first one being integration. This 
 The two services are connected by one S3 bucket called which contains the source code the user wants to run.
 
 This repository contains the pipeline service. Other relevant git repos can be found in [Necessary Git repositories](#necessary-git-repositories).
+## Table of Contents
+1. [Design overview](#design-overview)
+2. [Necessary git repositories](#necessary-git-repositories)
+3. [CloudFormation Templates](#cloudformation-templates)
+4. [IAM Policy](#iam-policy)
+5. [Deployment example](#deployment-example)
+    * [Preperation](#preparation)
+    * [Build and Upload files](#build-and-upload-files)
+    * [Production Pipeline](#production-pipeline)
+    * [Development Pipeline](#development-pipeline)
+
 ## Design overview
 This High-Level design figure depics the entire solution with both integration service and the pipeline service.
 
@@ -19,7 +30,7 @@ This High-Level design figure depics the entire solution with both integration s
 [suricata-pipeline-config-files](#https://github.com/beardnecks/suricata-pipeline-config-files)
 * Files required by the pipeline to run tests on and build Suricata
 
-# CloudFormation Templates
+## CloudFormation Templates
 The master template will initiate the nested stacks to create a pipeline in AWS CodePipeline.
 
 ## IAM Policy
