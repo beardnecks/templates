@@ -412,12 +412,12 @@
               "Statement": [
                 {
                   "Action": [
-                    "cloudwatch:*",
-                    "logs:*",
-                    "sns:*"
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
-                  "Resource": "*"
+                  "Resource": "arn:aws:logs:*:*:*"
                 }
               ]
             }
@@ -485,12 +485,12 @@
               "Statement": [
                 {
                   "Action": [
-                    "cloudwatch:*",
-                    "logs:*",
-                    "sns:*"
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
-                  "Resource": "*"
+                  "Resource": "arn:aws:logs:*:*:*"
                 }
               ]
             }
@@ -558,12 +558,12 @@
               "Statement": [
                 {
                   "Action": [
-                    "cloudwatch:*",
-                    "logs:*",
-                    "sns:*"
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
-                  "Resource": "*"
+                  "Resource": "arn:aws:logs:*:*:*"
                 }
               ]
             }
@@ -635,12 +635,12 @@
               "Statement": [
                 {
                   "Action": [
-                    "cloudwatch:*",
-                    "logs:*",
-                    "sns:*"
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
-                  "Resource": "*"
+                  "Resource": "arn:aws:logs:*:*:*"
                 }
               ]
             }
